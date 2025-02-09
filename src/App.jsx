@@ -1,14 +1,22 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LoginPage from './pages/Users/UserLogin';
-import RegistrationPage from './pages/Users/UserReg'; 
-import AdminLoginPage from './pages/Admins/AdminLogin';
-import AdminRegistrationPage from './pages/Admins/AdminReg'; 
-import AdminPanel from './pages/Admins/AdminPanel';
+
 import UserPanel from './pages/Users/UserPanel';
+import RegistrationPage from './pages/Users/UserReg';
+import LoginPage from './pages/Users/UserLogin';
+import BrowseJob from './pages/Users/data/BrowseJob';
+import JobDetails from './pages/Users/data/JobDetails';
+import JobListing from './pages/Users/data/JobList';
+import ScheduleInterview from './pages/Users/data/ScheduleInterview';
+
+
+import AdminLoginPage from './pages/Admins/AdminLogin';
+import AdminRegistrationPage from './pages/Admins/AdminReg';
+import AdminPanel from './pages/Admins/AdminPanel';
+
+
 import Recuiter from './pages/Recruiters/RecuiterPage';
-import ApprovedCompany from './pages/Admins/data/ApprovedCompany';
-import TotalNoOfJobs from './pages/Admins/data/TotalJobs';
+
 
 
 function App() {
@@ -17,13 +25,19 @@ function App() {
       <Routes>
         <Route path="/ulogin" element={<LoginPage />} />
         <Route path="/uregister" element={<RegistrationPage />} />
+
         <Route path="/upanel" element={<UserPanel />} />
+        <Route path="/browsejobs" element={<BrowseJob />} />
+        <Route path="/job-details" element={<JobDetails />} />
+        <Route path="/job-listing" element={<JobListing />} />
+        <Route path="/interview" element={<ScheduleInterview />} />
+
         <Route path="/alogin" element={<AdminLoginPage />} />
         <Route path="/aregister" element={<AdminRegistrationPage />} />
-        <Route path="/apanel/*" element={<AdminPanel />} /> 
-        <Route path="/Rpanel" element={<Recuiter/>} />
-        <Route path="/AppCmpny" element={<ApprovedCompany/>} />
-        <Route path="/TotalJobs" element={<TotalNoOfJobs/>} />
+        <Route path="/apanel/*" element={<AdminPanel />} />
+
+        <Route path="/Rpanel" element={<Recuiter />} />
+
       </Routes>
     </Router>
   );

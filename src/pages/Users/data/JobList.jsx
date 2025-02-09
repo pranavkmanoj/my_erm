@@ -1,7 +1,7 @@
 import React from "react";
-import Navbar from "../../components/Navbar";
-import Sidebar from "../../components/Sidebar";
-import Footer from "../../components/Footer";
+import Navbar from "../../../components/Navbar";
+import Sidebar from "../../../components/Sidebar";
+import Footer from "../../../components/Footer";
 
 const JobCard = ({ position, company, date, status }) => {
   return (
@@ -10,9 +10,8 @@ const JobCard = ({ position, company, date, status }) => {
       <p className="text-gray-600 dark:text-gray-400">{company}</p>
       <p className="text-sm text-gray-500 dark:text-gray-400">{date}</p>
       <div
-        className={`mt-2 px-4 py-1 text-black text-sm font-medium rounded-full ${
-          status === "Full-Time" ? "bg-yellow-300" : "bg-cyan-300"
-        }`}
+        className={`mt-2 px-4 py-1 text-black text-sm font-medium rounded-full ${status === "Full-Time" ? "bg-yellow-300" : "bg-cyan-300"
+          }`}
       >
         {status}
       </div>
@@ -54,7 +53,6 @@ const JobListing = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <div className="flex flex-1">
-        <Sidebar />
         <main className="flex-1 ml-15 p-5 mt-5">
           <h1 className="text-2xl font-bold mb-6">Available Job Listings</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -64,7 +62,7 @@ const JobListing = () => {
           </div>
         </main>
       </div>
-  
+      <Footer />
     </div>
   );
 };

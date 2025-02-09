@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const Sidebar = ({ setSelectedJob }) => {
-  const [menus, setMenus] = useState({ jobSearch: false, Applications: false, Interview: false, Settings: false , Profile: false  });
+  const [menus, setMenus] = useState({ jobSearch: false, Applications: false, Interview: false, Settings: false, Profile: false });
 
   const toggleMenu = (menu) => {
     setMenus((prevMenus) => ({
@@ -37,7 +37,7 @@ const Sidebar = ({ setSelectedJob }) => {
                   <a
                     href="#"
                     className="block p-2 text-gray-900 rounded-lg hover:bg-gray-100 cursor-pointer"
-                    onClick={() => setSelectedJob("BrowseJob")}
+                    onClick={() => setSelectedJob("Job-Details")}
                   >
                     Job Details
                   </a>
