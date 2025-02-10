@@ -16,6 +16,8 @@ import AdminPanel from './pages/Admins/AdminPanel';
 
 
 import Recuiter from './pages/Recruiters/RecuiterPage';
+import Recuiter1 from './pages/Recruiters/Rpanel';
+import MainContent from './pages/Recruiters/MainContent'
 
 
 
@@ -37,6 +39,8 @@ function App() {
         <Route path="/apanel/*" element={<AdminPanel />} />
 
         <Route path="/Rpanel" element={<Recuiter />} />
+        <Route path="/R1panel" element={<Recuiter1 />} />
+        <Route path="MainContent" element={<MainContent />} />
 
       </Routes>
     </Router>

@@ -1,6 +1,5 @@
 import React from "react";
 import Navbar from "../../../components/Navbar";
-import Sidebar from "../../../components/Sidebar";
 import Footer from "../../../components/Footer";
 
 const JobCard = ({ position, company, date, status }) => {
@@ -50,20 +49,21 @@ const JobListing = () => {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen ">
       <Navbar />
       <div className="flex flex-1">
-        <main className="flex-1 ml-15 p-5 mt-5">
-          <h1 className="text-2xl font-bold mb-6">Available Job Listings</h1>
+        < main className="flex-1 ml-15 p-20 mt-5" >
+          <h1 className="text-3xl font-bold mb-6 text-center">Available Job Listings</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {jobs.map((job, index) => (
               <JobCard key={index} {...job} />
             ))}
           </div>
-        </main>
-      </div>
+        </main >
+      </div >
       <Footer />
-    </div>
+    </div >
+
   );
 };
 
