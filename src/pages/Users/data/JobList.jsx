@@ -1,6 +1,6 @@
 import React from "react";
-import Navbar from "../../../components/Navbar";
-import Footer from "../../../components/Footer";
+import Navbar from "../../../Layout/Navbar";
+import Footer from "../../../Layout/Footer";
 
 const JobCard = ({ position, company, date, status }) => {
   return (

@@ -15,9 +15,11 @@ import AdminRegistrationPage from './pages/Admins/AdminReg';
 import AdminPanel from './pages/Admins/AdminPanel';
 
 
-import Recuiter from './pages/Recruiters/RecuiterPage';
-import Recuiter1 from './pages/Recruiters/Rpanel';
-import MainContent from './pages/Recruiters/MainContent'
+import Recuiter from './pages/Recruiters/Rpanel';
+import Dashboard from './pages/Recruiters/Dashboard';
+import JobPostingForm from './pages/Recruiters/data/JobPosting';
+import Jobview from './pages/Recruiters/data/Jobview';
+
 
 
 
@@ -25,7 +27,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/ulogin" element={<LoginPage />} />
+        <Route path="/" element={<LoginPage />} />
         <Route path="/uregister" element={<RegistrationPage />} />
 
         <Route path="/upanel" element={<UserPanel />} />
@@ -38,9 +40,13 @@ function App() {
         <Route path="/aregister" element={<AdminRegistrationPage />} />
         <Route path="/apanel/*" element={<AdminPanel />} />
 
-        <Route path="/Rpanel" element={<Recuiter />} />
-        <Route path="/R1panel" element={<Recuiter1 />} />
-        <Route path="MainContent" element={<MainContent />} />
+
+        <Route path="/rpanel" element={<Recuiter />} />
+        <Route path="/job-posting" element={<JobPostingForm />} />
+        <Route path="/job-status" element={<Jobview />} />
+        <Route path="/dashboard/*" element={<Dashboard />} />
+
+
 
       </Routes>
     </Router>

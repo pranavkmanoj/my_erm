@@ -1,6 +1,6 @@
 import React from "react";
-import Navbar from "../../../components/Navbar";
-import Footer from "../../../components/Footer";
+import Navbar from "../../../Layout/Navbar";
+import Footer from "../../../Layout/Footer";
 
 const ViewInterviews = () => {
     // Dummy data for UI preview (Assuming one employee with multiple interviews)

@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import Navbar from "../../components/Navbar";
-import Footer from "../../components/Footer";
+import Navbar from "../../Layout/Navbar";
+import Footer from "../../Layout/Footer";
 import "../../App.css";
 import img from "../../pages/Users/images/12.png";
 

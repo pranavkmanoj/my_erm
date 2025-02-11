@@ -4,10 +4,31 @@ import { motion } from "framer-motion";
 import Navbar from "../Recruiters/Layout/Navbar";
 import Footer from "../Recruiters/Layout/Footer";
 import "../../App.css";
-
+import { Carousel } from 'react-responsive-carousel';
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 const UserPanel1 = () => {
     const navigate = useNavigate();
+
+    const quotes = [
+        {
+            quote: "The only way to do great work is to love what you do.",
+            author: "Steve Jobs"
+        },
+        {
+            quote: "Innovation distinguishes between a leader and a follower.",
+            author: "Steve Jobs"
+        },
+        {
+            quote: "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+            author: "Winston Churchill"
+        },
+        {
+            quote: "Believe you can and you're halfway there.",
+            author: "Theodore Roosevelt"
+        },
+        // Add more quotes here
+    ];
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -15,7 +36,7 @@ const UserPanel1 = () => {
             <div className="flex flex-col bg-gradient-to-b from-blue-100 to-blue-200 py-20 lg:py-32">
                 <div className="flex flex-col items-center justify-center flex-grow p-6 text-center">
                     <main className="w-full max-w-2xl">
-                        <h1 className="text-4xl font-bold mt-6 wave-heading" >
+                        <h1 className="text-4xl font-bold mt-6 wave-heading">
                             Bridging Talent with Opportunity
                         </h1>
 
@@ -26,7 +47,7 @@ const UserPanel1 = () => {
                         <div className="mt-6 flex gap-4 justify-center">
                             <button
                                 className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:bg-blue-700 hover:scale-105"
-                                onClick={() => navigate("/ulogin")}
+                                onClick={() => navigate("/")}
                             >
                                 Create Your Profile
                             </button>
@@ -35,97 +56,31 @@ const UserPanel1 = () => {
                 </div>
             </div>
 
-            {/* Motion effect added when scrolling into view */}
-            <motion.div
-                className="bg-white py-20 lg:py-32"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                viewport={{ once: true, amount: 0.2 }} // Triggers animation when 20% of section is visible
-            >
-                <motion.div
-                    className="container mx-auto px-4 lg:px-6 flex flex-col lg:flex-row items-center"
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
-                    viewport={{ once: true, amount: 0.2 }} // Triggers animation when section enters viewport
-                >
-                    <div className="lg:w-1/2 mb-12 lg:mb-0">
-
-                    </div>
-
-                    <div className="lg:w-1/2 lg:pl-16">
-                        <h1 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
-                            Brand yourself for new opportunities
-                        </h1>
-                        <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                            Create a profile that highlights your unique skills and preferences,
-                            then apply to jobs with just one click.
-                        </p>
-
-                        <div className="mb-8">
-                            <div className="flex items-start mb-4">
-                                <span className="text-indigo-500 mr-3">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-6 w-6"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2"
-                                            d="M13 7l5 5m0 0l-5 5m5-5H6"
-                                        />
-                                    </svg>
-                                </span>
-                                <div>
-                                    <h3 className="text-lg font-medium text-gray-800">
-                                        One click apply
-                                    </h3>
-                                    <p className="text-gray-600">
-                                        Say goodbye to cover letters - your profile is all you need.
-                                        One click to apply, then you're done.
+            <div className="bg-white py-20 lg:py-32">
+                <div className="container mx-auto px-4 lg:px-6">
+                    <Carousel
+                        showArrows={true}
+                        showStatus={false}
+                        showIndicators={true}
+                        infiniteLoop={true}
+                        autoPlay={true}
+                        interval={5000} // Adjust interval as needed
+                    >
+                        {quotes.map((quote, index) => (
+                            <div key={index} className="flex flex-col items-center justify-center h-full"> {/* Added h-full */}
+                                <div className="text-center"> {/* Centered content */}
+                                    <p className="text-2xl lg:text-3xl font-bold text-gray-800 mb-4">
+                                        "{quote.quote}"
+                                    </p>
+                                    <p className="text-lg text-gray-600">
+                                        - {quote.author}
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex items-start">
-                                <span className="text-indigo-500 mr-3">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-6 w-6"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                    </svg>
-                                </span>
-                                <div>
-                                    <h3 className="text-lg font-medium text-gray-800">
-                                        Set your preferences
-                                    </h3>
-                                    <p className="text-gray-600">
-                                        Streamline the interview process by setting your expectations
-                                        (salary, industry, culture, etc.) upfront.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button className="bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-3 px-6 rounded-lg">
-                            Upload Resume
-                        </button>
-                    </div>
-                </motion.div>
-            </motion.div>
+                        ))}
+                    </Carousel>
+                </div>
+            </div>
 
             <Footer />
         </div>

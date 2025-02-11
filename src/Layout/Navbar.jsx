@@ -26,7 +26,7 @@ const Navbar1 = () => {
         {/* Right - Recruiter and Profile Dropdown */}
         <div className="flex items-center space-x-6">
           <button
-            onClick={() => navigate("/ulogin")}
+            onClick={() => navigate("/")}
             className="hidden md:flex items-center space-x-2 text-lg font-medium dark:text-white hover:text-red-500"
           >
             <Briefcase size={20} />

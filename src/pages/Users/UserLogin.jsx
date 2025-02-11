@@ -31,7 +31,7 @@ const UserLogin = () => {
 
     if (user) {
       alert("Login successful!");
-      navigate(activeTab === "user" ? "/U1panel" : "/rpanel");
+      navigate(activeTab === "user" ? "/upanel" : "/rpanel");
     } else {
       alert("Invalid email or password");
     }
