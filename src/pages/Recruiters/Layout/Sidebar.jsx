@@ -1,109 +1,155 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const [openMenu, setOpenMenu] = useState(null);
-  const [openSubMenu, setOpenSubMenu] = useState(null);
 
   // Function to toggle main menus
   const toggleMenu = (menu) => {
     setOpenMenu(openMenu === menu ? null : menu);
   };
 
-  // Function to toggle submenus
-  const toggleSubMenu = (submenu) => {
-    setOpenSubMenu(openSubMenu === submenu ? null : submenu);
-  };
-
   return (
-    <aside className="w-64 bg-black text-white p-4 h-full min-h-screen">
+    <aside className="w-64 bg-gradient-to-b from-blue-100 to-blue-200 text-black p-4 h-full min-h-screen">
       <nav className="flex flex-col gap-2">
         {/* Job Posting */}
         <div>
-          <div
-            className="p-3 rounded cursor-pointer"
+          <motion.div
+            whileHover={{ backgroundColor: "white" }}
+            className="p-3 rounded cursor-pointer transition-all"
             onClick={() => toggleMenu("jobPosting")}
           >
             Job Postings
-          </div>
+          </motion.div>
           {openMenu === "jobPosting" && (
-            <div className="ml-4">
-              <div
-                className="p-2 hover:bg-gray-600 rounded cursor-pointer"
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="ml-4"
+            >
+              <motion.div
+                whileHover={{ backgroundColor: "white" }}
+                className="p-2 rounded cursor-pointer transition-all"
                 onClick={() => navigate("/Dashboard/job-posting")}
               >
                 Post Job
-              </div>
-              <div
-                className="p-2 hover:bg-gray-600 rounded cursor-pointer"
-                onClick={() => navigate("/Dashboard/job-vie")}
+              </motion.div>
+              <motion.div
+                whileHover={{ backgroundColor: "white" }}
+                className="p-2 rounded cursor-pointer transition-all"
+                onClick={() => navigate("/Dashboard/job-view")}
               >
                 Status
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           )}
         </div>
 
-        {/* Employee Registration Management */}
+        {/* Application */}
         <div>
-          <div
-            className="p-3 hover:bg-gray-700 rounded cursor-pointer"
-            onClick={() => toggleMenu("employeeRegistration")}
+          <motion.div
+            whileHover={{ backgroundColor: "white" }}
+            className="p-3 rounded cursor-pointer transition-all"
+            onClick={() => toggleMenu("application")}
           >
-            Employee Registration Management
-          </div>
-          {openMenu === "employeeRegistration" && (
-            <div className="ml-4">
-              <div
-                className="p-2 hover:bg-gray-600 rounded cursor-pointer"
-                onClick={() => navigate("/apanel/Total-No.-Jobs")}
+            Application
+          </motion.div>
+          {openMenu === "application" && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="ml-4"
+            >
+              <motion.div
+                whileHover={{ backgroundColor: "white" }}
+                className="p-2 rounded cursor-pointer transition-all"
+                onClick={() => navigate("/Dashboard/view-application")}
               >
-                Total Number of Registrations
-              </div>
-              <div
-                className="p-2 hover:bg-gray-600 rounded cursor-pointer"
-                onClick={() => navigate("/apanel/Delete-Employee-acct")}
+                View Applications
+              </motion.div>
+              <motion.div
+                whileHover={{ backgroundColor: "white" }}
+                className="p-2 rounded cursor-pointer transition-all"
+                onClick={() => navigate("/Dashboard/shortlisted-candidates")}
               >
-                Delete Employee Account
-              </div>
-            </div>
+                Shortlisted Candidates
+              </motion.div>
+            </motion.div>
           )}
         </div>
 
-        {/* Job Posting Management */}
+        {/* Interview Scheduling*/}
         <div>
-          <div
-            className="p-3 hover:bg-gray-700 rounded cursor-pointer"
-            onClick={() => toggleMenu("jobManagement")}
+          <motion.div
+            whileHover={{ backgroundColor: "white" }}
+            className="p-3 rounded cursor-pointer transition-all"
+            onClick={() => toggleMenu("interviewScheduling")}
           >
-            Job Posting Management
-          </div>
-          {openMenu === "jobManagement" && (
-            <div className="ml-4">
-              <div
-                className="p-2 hover:bg-gray-600 rounded cursor-pointer"
-                onClick={() => navigate("/apanel/View-total-job-posted")}
+            Interview Scheduling
+          </motion.div>
+          {openMenu === "interviewScheduling" && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="ml-4"
+            >
+              <motion.div
+                whileHover={{ backgroundColor: "white" }}
+                className="p-2 rounded cursor-pointer transition-all"
+                onClick={() => navigate("/Dashboard/schedule-interviews")}
               >
-                Total Job Posted
-              </div>
-              <div
-                className="p-2 hover:bg-gray-600 rounded cursor-pointer"
-                onClick={() => navigate("/apanel/Filter-Jobs")}
+                Schedule Interviews
+              </motion.div>
+              <motion.div
+                whileHover={{ backgroundColor: "white" }}
+                className="p-2 rounded cursor-pointer transition-all"
+                onClick={() => navigate("/Dashboard/manage-feedback")}
               >
-                Filter Jobs
-              </div>
-            </div>
+                Manage Feedback
+              </motion.div>
+            </motion.div>
           )}
         </div>
 
-        {/* Dashboard */}
-        <div
-          className="p-3 hover:bg-gray-700 rounded cursor-pointer"
-          onClick={() => navigate("/apanel/DashBoard")}
-        >
-          Dashboard
+        {/* Profile & Settings */}
+        <div>
+          <motion.div
+            whileHover={{ backgroundColor: "white" }}
+            className="p-3 rounded cursor-pointer transition-all"
+            onClick={() => toggleMenu("profile&settings")}
+          >
+            Profile & Settings
+          </motion.div>
+          {openMenu === "profile&settings" && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="ml-4"
+            >
+              <motion.div
+                whileHover={{ backgroundColor: "white" }}
+                className="p-2 rounded cursor-pointer transition-all"
+                onClick={() => navigate("/Dashboard/company-profile")}
+              >
+                Company Profile
+              </motion.div>
+              <motion.div
+                whileHover={{ backgroundColor: "white" }}
+                className="p-2 rounded cursor-pointer transition-all"
+                onClick={() => navigate("/Dashboard/account-settings")}
+              >
+                Account Settings
+              </motion.div>
+            </motion.div>
+          )}
         </div>
+
       </nav>
     </aside>
   );

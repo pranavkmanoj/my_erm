@@ -37,15 +37,14 @@ const ViewJobs = () => {
             <p className="text-gray-600">{job.company}</p>
             <p>{job.location}</p>
             <p className="text-green-600 font-semibold">Salary: {job.salary}</p>
-            <p
-              className={`text-sm font-semibold ${job.status === "Open" ? "text-blue-500" : "text-red-500"
-                }`}
-            >
+            <p className={`text-sm font-semibold ${job.status === "Open" ? "text-blue-500" : "text-red-500"}`}>
               {job.status}
             </p>
-            <button className="mt-3 bg-blue-500 text-white px-4 py-2 rounded">
-              View Details
-            </button>
+            <div className="flex gap-2 mt-3">
+              <button className="bg-blue-500 text-white px-4 py-2 rounded">View</button>
+              <button className="bg-yellow-500 text-white px-4 py-2 rounded">Edit</button>
+              <button className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
+            </div>
           </div>
         ))}
       </div>

@@ -62,8 +62,7 @@ const UserReg = () => {
       className="min-h-screen flex items-center justify-center bg-cover bg-center p-4"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
-      <div  className={`shadow-lg rounded-lg p-8 border border-gray-200 transition-all backdrop-blur-md ${
-          role === "user" ? "w-full max-w-2xl" : "w-full max-w-lg"
+      <div className={`shadow-lg rounded-lg p-8 border border-gray-200 transition-all backdrop-blur-md ${role === "user" ? "w-full max-w-2xl" : "w-full max-w-lg"
         } bg-white/70`} // Light transparent effect
       >
         <h2 className="text-3xl font-semibold text-center mb-6 text-gray-900">Register</h2>
@@ -71,17 +70,15 @@ const UserReg = () => {
         {/* Role Selection Tabs */}
         <div className="flex justify-center mb-6">
           <button
-            className={`px-6 py-2 text-lg font-medium border-b-4 transition-all ${
-              role === "user" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500"
-            }`}
+            className={`px-6 py-2 text-lg font-medium border-b-4 transition-all ${role === "user" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500"
+              }`}
             onClick={() => setRole("user")}
           >
             User
           </button>
           <button
-            className={`px-6 py-2 text-lg font-medium border-b-4 transition-all ${
-              role === "recruiter" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500"
-            }`}
+            className={`px-6 py-2 text-lg font-medium border-b-4 transition-all ${role === "recruiter" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500"
+              }`}
             onClick={() => setRole("recruiter")}
           >
             Recruiter
@@ -163,7 +160,7 @@ const UserReg = () => {
         </form>
 
         <p className="mt-6 text-center text-gray-700">
-          Already have an account? <Link to="/ulogin" className="underline text-blue-600">Login</Link>
+          Already have an account? <Link to="/" className="underline text-blue-600">Login</Link>
         </p>
       </div>
     </div>

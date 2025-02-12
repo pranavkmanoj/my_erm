@@ -10,6 +10,13 @@ const Sidebar = () => {
   return (
     <aside className="w-64 bg-gray-800 text-white p-4 h-full min-h-screen">
       <nav className="flex flex-col gap-2">
+        {/* Dashboard */}
+        <div
+          className="p-3 hover:bg-gray-700 rounded cursor-pointer"
+          onClick={() => navigate("/apanel/Dash-board")}
+        >
+          Dashboard
+        </div>
         {/* Company Registration Management */}
         <div>
           <div
@@ -31,6 +38,12 @@ const Sidebar = () => {
                 onClick={() => navigate("/apanel/Approved-Company")}
               >
                 Approved Companies
+              </div>
+              <div
+                className="p-2 hover:bg-gray-600 rounded cursor-pointer"
+                onClick={() => navigate("/apanel/RecruiterManagementPanel")}
+              >
+                RMP
               </div>
             </div>
           )}
@@ -80,7 +93,7 @@ const Sidebar = () => {
               </div>
               <div
                 className="p-2 hover:bg-gray-600 rounded cursor-pointer"
-                onClick={() => navigate("/apanel/Filter-Jobs")}
+                onClick={() => navigate("/apanel/Job-filter")}
               >
                 Filter Jobs
               </div>
@@ -88,13 +101,7 @@ const Sidebar = () => {
           )}
         </div>
 
-        {/* Dashboard */}
-        <div
-          className="p-3 hover:bg-gray-700 rounded cursor-pointer"
-          onClick={() => navigate("/apanel/DashBoard")}
-        >
-          Dashboard
-        </div>
+
       </nav>
     </aside>
   );
