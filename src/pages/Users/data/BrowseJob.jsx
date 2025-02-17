@@ -1,7 +1,7 @@
 import React from "react";
 import { FaSearch, FaMapMarkerAlt, FaSlidersH } from "react-icons/fa";
 import img from '../images/coverforBrowse.jpg';
-import Navbar1 from "../../../Layout/Navbar";
+import Navbar1 from "../Layout/User-Navbar";
 import "../../../App.css";
 
 const BrowseJob = () => {

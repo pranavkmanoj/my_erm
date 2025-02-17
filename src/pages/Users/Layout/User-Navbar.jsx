@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Bell, User, LogOut, Briefcase } from "lucide-react";
+import { Bell, User, LogOut, Briefcase, Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/logo.jpg";
+import logo from "../../../assets/logo.jpg";
 
 const Navbar1 = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,9 +11,17 @@ const Navbar1 = () => {
     <nav className="bg-white border-b border-gray-200 dark:bg-gray-900 fixed top-0 left-0 right-0 z-10 shadow-md">
       <div className="max-w-screen-xl flex items-center justify-between mx-auto p-4">
         {/* Left - Logo and Brand Name */}
-        <button onClick={() => navigate("/upanel")} className="flex items-center space-x-3">
+        <button onClick={() => navigate("/")} className="flex items-center space-x-3">
           <img src={logo} className="h-8 ml-2" alt="ERM Logo" />
           <span className="text-2xl font-semibold dark:text-white">ERM</span>
+        </button>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden text-gray-700 dark:text-white"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
         {/* Center - Navigation Links */}
@@ -24,15 +32,15 @@ const Navbar1 = () => {
         </div>
 
         {/* Right - Recruiter and Profile Dropdown */}
-        <div className="flex items-center space-x-6">
+        <div className="hidden md:flex items-center space-x-6">
           <button
-            onClick={() => navigate("/")}
-            className="hidden md:flex items-center space-x-2 text-lg font-medium dark:text-white hover:text-red-500"
+            onClick={() => navigate("/rpanel")}
+            className="flex items-center space-x-2 text-lg font-medium dark:text-white hover:text-red-500"
           >
             <Briefcase size={20} />
             <span>Recruiter</span>
           </button>
-          <div className="relative hidden md:flex items-center space-x-6">
+          <div className="relative">
             <div className="group relative">
               <button className="flex items-center space-x-2 text-lg font-medium dark:text-white hover:text-red-500">
                 <User size={24} className="rounded-full bg-gray-200 p-1 dark:bg-gray-700" />
@@ -60,7 +68,7 @@ const Navbar1 = () => {
           <button onClick={() => navigate("/job-listing")} className="hover:text-red-500 dark:text-white">Jobs</button>
           <button className="hover:text-red-500 dark:text-white">Applications</button>
           <button onClick={() => navigate("/interview")} className="hover:text-red-500 dark:text-white">Interviews</button>
-          <button onClick={() => navigate("/ulogin")} className="flex items-center space-x-2 text-lg font-medium dark:text-white hover:text-red-500">
+          <button onClick={() => navigate("/rpanel")} className="flex items-center space-x-2 text-lg font-medium dark:text-white hover:text-red-500">
             <Briefcase size={20} />
             <span>Recruiter</span>
           </button>

@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
-import Navbar from "./Layout/Navbar";
-import Sidebar from "./Layout/Sidebar";
+import Navbar from "./Layout/Rec-Navbar";
+import Sidebar from "./Layout/Rec-Sidebar";
 import JobPosting from "./data/JobPosting";
 import Jobview from "./data/Jobview";
 import ViewApplication from "./data/view-application";
@@ -19,14 +19,12 @@ function Dashboard() {
             </div>
 
             {/* Sidebar & Main Content */}
-            <div className="flex flex-1 pt-16">
-                <Sidebar />
+            <div className="flex flex-1 pt-16 flex-col md:flex-row">
+                <Sidebar className="w-full md:w-64 fixed md:relative" />
 
                 {/* Main Content Area (Updated via Nested Routes) */}
-                <div className="flex-1 p-6 bg-gradient-to-b ml-64 md:ml-0 pt-1">
+                <div className="flex-1 p-6 bg-gradient-to-b pt-1 md:ml-0">
                     <Routes>
-
-
                         <Route path="job-posting" element={<JobPosting />} />
                         <Route path="job-view" element={<Jobview />} />
                         <Route path="view-application" element={<ViewApplication />} />
@@ -35,7 +33,6 @@ function Dashboard() {
                         <Route path="manage-feedback" element={<ManageFeedback />} />
                         <Route path="company-profile" element={<CompanyProfile />} />
                         <Route path="account-settings" element={<AccountSettings />} />
-
                     </Routes>
                 </div>
             </div>

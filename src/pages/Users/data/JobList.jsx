@@ -1,70 +1,93 @@
-import React from "react";
-import Navbar from "../../../Layout/Navbar";
-import Footer from "../../../Layout/Footer";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaSearch } from 'react-icons/fa';
+import background from '../images/background.jpg';
+import logo from '../../../assets/logo.jpg';
 
-const JobCard = ({ position, company, date, status }) => {
+const jobListings = [
+  { title: "Mern Stack Developer Freelancer", company: "Vingsfire HRIM Pvt Ltd", location: "Remote", salary: "13K-163K (Employer Est.)" },
+  { title: "Frontend Developer", company: "Tech Solutions Ltd", location: "Full-Time", salary: "20K-180K (Employer Est.)" },
+  { title: "Backend Developer", company: "Innovatech Pvt Ltd", location: "Part-Time", salary: "30K-200K (Employer Est.)" },
+  { title: "Mern Stack Developer Freelancer", company: "Vingsfire HRIM Pvt Ltd", location: "Remote", salary: "13K-163K (Employer Est.)" },
+  { title: "Backend Developer", company: "Innovatech Pvt Ltd", location: "Full-Time", salary: "30K-200K (Employer Est.)" }
+];
+
+const JobSearchUI = () => {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleApply = () => {
+    navigate('/Apply-Jobs');
+  };
+  const handleProfile = () => {
+    navigate('/Profile');
+  };
+
+  const filteredJobs = jobListings.filter(job =>
+    job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.location.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 max-w-sm w-full mx-auto">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{position}</h2>
-      <p className="text-gray-600 dark:text-gray-400">{company}</p>
-      <p className="text-sm text-gray-500 dark:text-gray-400">{date}</p>
-      <div
-        className={`mt-2 px-4 py-1 text-black text-sm font-medium rounded-full ${status === "Full-Time" ? "bg-yellow-300" : "bg-cyan-300"
-          }`}
-      >
-        {status}
+    <div className="bg-gray-100 min-h-screen" style={{ backgroundImage: `url(${background})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      {/* Navbar */}
+      <nav className="bg-white p-4 shadow-md flex justify-between items-center">
+        <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate('/')}>
+          <img src={logo} alt="Logo" className="h-10" />
+          <span className="text-2xl font-bold text-gray-800">ERM</span>
+        </div>
+        <div>
+          <button
+            onClick={handleProfile}
+            className="text-blue-500 px-4 py-2 rounded-md transition duration-300 ease-in-out bg-blue-100 hover:bg-blue-500 hover:text-white shadow-md"
+          >
+            Profile
+          </button>
+        </div>
+      </nav>
+
+      {/* Search Filter */}
+      <div className="container mx-auto mt-4 px-4 md:px-0">
+        <div className="relative w-full max-w-lg mx-auto">
+          <input
+            type="text"
+            placeholder="Search by title, company, or location..."
+            className="w-full p-3 pl-10 border rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+        </div>
       </div>
-      <div className="mt-4 flex space-x-3">
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200 w-full"
-          onClick={() => alert(`Viewing details for ${position}`)}
-        >
-          Details
-        </button>
-        <button
-          className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-200 w-full"
-          onClick={() => alert(`Applying for ${position}`)}
-        >
-          Apply
-        </button>
+
+      {/* Job Listings */}
+      <div className="container mx-auto mt-4 px-4 md:px-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filteredJobs.map((job, index) => (
+            <div key={index} className="bg-white p-4 shadow-md rounded-md">
+              <div className="flex flex-col md:flex-row justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-bold text-blue-500">{job.title}</h3>
+                  <div className="text-gray-600">{job.company}</div>
+                  <div className="text-gray-600">{job.location}</div>
+                  <div className="text-gray-600">{job.salary}</div>
+                </div>
+                <div className="flex flex-col items-end mt-4 md:mt-0">
+                  <button
+                    onClick={handleApply}
+                    className="bg-gray-700 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
+                  >
+                    Easy Apply
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
-const JobListing = () => {
-  const jobs = [
-    { position: "Software Engineer", company: "Tech Corp", date: "Feb 5, 2025", status: "Full-Time" },
-    { position: "Data Analyst", company: "Data Inc.", date: "Feb 10, 2025", status: "Part-Time" },
-    { position: "Product Manager", company: "InnovateX", date: "Feb 15, 2025", status: "Full-Time" },
-    { position: "UI/UX Designer", company: "Creative Solutions", date: "Feb 20, 2025", status: "Part-Time" },
-    { position: "Software Engineer", company: "Tech Corp", date: "Feb 5, 2025", status: "Full-Time" },
-    { position: "Data Analyst", company: "Data Inc.", date: "Feb 10, 2025", status: "Part-Time" },
-    { position: "UI/UX Designer", company: "Creative Solutions", date: "Feb 20, 2025", status: "Part-Time" },
-    { position: "Software Engineer", company: "Tech Corp", date: "Feb 5, 2025", status: "Full-Time" },
-    { position: "Data Analyst", company: "Data Inc.", date: "Feb 10, 2025", status: "Part-Time" },
-    { position: "UI/UX Designer", company: "Creative Solutions", date: "Feb 20, 2025", status: "Part-Time" },
-    { position: "Data Analyst", company: "Data Inc.", date: "Feb 10, 2025", status: "Part-Time" },
-    { position: "Product Manager", company: "InnovateX", date: "Feb 15, 2025", status: "Full-Time" },
-  ];
-
-  return (
-    <div className="flex flex-col min-h-screen ">
-      <Navbar />
-      <div className="flex flex-1">
-        < main className="flex-1 ml-15 p-20 mt-5" >
-          <h1 className="text-3xl font-bold mb-6 text-center">Available Job Listings</h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {jobs.map((job, index) => (
-              <JobCard key={index} {...job} />
-            ))}
-          </div>
-        </main >
-      </div >
-      <Footer />
-    </div >
-
-  );
-};
-
-export default JobListing;
+export default JobSearchUI;

@@ -8,10 +8,8 @@ import BrowseJob from './pages/Users/data/BrowseJob';
 import JobDetails from './pages/Users/data/JobDetails';
 import JobListing from './pages/Users/data/JobList';
 import ScheduleInterview from './pages/Users/data/ScheduleInterview';
+import ApplyJobs from './pages/Users/data/Apply-Jobs';
 
-
-// import AdminLoginPage from './pages/Admins/AdminLogin';
-// import AdminRegistrationPage from './pages/Admins/AdminReg';
 import AdminPanel from './pages/Admins/AdminPanel';
 
 
@@ -25,19 +23,17 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/ulogin" element={<LoginPage />} />
         <Route path="/uregister" element={<RegistrationPage />} />
 
-        <Route path="/upanel" element={<UserPanel />} />
+        <Route path="/" element={<UserPanel />} />
         <Route path="/browsejobs" element={<BrowseJob />} />
         <Route path="/job-details" element={<JobDetails />} />
         <Route path="/job-listing" element={<JobListing />} />
         <Route path="/interview" element={<ScheduleInterview />} />
-{/* 
-        <Route path="/alogin" element={<AdminLoginPage />} />
-        <Route path="/aregister" element={<AdminRegistrationPage />} /> */}
-        <Route path="/apanel/*" element={<AdminPanel />} />
+        <Route path="/Apply-Jobs" element={<ApplyJobs />} />
 
+        <Route path="/apanel/*" element={<AdminPanel />} />
 
         <Route path="/rpanel" element={<Recuiter />} />
         <Route path="/dashboard/*" element={<Dashboard />} />

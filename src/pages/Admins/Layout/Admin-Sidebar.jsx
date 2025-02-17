@@ -8,7 +8,7 @@ const Sidebar = () => {
   const [jobMenuOpen, setJobMenuOpen] = useState(false);
 
   return (
-    <aside className="w-64 bg-gray-800 text-white p-4 h-full min-h-screen">
+    <aside className="w-64 bg-gray-800 text-white p-1">
       <nav className="flex flex-col gap-2">
         {/* Dashboard */}
         <div
@@ -39,12 +39,6 @@ const Sidebar = () => {
               >
                 Approved Companies
               </div>
-              <div
-                className="p-2 hover:bg-gray-600 rounded cursor-pointer"
-                onClick={() => navigate("/apanel/RecruiterManagementPanel")}
-              >
-                RMP
-              </div>
             </div>
           )}
         </div>
@@ -67,7 +61,7 @@ const Sidebar = () => {
               </div>
               <div
                 className="p-2 hover:bg-gray-600 rounded cursor-pointer"
-                onClick={() => navigate("/apanel/Delete-Employee-acct")}
+                onClick={() => navigate("/apanel/emp-delete")}
               >
                 Delete Employee Account
               </div>

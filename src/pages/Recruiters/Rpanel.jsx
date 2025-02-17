@@ -1,8 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import Navbar from "../Recruiters/Layout/Navbar";
-import Footer from "../Recruiters/Layout/Footer";
+import Navbar from "./Layout/Rec-Navbar";
+import Footer from "./Layout/Rec-Footer";
 import "../../App.css";
 import { Carousel } from 'react-responsive-carousel';
 import "react-responsive-carousel/lib/styles/carousel.min.css";
