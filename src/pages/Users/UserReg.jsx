@@ -12,74 +12,92 @@ const UserReg = () => {
     confirmPassword: "",
     bio: "",
   });
-
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Password validation function
   const validatePassword = (password) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return regex.test(password);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Handle form submission
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  const { email, password, confirmPassword, name, companyName, bio } = formData;
 
-    const { email, password, confirmPassword } = formData;
-    if (!email || !password || !confirmPassword) {
-      alert("All fields are required!");
-      return;
+  if (!email || !password || !confirmPassword) {
+    alert("All fields are required!");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  if (!validatePassword(password)) {
+    alert("Password must have at least 8 characters, one uppercase, one lowercase, one number, and one special character.");
+    return;
+  }
+
+  setLoading(true);
+
+  const userData =
+    role === "user"
+      ? { role, name, email, password }
+      : { role, companyName, email, password, bio };
+
+  try {
+    const response = await fetch("http://localhost:5000/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert("Registration successful! Please log in.");
+      navigate("/ulogin");
+    } else {
+      alert(result.message || "Registration failed! Please try again.");
     }
+  }catch (error) {
+    console.error("Error:", error); // Log full error details
+    res.status(500).json({ message: "Server error", error: error.message });
+}
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-
-    if (!validatePassword(password)) {
-      alert("Password must have at least 8 characters, one uppercase, one lowercase, one number, and one special character.");
-      return;
-    }
-
-    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
-    if (existingUsers.some((user) => user.email.toLowerCase() === email.toLowerCase())) {
-      alert("Email already registered! Please log in.");
-      return;
-    }
-
-    const newUser =
-      role === "user"
-        ? { role, name: formData.name, email, password }
-        : { role, companyName: formData.companyName, email, password, bio: formData.bio };
-
-    existingUsers.push(newUser);
-    localStorage.setItem("users", JSON.stringify(existingUsers));
-
-    alert("Registration successful!");
-    navigate("/ulogin");
-  };
+};
 
   return (
     <div
       className="min-h-screen flex items-center justify-center bg-cover bg-center p-4"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
-      <div className={`shadow-lg rounded-lg p-8 border border-gray-200 transition-all backdrop-blur-md ${role === "user" ? "w-full max-w-2xl" : "w-full max-w-lg"
-        } bg-white/70`} // Light transparent effect
+      <div
+        className={`shadow-lg rounded-lg p-8 border border-gray-200 transition-all backdrop-blur-md 
+        ${role === "user" ? "w-full max-w-2xl" : "w-full max-w-lg"} bg-white/70`}
       >
         <h2 className="text-3xl font-semibold text-center mb-6 text-gray-900">Register</h2>
 
         {/* Role Selection Tabs */}
         <div className="flex justify-center mb-6">
           <button
-            className={`px-6 py-2 text-lg font-medium border-b-4 transition-all ${role === "user" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500"
-              }`}
-            onClick={() => setRole("user")}
+            className={`px-6 py-2 text-lg font-medium border-b-4 transition-all ${role === "user" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500"}`}
+            onClick={() => {
+              setRole("user");
+              setFormData({ name: "", email: "", password: "", confirmPassword: "", companyName: "", bio: "" });
+            }}
           >
             User
           </button>
           <button
-            className={`px-6 py-2 text-lg font-medium border-b-4 transition-all ${role === "recruiter" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500"
-              }`}
-            onClick={() => setRole("recruiter")}
+            className={`px-6 py-2 text-lg font-medium border-b-4 transition-all ${role === "recruiter" ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500"}`}
+            onClick={() => {
+              setRole("recruiter");
+              setFormData({ companyName: "", email: "", password: "", confirmPassword: "", name: "", bio: "" });
+            }}
           >
             Recruiter
           </button>
@@ -87,7 +105,7 @@ const UserReg = () => {
 
         {/* Registration Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Dynamic Name/Company Field */}
+          {/* Name/Company Field */}
           {role === "user" ? (
             <input
               type="text"
@@ -154,8 +172,9 @@ const UserReg = () => {
           <button
             type="submit"
             className="w-full p-3 bg-blue-600 text-white rounded hover:bg-blue-700"
+            disabled={loading}
           >
-            Register as {role === "user" ? "User" : "Recruiter"}
+            {loading ? "Registering..." : `Register as ${role === "user" ? "User" : "Recruiter"}`}
           </button>
         </form>
 

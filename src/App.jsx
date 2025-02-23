@@ -11,6 +11,7 @@ import ScheduleInterview from './pages/Users/data/ScheduleInterview';
 import ApplyJobs from './pages/Users/data/Apply-Jobs';
 
 import AdminPanel from './pages/Admins/AdminPanel';
+import AdminLogin from './pages/Admins/AdminLogin';
 
 
 import Recuiter from './pages/Recruiters/Rpanel';
@@ -34,6 +35,7 @@ function App() {
         <Route path="/Apply-Jobs" element={<ApplyJobs />} />
 
         <Route path="/apanel/*" element={<AdminPanel />} />
+        <Route path="/alogin" element={<AdminLogin />} />
 
         <Route path="/rpanel" element={<Recuiter />} />
         <Route path="/dashboard/*" element={<Dashboard />} />
