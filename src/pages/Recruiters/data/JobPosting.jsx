@@ -1,22 +1,59 @@
 import React, { useState } from 'react';
+import axiosInstance from "../../../../backend/axiosInstance";
 
 const JobPostingForm = () => {
+  const [companyName, setCompanyName] = useState('');
   const [jobTitle, setJobTitle] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [jobLocation, setJobLocation] = useState('');
   const [jobType, setJobType] = useState('full-time');
   const [salary, setSalary] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ jobTitle, jobDescription, jobLocation, jobType, salary });
+
+    const jobData = { companyName, jobTitle, jobDescription, jobLocation, jobType, salary };
+
+    try {
+      const response = await axiosInstance.post("/jobs", jobData);
+
+      if (response.status === 201) {
+        alert("Job posted successfully!");
+        setCompanyName("");
+        setJobTitle("");
+        setJobDescription("");
+        setJobLocation("");
+        setJobType("full-time");
+        setSalary("");
+      } else {
+        alert("Failed to post job");
+      }
+    } catch (error) {
+      console.error("Error posting job:", error);
+      alert("An error occurred while posting the job.");
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-4 py-6">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg ">
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Post a Job</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-gray-700 font-medium mb-1" htmlFor="companyName">
+              Company Name
+            </label>
+            <input
+              type="text"
+              id="companyName"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter Company Name"
+              required
+            />
+          </div>
           <div>
             <label className="block text-gray-700 font-medium mb-1" htmlFor="jobTitle">
               Job Title
@@ -75,7 +112,7 @@ const JobPostingForm = () => {
               <option value="full-time">Full Time</option>
               <option value="part-time">Part Time</option>
               <option value="remote">Remote</option>
-              <option value="contract">Contract</option>
+
             </select>
           </div>
 

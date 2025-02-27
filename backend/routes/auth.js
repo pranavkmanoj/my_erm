@@ -92,4 +92,5 @@ router.post("/user-login", (req, res) => loginUser(req, res, "user"));
 // Recruiter Login Route
 router.post("/recruiter-login", (req, res) => loginUser(req, res, "recruiter"));
 
+
 module.exports = router;

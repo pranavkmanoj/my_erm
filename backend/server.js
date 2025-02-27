@@ -3,6 +3,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+const jobRoutes = require("./routes/jobRoutes"); 
+
 const app = express(); // Initialize app first
 
 console.log("JWT_SECRET:", process.env.JWT_SECRET);
@@ -29,9 +31,12 @@ app.use(express.json()); // Ensure JSON parsing is enabled
 // Import routes
 const authRoutes = require("./routes/auth"); // Ensure correct path
 
+// Routes
+app.use("/api/jobs", jobRoutes); // Use job routes
+
+
 // Use routes with a prefix
 app.use("/api/auth", authRoutes); 
-
 const PORT = process.env.PORT || 5001;
 
 // Connect to MongoDB Atlas

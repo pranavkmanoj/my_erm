@@ -31,34 +31,21 @@ const Navbar1 = () => {
           <button onClick={() => navigate("/interview")} className="hover:text-red-500 dark:text-white">Interviews</button>
         </div>
 
-        {/* Right - Recruiter and Profile Dropdown */}
+        {/* Right - Recruiter and Profile */}
         <div className="hidden md:flex items-center space-x-6">
-          <button
-            onClick={() => navigate("/rpanel")}
-            className="flex items-center space-x-2 text-lg font-medium dark:text-white hover:text-red-500"
-          >
+          <button onClick={() => navigate("/ulogin")} className="flex items-center space-x-2 text-lg font-medium dark:text-white hover:text-red-500">
             <Briefcase size={20} />
             <span>Recruiter</span>
           </button>
-          <div className="relative">
-            <div className="group relative">
-              <button className="flex items-center space-x-2 text-lg font-medium dark:text-white hover:text-red-500">
-                <User size={24} className="rounded-full bg-gray-200 p-1 dark:bg-gray-700" />
-                <span>Profile</span>
-              </button>
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all overflow-hidden flex flex-col">
-                <button className="flex items-center justify-start px-4 py-3 hover:bg-gray-200 dark:hover:bg-gray-700 gap-3 text-gray-700 dark:text-white">
-                  <Bell size={20} className="text-blue-500" /> <span>Notifications</span>
-                </button>
-                <button className="flex items-center justify-start px-4 py-3 hover:bg-gray-200 dark:hover:bg-gray-700 gap-3 text-gray-700 dark:text-white">
-                  <User size={20} className="text-green-500" /> <span>Account</span>
-                </button>
-                <button className="flex items-center justify-start px-4 py-3 text-red-500 hover:bg-gray-200 dark:hover:bg-gray-700 gap-3 font-semibold">
-                  <LogOut size={20} className="text-red-500" /> <span>Logout</span>
-                </button>
-              </div>
-            </div>
-          </div>
+
+          {/* Profile Button (Now Directly Navigates) */}
+          <button
+            onClick={() => navigate("/user-profile")}
+            className="flex items-center space-x-2 text-lg font-medium dark:text-white hover:text-red-500"
+          >
+            <User size={24} className="rounded-full bg-gray-200 p-1 dark:bg-gray-700" />
+            <span>Profile</span>
+          </button>
         </div>
       </div>
 
@@ -74,7 +61,7 @@ const Navbar1 = () => {
           </button>
           <div className="flex flex-col items-center space-y-2 mt-2">
             <button className="hover:text-red-500 dark:text-white">Notifications</button>
-            <button className="hover:text-red-500 dark:text-white">Account</button>
+            <button onClick={() => navigate("/user-profile")} className="hover:text-red-500 dark:text-white">Account</button>
             <button className="text-red-500 hover:text-red-700">Logout</button>
           </div>
         </div>
