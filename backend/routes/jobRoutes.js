@@ -2,37 +2,37 @@ const express = require("express");
 const router = express.Router();
 const Job = require("../models/Job_listing");
 
-
+// Create a new job posting
 router.post("/", async (req, res) => {
   try {
-    const newJob = new Job(req.body);
-    await newJob.save();
-    res.status(201).json({ message: "Job posted successfully", job: newJob });
+    const job = new Job(req.body);
+    await job.save();
+    res.status(201).json(job);
   } catch (error) {
-    res.status(500).json({ error: "Failed to post job" });
+    res.status(500).json({ message: "Error posting job", error });
   }
 });
 
-
+// Fetch all job postings
 router.get("/", async (req, res) => {
   try {
     const jobs = await Job.find();
     res.status(200).json(jobs);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch jobs" });
+    res.status(500).json({ message: "Error fetching jobs", error });
   }
 });
 
 
-router.put("/:id", async (req, res) => {
+// Update job status
+router.put("/jobs/:id", async (req, res) => {
   try {
     const { status } = req.body;
 
-    // Find and update the job
     const updatedJob = await Job.findByIdAndUpdate(
       req.params.id,
       { status },
-      { new: true } // Return updated document
+      { new: true }
     );
 
     if (!updatedJob) {
@@ -45,7 +45,5 @@ router.put("/:id", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
-
 
 module.exports = router;

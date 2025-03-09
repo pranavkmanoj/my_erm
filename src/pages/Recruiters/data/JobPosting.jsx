@@ -1,146 +1,112 @@
-import React, { useState } from 'react';
-import axiosInstance from "../../../../backend/axiosInstance";
+import { useState } from "react";
+import axiosInstance from "../../../axiosInstance"; // Import the Axios instance
 
-const JobPostingForm = () => {
-  const [companyName, setCompanyName] = useState('');
-  const [jobTitle, setJobTitle] = useState('');
-  const [jobDescription, setJobDescription] = useState('');
-  const [jobLocation, setJobLocation] = useState('');
-  const [jobType, setJobType] = useState('full-time');
-  const [salary, setSalary] = useState('');
+const JobPosting = () => {
+  const [jobData, setJobData] = useState({
+    jobTitle: "",
+    companyName: "",
+    jobDescription: "",
+    jobLocation: "",
+    salary: "",
+    jobType: "",
+  });
+
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const handleChange = (e) => {
+    setJobData({ ...jobData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const jobData = { companyName, jobTitle, jobDescription, jobLocation, jobType, salary };
-
     try {
       const response = await axiosInstance.post("/jobs", jobData);
-
       if (response.status === 201) {
-        alert("Job posted successfully!");
-        setCompanyName("");
-        setJobTitle("");
-        setJobDescription("");
-        setJobLocation("");
-        setJobType("full-time");
-        setSalary("");
-      } else {
-        alert("Failed to post job");
+        setSuccessMessage("Job posted successfully! ✅");
+        setJobData({
+          jobTitle: "",
+          companyName: "",
+          jobDescription: "",
+          jobLocation: "",
+          salary: "",
+          jobType: "",
+        });
+
+        setTimeout(() => setSuccessMessage(""), 3000);
       }
     } catch (error) {
       console.error("Error posting job:", error);
-      alert("An error occurred while posting the job.");
     }
   };
 
-
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4 py-6">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg ">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Post a Job</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-gray-700 font-medium mb-1" htmlFor="companyName">
-              Company Name
-            </label>
-            <input
-              type="text"
-              id="companyName"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter Company Name"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-1" htmlFor="jobTitle">
-              Job Title
-            </label>
-            <input
-              type="text"
-              id="jobTitle"
-              value={jobTitle}
-              onChange={(e) => setJobTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter job title"
-              required
-            />
-          </div>
+    <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200 mt-10">
+      <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">Post a New Job</h2>
 
-          <div>
-            <label className="block text-gray-700 font-medium mb-1" htmlFor="jobDescription">
-              Job Description
-            </label>
-            <textarea
-              id="jobDescription"
-              value={jobDescription}
-              onChange={(e) => setJobDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter job description"
-              rows="4"
-              required
-            />
-          </div>
+      {successMessage && (
+        <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-3 mb-4">
+          {successMessage}
+        </div>
+      )}
 
-          <div>
-            <label className="block text-gray-700 font-medium mb-1" htmlFor="jobLocation">
-              Job Location
-            </label>
-            <input
-              type="text"
-              id="jobLocation"
-              value={jobLocation}
-              onChange={(e) => setJobLocation(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter job location"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-medium mb-1" htmlFor="jobType">
-              Job Type
-            </label>
-            <select
-              id="jobType"
-              value={jobType}
-              onChange={(e) => setJobType(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="full-time">Full Time</option>
-              <option value="part-time">Part Time</option>
-              <option value="remote">Remote</option>
-
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-medium mb-1" htmlFor="salary">
-              Salary
-            </label>
-            <input
-              type="text"
-              id="salary"
-              value={salary}
-              onChange={(e) => setSalary(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter salary"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Post Job
-          </button>
-        </form>
-      </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="text"
+          name="jobTitle"
+          placeholder="Job Title"
+          value={jobData.jobTitle}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          type="text"
+          name="companyName"
+          placeholder="Company Name"
+          value={jobData.companyName}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <textarea
+          name="jobDescription"
+          placeholder="Job Description"
+          value={jobData.jobDescription}
+          onChange={handleChange}
+          rows="4"
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          type="text"
+          name="jobLocation"
+          placeholder="Location"
+          value={jobData.jobLocation}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          type="number"
+          name="salary"
+          placeholder="Salary"
+          value={jobData.salary}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          type="text"
+          name="jobType"
+          placeholder="Job Type"
+          value={jobData.jobType}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white p-3 rounded-md font-semibold hover:bg-blue-600 transition duration-200"
+        >
+          Post Job
+        </button>
+      </form>
     </div>
   );
 };
 
-export default JobPostingForm;
+export default JobPosting;

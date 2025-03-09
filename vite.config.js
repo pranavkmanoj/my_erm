@@ -10,4 +10,7 @@ port : 5174,
 open : true,
 },
   plugins: [tailwindcss(),react()],
+ define: {
+    'process.env': {}, // Prevents `ReferenceError`
+  },
 })

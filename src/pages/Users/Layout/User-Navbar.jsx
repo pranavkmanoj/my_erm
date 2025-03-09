@@ -1,11 +1,23 @@
 import React, { useState } from "react";
 import { Bell, User, LogOut, Briefcase, Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../../../context/AuthContext"; // Import useUser
 import logo from "../../../assets/logo.jpg";
 
 const Navbar1 = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const { user } = useUser(); // Get user data from context
+
+  // Function to check authentication and navigate to profile
+  const handleProfileClick = () => {
+    if (user?.id) {
+      navigate("/user-profile");
+    } else {
+      alert("You need to log in first!");
+      navigate("/ulogin");
+    }
+  };
 
   return (
     <nav className="bg-white border-b border-gray-200 dark:bg-gray-900 fixed top-0 left-0 right-0 z-10 shadow-md">
@@ -38,9 +50,9 @@ const Navbar1 = () => {
             <span>Recruiter</span>
           </button>
 
-          {/* Profile Button (Now Directly Navigates) */}
+          {/* Profile Button with Authentication Check */}
           <button
-            onClick={() => navigate("/user-profile")}
+            onClick={handleProfileClick}
             className="flex items-center space-x-2 text-lg font-medium dark:text-white hover:text-red-500"
           >
             <User size={24} className="rounded-full bg-gray-200 p-1 dark:bg-gray-700" />
@@ -61,7 +73,7 @@ const Navbar1 = () => {
           </button>
           <div className="flex flex-col items-center space-y-2 mt-2">
             <button className="hover:text-red-500 dark:text-white">Notifications</button>
-            <button onClick={() => navigate("/user-profile")} className="hover:text-red-500 dark:text-white">Account</button>
+            <button onClick={handleProfileClick} className="hover:text-red-500 dark:text-white">Account</button>
             <button className="text-red-500 hover:text-red-700">Logout</button>
           </div>
         </div>

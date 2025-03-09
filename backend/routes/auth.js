@@ -10,24 +10,21 @@ const router = express.Router();
 // Register Route
 router.post("/register", async (req, res) => {
   try {
-    console.log("Received Registration Data:", req.body); // Debugging Log
-
+    console.log("Received Registration Data:", req.body);
+    
     const { role, name, companyName, email, password, bio } = req.body;
-
-    if (!role) {
-      return res.status(400).json({ message: "Role is required!" });
+    if (!role || !email || !password) {
+      return res.status(400).json({ message: "Role, email, and password are required!" });
     }
 
-    console.log("Role received:", role); // Debugging Log
+    const Model = role === "user" ? User : role === "recruiter" ? Recruiter : null;
+    if (!Model) {
+      return res.status(400).json({ message: "Invalid role specified!" });
+    }
 
-    const Model = role === "user" ? User : Recruiter;
-
-    console.log(`Using Model: ${Model.modelName}`);
-
-    // Check if user/recruiter already exists
+    // Check if email already exists in either collection
     const existingUser = await User.findOne({ email });
     const existingRecruiter = await Recruiter.findOne({ email });
-
     if (existingUser || existingRecruiter) {
       return res.status(400).json({ message: "Email already registered!" });
     }
@@ -45,44 +42,48 @@ router.post("/register", async (req, res) => {
 
     await newUser.save();
     res.status(201).json({ message: "Registration successful!" });
-
   } catch (error) {
     console.error("Server error:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
 
-// Reusable login function
+// Reusable Login Function
 const loginUser = async (req, res, userType) => {
   try {
-    console.log(`${userType} login request received:`, req.body);
+    console.log(`[${userType.toUpperCase()}] Login request received:`, req.body);
 
     const { email, password } = req.body;
-
     if (!email || !password) {
-      return res.status(400).json({ error: "All fields are required" });
+      return res.status(400).json({ error: "Email and password are required!" });
     }
 
-    const Model = userType === "user" ? User : Recruiter;
-    const user = await Model.findOne({ email });
+    const Model = userType === "user" ? User : userType === "recruiter" ? Recruiter : null;
+    if (!Model) {
+      return res.status(400).json({ error: "Invalid role specified!" });
+    }
 
+    const user = await Model.findOne({ email });
     if (!user) {
-      return res.status(400).json({ error: `${userType} not found` });
+      return res.status(404).json({ error: `${userType} not found! Please create a profile.` });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: "Incorrect password! Please try again." });
     }
 
-    const token = jwt.sign({ id: user._id, role: userType }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: userType },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
+    console.log(`[${userType.toUpperCase()}] Login successful:`, user.email);
     res.status(200).json({ token, role: userType });
   } catch (err) {
-    console.error(`${userType} Login Error:`, err);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error(`[${userType.toUpperCase()}] Login Error:`, err);
+    res.status(500).json({ error: "Internal Server Error. Please try again later." });
   }
 };
 
@@ -91,6 +92,5 @@ router.post("/user-login", (req, res) => loginUser(req, res, "user"));
 
 // Recruiter Login Route
 router.post("/recruiter-login", (req, res) => loginUser(req, res, "recruiter"));
-
 
 module.exports = router;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "../Layout/User-Navbar";
-import axiosInstance from "../../../../backend/axiosInstance"; // Update with your Axios instance path
+import axiosInstance from "../../../axiosInstance"; 
 import backgroundImage from "../images/background.jpg";
 
 const ApplyJobs = () => {

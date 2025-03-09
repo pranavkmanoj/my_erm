@@ -4,7 +4,7 @@ import { FaSearch } from 'react-icons/fa';
 import Navbar from "../Layout/User-Navbar";
 import background from '../images/background.jpg';
 import logo from '../../../assets/logo.jpg';
-import API from '../../../../backend/axiosInstance';
+import API from '../../../axiosInstance';
 
 
 const JobList = () => {

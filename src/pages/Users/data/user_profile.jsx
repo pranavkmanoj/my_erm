@@ -1,184 +1,226 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../Layout/User-Navbar";
-import back from "../images/background.jpg";
-import profilePic from "../images/back.jpg";
-import coverPhoto from "../images/coverforBrowse.jpg";
-// import { motion } from "framer-motion";
-// import { FaUpload } from "react-icons/fa";
-import axios from "../../../../backend/axiosInstance";
+import axiosInstance from "../../../axiosInstance";
+import { useUser } from "../../../context/AuthContext";
+import CvUpload from "./cv";
 
 const UserProfile = () => {
-  const [user, setUser] = useState({});
+  const { user, setUser } = useUser();
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
-  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const [passwordData, setPasswordData] = useState({ newPassword: "", confirmPassword: "" });
-  const [cvFile, setCvFile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false); // To show loading state while saving
+
+  // Image State
+  const [profilePic, setProfilePic] = useState("");
+  const [coverPhoto, setCoverPhoto] = useState("");
+
+  // Temporary Image Preview
+  const [tempProfilePic, setTempProfilePic] = useState("");
+  const [tempCoverPhoto, setTempCoverPhoto] = useState("");
 
   useEffect(() => {
+    if (!user?.token) {
+      window.location.href = "/ulogin";
+      return;
+    }
+
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("token"); // Get JWT token
-        const response = await axios.get("/user/profile", {
-          headers: { Authorization: `Bearer ${token}` },
+        const response = await axiosInstance.get("/user/profile", {
+          headers: { Authorization: `Bearer ${user.token}` },
         });
-        setUser(response.data);
+
+        setUser({
+          id: response.data._id,
+          name: response.data.name,
+          email: response.data.email,
+          profilePic: response.data.profilePic,
+          coverPhoto: response.data.coverPhoto,
+          token: user.token,
+        });
+
+        setFormData({ name: response.data.name, email: response.data.email });
+        setProfilePic(response.data.profilePic);
+        setCoverPhoto(response.data.coverPhoto);
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching user data:", error.response?.data || error);
+        if (error.response?.status === 401) {
+          alert("Session expired. Please log in again.");
+          handleLogout();
+        }
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUser();
-  }, []);
+  }, [user?.token]);
 
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+    window.location.href = "/ulogin";
   };
 
-  // const handleSave = () => {
-  //   axios
-  //     .put("http://localhost:5000/api/user/update", formData)
-  //     .then((response) => {
-  //       setUser(response.data);
-  //       setEditMode(false);
-  //     })
-  //     .catch((error) => console.error("Error updating user data:", error));
-  // };
+  // Handle Image Preview & Upload
+  const handleImagePreviewAndUpload = async (event, type) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-  // const handlePasswordChange = (e) => {
-  //   setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
-  // };
+    // Show preview before upload
+    const fileURL = URL.createObjectURL(file);
+    if (type === "profile") setTempProfilePic(fileURL);
+    if (type === "cover") setTempCoverPhoto(fileURL);
 
-  // const handlePasswordSubmit = () => {
-  //   if (passwordData.newPassword !== passwordData.confirmPassword) {
-  //     alert("Passwords do not match");
-  //     return;
-  //   }
-  //   axios
-  //     .post("http://localhost:5000/api/user/change-password", passwordData)
-  //     .then(() => {
-  //       setShowPasswordDialog(false);
-  //       alert("Password changed successfully");
-  //     })
-  //     .catch((error) => console.error("Error changing password:", error));
-  // };
+    const uploadData = new FormData();
+    uploadData.append(type === "profile" ? "profilePic" : "coverPhoto", file);
 
-  // const handleLogout = () => {
-  //   axios.post("http://localhost:5000/api/user/logout").then(() => {
-  //     window.location.href = "/login";
-  //   });
-  // };
+    try {
+      const response = await axiosInstance.put(
+        `/user/upload-${type === "profile" ? "profile" : "cover"}`,
+        uploadData,
+        { headers: { Authorization: `Bearer ${user.token}`, "Content-Type": "multipart/form-data" } }
+      );
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setCvFile(file);
-      console.log("File selected:", file.name);
-      // Add your file upload logic here
+      if (type === "profile") {
+        setProfilePic(response.data.profilePic);
+        setUser((prevUser) => ({ ...prevUser, profilePic: response.data.profilePic }));
+      } else if (type === "cover") {
+        setCoverPhoto(response.data.coverPhoto);
+        setUser((prevUser) => ({ ...prevUser, coverPhoto: response.data.coverPhoto }));
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Image upload failed. Please try again.");
     }
   };
 
+  // Handle Profile Update
+  const updateProfile = async () => {
+    setSaving(true);
+    try {
+      const response = await axiosInstance.put(
+        "/user/update-profile",
+        { name: formData.name, email: formData.email },
+        { headers: { Authorization: `Bearer ${user.token}` } }
+      );
+
+      setUser((prevUser) => ({
+        ...prevUser,
+        name: response.data.name,
+        email: response.data.email,
+      }));
+
+      setEditMode(false);
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error updating profile:", error.response?.data || error);
+      alert("Profile update failed. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) return <div className="text-center mt-10 text-gray-600">Loading...</div>;
+  if (!user) return <div className="text-center mt-10 text-gray-600">Unauthorized access. Redirecting...</div>;
+
   return (
-    <div style={{ backgroundImage: `url(${back})`, backgroundSize: "cover", minHeight: "100vh", backgroundPosition: "center" }}>
+    <div className="min-h-screen bg-gray-100">
       <Navbar />
-      <div className="max-w-4xl mx-auto bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden p-6 relative mt-10">
-        {/* Cover Photo */}
-        <img src={coverPhoto} alt="Cover" className="w-full h-48 object-cover" />
+      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6 mt-10">
 
-        {/* Profile Photo */}
-        <div className="relative -mt-16 flex justify-center">
-          <img src={profilePic} alt="Profile" className="w-32 h-32 rounded-full border-4 border-white" />
+        {/* Cover Photo Section */}
+        <div className="relative w-full h-48 bg-gray-200 flex items-center justify-center">
+          <img src={tempCoverPhoto || coverPhoto} alt="Cover" className="w-full h-full object-cover" />
+          {editMode && (
+            <div className="absolute bottom-2 right-2 z-10">
+              <button
+                onClick={() => document.getElementById("coverUploadInput").click()}
+                className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800"
+              >
+                Change Cover Photo
+              </button>
+              <input
+                type="file"
+                id="coverUploadInput"
+                className="hidden"
+                accept="image/*"
+                onChange={(e) => handleImagePreviewAndUpload(e, "cover")}
+              />
+            </div>
+          )}
         </div>
 
-        {/* Edit/Save Button */}
-        <div className="flex justify-end mt-2">
-          <button
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-            onClick={() => (editMode ? handleSave() : setEditMode(true))}
-          >
-            {editMode ? "Save" : "Edit Profile"}
-          </button>
+        {/* Profile Photo Section */}
+        <div className="relative -mt-16 flex flex-col items-center">
+          <img src={tempProfilePic || profilePic} alt="Profile" className="w-32 h-32 rounded-full border-4 border-white object-cover" />
+
+          {editMode && (
+            <label className="mt-2 px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800 relative cursor-pointer">
+              Change Profile Picture
+              <input
+                type="file"
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                accept="image/*"
+                onChange={(e) => handleImagePreviewAndUpload(e, "profile")}
+              />
+            </label>
+          )}
         </div>
 
-        {/* Profile Details */}
-        <h3 className="text-xl font-semibold text-gray-800 text-center mt-2">Profile Details</h3>
+        <h3 className="text-xl font-semibold text-gray-800 text-center mt-4">Profile Details</h3>
+
         {editMode ? (
-          <input
-            type="text"
-            name="fullName"
-            value={formData.fullName || ""}
-            onChange={handleInputChange}
-            className="text-3xl font-bold text-gray-800 border p-2 rounded-md w-full text-center"
-          />
+          <div className="text-center">
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="border px-2 py-1 rounded w-full mt-2"
+              placeholder="Enter Name"
+            />
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="border px-2 py-1 rounded w-full mt-2"
+              placeholder="Enter Email"
+            />
+          </div>
         ) : (
-          <h2 className="text-3xl font-bold text-gray-800 text-center">{user.name}</h2>
+          <>
+            <h2 className="text-3xl font-bold text-gray-800 text-center">{user.name}</h2>
+            <p className="text-gray-600 text-center">{user.email}</p>
+          </>
         )}
-        <p className="text-gray-600 text-center">{user.email}</p>
-        <p className="text-gray-600 text-center">DOB: {user.dob}</p>
-        <p className="text-gray-600 text-center">Phone: {user.phone}</p>
-        <p className="text-gray-600 text-center">Address: {user.address}</p>
-
-        <hr className="my-4" />
 
         {/* CV Upload Section */}
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Upload CV</h3>
-        <div className="text-center mb-4">
-          <p className="text-gray-600 italic">
-            "A great career begins with a great first step. Upload your CV and make it count!"
-          </p>
-        </div>
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-          {/* Upload Icon */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8 mx-auto text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-            />
-          </svg>
-
-          {/* Upload Text */}
-          <p className="mt-2 text-gray-600 text-sm">
-            Upload CV (PDF, DOCX, DOC, RTF, or TXT)
-          </p>
-
-          {/* Upload Button */}
-          <label className="mt-2 inline-block px-4 py-1 bg-blue-500 text-white rounded-md cursor-pointer hover:bg-blue-600 transition-colors text-sm">
-            <input
-              type="file"
-              className="hidden"
-              accept=".pdf,.docx,.doc,.rtf,.txt"
-              onChange={handleFileUpload}
-            />
-            Upload CV
-          </label>
+        <div className="mt-6 p-4 bg-gray-200 rounded-lg">
+          <h3 className="text-lg font-semibold">Upload Your CV</h3>
+          <CvUpload />  {/* Imported CV Upload Component */}
         </div>
 
-        <hr className="my-4" />
+        <div className="flex justify-between mt-4">
+          {editMode ? (
+            <button
+              className={`px-4 py-2 rounded-md text-white ${saving ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"}`}
+              onClick={updateProfile}
+              disabled={saving}
+            >
+              {saving ? "Saving..." : "Save Changes"}
+            </button>
+          ) : (
+            <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600" onClick={() => setEditMode(true)}>
+              Edit Profile
+            </button>
+          )}
 
-        {/* Change Password and Logout Buttons */}
-        <div className="flex justify-center gap-4 mt-4">
-          <button
-            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-            onClick={() => setShowPasswordDialog(true)}
-          >
-            Change Password
-          </button>
-
-          <button
-            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-          // onClick={handleLogout}
-          >
+          <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600" onClick={handleLogout}>
             Logout
           </button>
         </div>
+
       </div>
     </div>
   );

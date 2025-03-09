@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axiosInstance from "../../../../backend/axiosInstance";
+import axiosInstance from "../../../axiosInstance";
 
 const JobListings = () => {
   const [jobs, setJobs] = useState([]);

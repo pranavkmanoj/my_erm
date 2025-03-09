@@ -1,50 +1,40 @@
 const express = require("express");
-const cors = require("cors");
 const mongoose = require("mongoose");
+const cors = require("cors");
 require("dotenv").config();
 
-const jobRoutes = require("./routes/jobRoutes"); 
+const jobRoutes = require("./routes/jobRoutes");
+const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/userRoutes");
 
-const app = express(); // Initialize app first
 
-console.log("JWT_SECRET:", process.env.JWT_SECRET);
+const app = express();
 
-const allowedOrigins = ["http://localhost:5174", "http://localhost:5176"];
-
+// Middleware
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true, // If you're using cookies or authorization headers
+    origin: ["http://localhost:5173", "http://localhost:5174"], // Allow both
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   })
 );
-
-
-
-app.use(express.json()); // Ensure JSON parsing is enabled
-
-// Import routes
-const authRoutes = require("./routes/auth"); // Ensure correct path
+app.use(express.json()); // Middleware to parse JSON
+app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use("/api/jobs", jobRoutes); // Use job routes
+app.use("/api/auth", authRoutes);
+app.use("/api/jobs", jobRoutes);
+app.use("/api/user", userRoutes);
 
 
-// Use routes with a prefix
-app.use("/api/auth", authRoutes); 
-const PORT = process.env.PORT || 5001;
+// Connect to MongoDB
+mongoose
+  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
-// Connect to MongoDB Atlas
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.log("MongoDB connection error:", err));
+console.log(app._router.stack.map((r) => r.route && r.route.path));
 
-// Start server
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-
+// Start the server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
