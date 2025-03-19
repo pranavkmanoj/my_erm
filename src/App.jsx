@@ -11,6 +11,7 @@ import JobListing from './pages/Users/data/JobList';
 import ScheduleInterview from './pages/Users/data/ScheduleInterview';
 import ApplyJobs from './pages/Users/data/Apply-Jobs';
 import UserProfile from './pages/Users/data/user_profile';
+import ViewApplication from './pages/Users/data/ViewApplication';
 
 import AdminPanel from './pages/Admins/AdminPanel';
 import AdminLogin from './pages/Admins/AdminLogin';
@@ -35,6 +36,8 @@ function App() {
           <Route path="/interview" element={<ScheduleInterview />} />
           <Route path="/apply-jobs" element={<ApplyJobs />} />
           <Route path="/user-profile" element={<UserProfile />} />
+          <Route path="/view-application" element={<ViewApplication />} />
+
 
           <Route path="/alogin" element={<AdminLogin />} />
           <Route path="/aregister" element={<AdminRegister />} />

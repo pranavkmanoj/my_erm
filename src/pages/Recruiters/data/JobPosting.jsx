@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axiosInstance from "../../../axiosInstance"; // Import the Axios instance
+import axiosInstance from "../../../axiosInstance"; // Import Axios instance
 
 const JobPosting = () => {
   const [jobData, setJobData] = useState({
@@ -8,7 +8,12 @@ const JobPosting = () => {
     jobDescription: "",
     jobLocation: "",
     salary: "",
-    jobType: "",
+    jobType: "Full-time",
+    skillsRequired: "",
+    experienceRequired: "",
+    qualifications: "",
+    applicationDeadline: "",
+    workMode: "Onsite",
   });
 
   const [successMessage, setSuccessMessage] = useState("");
@@ -20,7 +25,12 @@ const JobPosting = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axiosInstance.post("/jobs", jobData);
+      const formattedJobData = {
+        ...jobData,
+        skillsRequired: jobData.skillsRequired.split(",").map((skill) => skill.trim()), // Convert skills to array
+      };
+
+      const response = await axiosInstance.post("/jobs", formattedJobData);
       if (response.status === 201) {
         setSuccessMessage("Job posted successfully! ✅");
         setJobData({
@@ -29,7 +39,12 @@ const JobPosting = () => {
           jobDescription: "",
           jobLocation: "",
           salary: "",
-          jobType: "",
+          jobType: "Full-time",
+          skillsRequired: "",
+          experienceRequired: "",
+          qualifications: "",
+          applicationDeadline: "",
+          workMode: "Onsite",
         });
 
         setTimeout(() => setSuccessMessage(""), 3000);
@@ -57,6 +72,7 @@ const JobPosting = () => {
           value={jobData.jobTitle}
           onChange={handleChange}
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
         />
         <input
           type="text"
@@ -65,6 +81,7 @@ const JobPosting = () => {
           value={jobData.companyName}
           onChange={handleChange}
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
         />
         <textarea
           name="jobDescription"
@@ -73,6 +90,7 @@ const JobPosting = () => {
           onChange={handleChange}
           rows="4"
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
         />
         <input
           type="text"
@@ -81,6 +99,7 @@ const JobPosting = () => {
           value={jobData.jobLocation}
           onChange={handleChange}
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
         />
         <input
           type="number"
@@ -89,15 +108,72 @@ const JobPosting = () => {
           value={jobData.salary}
           onChange={handleChange}
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
         />
-        <input
-          type="text"
+
+        {/* Job Type Dropdown */}
+        <select
           name="jobType"
-          placeholder="Job Type"
           value={jobData.jobType}
           onChange={handleChange}
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        >
+          <option value="Full-time">Full-time</option>
+          <option value="Part-time">Part-time</option>
+          <option value="Internship">Internship</option>
+          <option value="Contract">Contract</option>
+        </select>
+
+        {/* Work Mode Dropdown */}
+        <select
+          name="workMode"
+          value={jobData.workMode}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        >
+          <option value="Onsite">Onsite</option>
+          <option value="Remote">Remote</option>
+          <option value="Hybrid">Hybrid</option>
+        </select>
+
+        <input
+          type="text"
+          name="skillsRequired"
+          placeholder="Skills (comma separated)"
+          value={jobData.skillsRequired}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
         />
+        <input
+          type="text"
+          name="experienceRequired"
+          placeholder="Experience Required (e.g. 0-2 years)"
+          value={jobData.experienceRequired}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+        <input
+          type="text"
+          name="qualifications"
+          placeholder="Qualifications (e.g. B.Tech, MCA)"
+          value={jobData.qualifications}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+        <input
+          type="date"
+          name="applicationDeadline"
+          value={jobData.applicationDeadline}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+
         <button
           type="submit"
           className="w-full bg-blue-500 text-white p-3 rounded-md font-semibold hover:bg-blue-600 transition duration-200"

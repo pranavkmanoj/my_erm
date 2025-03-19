@@ -37,51 +37,53 @@ const UserReg = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const { email, password, confirmPassword, name, companyName, bio } = formData;
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  const { email, password, confirmPassword, name, companyName, bio } = formData;
 
-    if (!email || !password || !confirmPassword) {
-      toast.error("All fields are required!");
-      return;
+  if (!email || !password || !confirmPassword) {
+    alert("All fields are required!");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  if (!validatePassword(password)) {
+    alert(
+      "Password must have at least 8 characters, one uppercase, one lowercase, one number, and one special character."
+    );
+    return;
+  }
+
+  const userData =
+    role === "user"
+      ? { role, name, email, password }
+      : { role, companyName, email, password, bio };
+
+  try {
+    setLoading(true);
+    const response = await axios.post("/auth/register", userData);
+    console.log("Response:", response.data); // Debugging
+
+    if (response.data.success) {
+      alert("Successfully registered!");
+      setTimeout(() => {
+        navigate("/ulogin");
+      }, 0);
+    } else {
+      alert(response.data.message || "Registration failed. Try again.");
     }
+  } catch (error) {
+    console.error("Registration error:", error);
+    alert(error.response?.data?.message || "An error occurred. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match!");
-      return;
-    }
-
-    if (!validatePassword(password)) {
-      toast.error(
-        "Password must have at least 8 characters, one uppercase, one lowercase, one number, and one special character."
-      );
-      return;
-    }
-
-    const userData =
-      role === "user"
-        ? { role, name, email, password }
-        : { role, companyName, email, password, bio };
-
-    try {
-      setLoading(true);
-      const response = await axios.post("/auth/register", userData);
-
-      if (response.data.success) {
-        toast.success("Registration successful! Redirecting...");
-        setTimeout(() => navigate("/ulogin"), 1000);
-      } else {
-        toast.error(response.data.message || "Registration failed. Try again.");
-      }
-    } catch (error) {
-      console.error("Registration error:", error);
-      toast.error(
-        error.response?.data?.message || "An error occurred. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div
@@ -100,8 +102,8 @@ const UserReg = () => {
         <div className="flex justify-center mb-6">
           <button
             className={`px-6 py-2 text-lg font-medium border-b-4 transition-all ${role === "user"
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-500"
+              ? "border-blue-600 text-blue-600"
+              : "border-transparent text-gray-500"
               }`}
             onClick={() => handleRoleChange("user")}
           >
@@ -109,8 +111,8 @@ const UserReg = () => {
           </button>
           <button
             className={`px-6 py-2 text-lg font-medium border-b-4 transition-all ${role === "recruiter"
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-500"
+              ? "border-blue-600 text-blue-600"
+              : "border-transparent text-gray-500"
               }`}
             onClick={() => handleRoleChange("recruiter")}
           >

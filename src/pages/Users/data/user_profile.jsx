@@ -9,13 +9,9 @@ const UserProfile = () => {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false); // To show loading state while saving
-
-  // Image State
+  const [saving, setSaving] = useState(false);
   const [profilePic, setProfilePic] = useState("");
   const [coverPhoto, setCoverPhoto] = useState("");
-
-  // Temporary Image Preview
   const [tempProfilePic, setTempProfilePic] = useState("");
   const [tempCoverPhoto, setTempCoverPhoto] = useState("");
 
@@ -68,7 +64,6 @@ const UserProfile = () => {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Show preview before upload
     const fileURL = URL.createObjectURL(file);
     if (type === "profile") setTempProfilePic(fileURL);
     if (type === "cover") setTempCoverPhoto(fileURL);
@@ -132,7 +127,12 @@ const UserProfile = () => {
 
         {/* Cover Photo Section */}
         <div className="relative w-full h-48 bg-gray-200 flex items-center justify-center">
-          <img src={tempCoverPhoto || coverPhoto} alt="Cover" className="w-full h-full object-cover" />
+          {tempCoverPhoto || coverPhoto ? (
+            <img src={tempCoverPhoto || coverPhoto} alt="Cover" className="w-full h-full object-cover" />
+          ) : (
+            <h1 className="text-3xl font-bold text-gray-700">{user.name}</h1>
+          )}
+
           {editMode && (
             <div className="absolute bottom-2 right-2 z-10">
               <button
@@ -154,7 +154,13 @@ const UserProfile = () => {
 
         {/* Profile Photo Section */}
         <div className="relative -mt-16 flex flex-col items-center">
-          <img src={tempProfilePic || profilePic} alt="Profile" className="w-32 h-32 rounded-full border-4 border-white object-cover" />
+          {tempProfilePic || profilePic ? (
+            <img src={tempProfilePic || profilePic} alt="Profile" className="w-32 h-32 rounded-full border-4 border-white object-cover" />
+          ) : (
+            <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 text-2xl font-bold border-4 border-white">
+              {user.name[0]}
+            </div>
+          )}
 
           {editMode && (
             <label className="mt-2 px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800 relative cursor-pointer">
@@ -195,27 +201,18 @@ const UserProfile = () => {
           </>
         )}
 
-        {/* CV Upload Section */}
-        <div className="mt-6 p-4 bg-gray-200 rounded-lg">
-          <h3 className="text-lg font-semibold">Upload Your CV</h3>
-          <CvUpload />  {/* Imported CV Upload Component */}
-        </div>
+        <CvUpload />
 
         <div className="flex justify-between mt-4">
           {editMode ? (
-            <button
-              className={`px-4 py-2 rounded-md text-white ${saving ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"}`}
-              onClick={updateProfile}
-              disabled={saving}
-            >
-              {saving ? "Saving..." : "Save Changes"}
+            <button className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600" onClick={updateProfile}>
+              Save Changes
             </button>
           ) : (
             <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600" onClick={() => setEditMode(true)}>
               Edit Profile
             </button>
           )}
-
           <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600" onClick={handleLogout}>
             Logout
           </button>

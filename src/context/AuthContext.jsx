@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
     });
 
     useEffect(() => {
-        if (user !== null) {
+        if (user) {
             localStorage.setItem("user", JSON.stringify(user));
         } else {
             localStorage.removeItem("user");
@@ -22,7 +22,16 @@ export const AuthProvider = ({ children }) => {
         console.log("User State Updated:", user);
     }, [user]);
 
-    return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>;
+    const logout = () => {
+        setUser(null);
+        localStorage.removeItem("user");
+    };
+
+    return (
+        <AuthContext.Provider value={{ user, setUser, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export const useUser = () => useContext(AuthContext);

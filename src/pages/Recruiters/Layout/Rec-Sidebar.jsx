@@ -24,8 +24,8 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 w-64 bg-gradient-to-b from-blue-100 to-blue-200 text-black p-4 h-full min-h-screen transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } lg:translate-x-0 lg:static`}
+        className={`fixed top-0 left-0 w-64 bg-gradient-to-b from-blue-100 to-blue-200 text-black p-4 h-full min-h-screen transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          lg:translate-x-0 lg:static`}
       >
         <nav className="flex flex-col gap-2">
           {/* Job Posting */}
@@ -58,31 +58,36 @@ const Sidebar = () => {
                 >
                   Status
                 </motion.div>
+                <motion.div
+                  whileHover={{ backgroundColor: "white" }}
+                  className="p-2 rounded cursor-pointer transition-all"
+                  onClick={() => navigate("/Dashboard/edit-job")}
+                >
+                  Edit Job
+                </motion.div>
               </motion.div>
             )}
           </div>
 
           {/* Other Menu Sections */}
-          {[
-            {
-              title: "Application", links: [
-                { name: "View Applications", path: "/Dashboard/view-application" },
-                { name: "Shortlisted Candidates", path: "/Dashboard/shortlisted-candidates" }
-              ]
-            },
-            {
-              title: "Interview Scheduling", links: [
-                { name: "Schedule Interviews", path: "/Dashboard/schedule-interviews" },
-                { name: "Manage Feedback", path: "/Dashboard/manage-feedback" }
-              ]
-            },
-            {
-              title: "Profile & Settings", links: [
-                { name: "Company Profile", path: "/Dashboard/company-profile" },
-                { name: "Account Settings", path: "/Dashboard/account-settings" }
-              ]
-            },
-          ].map((menu, index) => (
+          {[{
+            title: "Application", links: [
+              { name: "View Applications", path: "/Dashboard/view-application" },
+              { name: "Shortlisted Candidates", path: "/Dashboard/shortlisted-candidates" }
+            ]
+          },
+          {
+            title: "Interview Scheduling", links: [
+              { name: "Schedule Interviews", path: "/Dashboard/schedule-interviews" },
+              { name: "Manage Feedback", path: "/Dashboard/manage-feedback" }
+            ]
+          },
+          {
+            title: "Profile & Settings", links: [
+              { name: "Company Profile", path: "/Dashboard/company-profile" },
+              { name: "Account Settings", path: "/Dashboard/account-settings" }
+            ]
+          }].map((menu, index) => (
             <div key={index}>
               <motion.div
                 whileHover={{ backgroundColor: "white" }}

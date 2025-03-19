@@ -1,34 +1,25 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 const ShortlistedCandidates = () => {
-    const [shortlisted, setShortlisted] = useState([]);
+    const [approvedCandidates, setApprovedCandidates] = useState([]);
 
-    // Mock data (Replace this with API fetch)
     useEffect(() => {
-        const fetchShortlistedCandidates = async () => {
-            const data = [
-                {
-                    id: 1,
-                    applicant: "Emily Davis",
-                    jobTitle: "Software Engineer",
-                    resume: "https://example.com/resume-emily.pdf",
-                },
-                {
-                    id: 2,
-                    applicant: "Mark Wilson",
-                    jobTitle: "Data Scientist",
-                    resume: "https://example.com/resume-mark.pdf",
-                },
-            ];
-            setShortlisted(data);
+        const fetchApprovedCandidates = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/api/job-applications/approved");
+                setApprovedCandidates(response.data);
+            } catch (error) {
+                console.error("Error fetching approved candidates:", error);
+            }
         };
 
-        fetchShortlistedCandidates();
+        fetchApprovedCandidates();
     }, []);
 
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Shortlisted Candidates</h2>
+        <div className="max-w-6xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Approved Candidates</h2>
 
             <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-200">
@@ -36,15 +27,27 @@ const ShortlistedCandidates = () => {
                         <tr className="bg-gray-100 text-gray-700">
                             <th className="p-3 border border-gray-200">Applicant</th>
                             <th className="p-3 border border-gray-200">Job Title</th>
+                            <th className="p-3 border border-gray-200">Details</th>
                             <th className="p-3 border border-gray-200">Resume</th>
                             <th className="p-3 border border-gray-200">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {shortlisted.map((candidate) => (
-                            <tr key={candidate.id} className="text-gray-700 text-center">
-                                <td className="p-3 border border-gray-200">{candidate.applicant}</td>
-                                <td className="p-3 border border-gray-200">{candidate.jobTitle}</td>
+                        {approvedCandidates.map((candidate) => (
+                            <tr key={candidate._id} className="text-gray-700 text-center">
+                                <td className="p-3 border border-gray-200">{candidate.fullName}</td>
+                                <td className="p-3 border border-gray-200">{candidate.jobTitle || "N/A"}</td>
+                                <td className="p-3 border border-gray-200 text-left">
+                                    <div className="text-sm">
+                                        <p><strong>📞 Phone:</strong> {candidate.details?.phone || "N/A"}</p>
+                                        <p><strong>📧 Email:</strong> {candidate.details?.email || "N/A"}</p>
+                                        <p><strong>📍 City:</strong> {candidate.details?.city || "N/A"}</p>
+                                        <p><strong>💼 Experience:</strong> {candidate.details?.experience || "N/A"}</p>
+                                        <p><strong>🛠 Skills:</strong> {candidate.details?.skills?.join(", ") || "N/A"}</p>
+                                        <p><strong>📅 Availability:</strong> {candidate.details?.availability || "N/A"}</p>
+                                        <p><strong>📆 Applied On:</strong> {new Date(candidate.details?.appliedAt).toLocaleDateString()}</p>
+                                    </div>
+                                </td>
                                 <td className="p-3 border border-gray-200">
                                     <a href={candidate.resume} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
                                         View Resume

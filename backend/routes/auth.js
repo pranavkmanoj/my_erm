@@ -14,19 +14,19 @@ router.post("/register", async (req, res) => {
     
     const { role, name, companyName, email, password, bio } = req.body;
     if (!role || !email || !password) {
-      return res.status(400).json({ message: "Role, email, and password are required!" });
+      return res.status(400).json({ success: false, message: "Role, email, and password are required!" });
     }
 
     const Model = role === "user" ? User : role === "recruiter" ? Recruiter : null;
     if (!Model) {
-      return res.status(400).json({ message: "Invalid role specified!" });
+      return res.status(400).json({ success: false, message: "Invalid role specified!" });
     }
 
-    // Check if email already exists in either collection
+    // Check if email already exists
     const existingUser = await User.findOne({ email });
     const existingRecruiter = await Recruiter.findOne({ email });
     if (existingUser || existingRecruiter) {
-      return res.status(400).json({ message: "Email already registered!" });
+      return res.status(400).json({ success: false, message: "Email already registered!" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -41,12 +41,14 @@ router.post("/register", async (req, res) => {
     });
 
     await newUser.save();
-    res.status(201).json({ message: "Registration successful!" });
+    
+    return res.status(201).json({ success: true, message: "Registration successful!" });
   } catch (error) {
     console.error("Server error:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+    return res.status(500).json({ success: false, message: "Server error", error: error.message });
   }
 });
+
 
 // Reusable Login Function
 const loginUser = async (req, res, userType) => {

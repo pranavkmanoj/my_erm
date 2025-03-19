@@ -24,7 +24,7 @@ const UserPanel1 = () => {
 
     console.log(`🔍 Fetching resume for user ID: ${user.id}`);
 
-    axiosInstance.get(`/user/get-resume/${user.id}`)    
+    axiosInstance.get(`/user/get-resume/${user.id}`)
       // <-- Use axiosInstance, baseURL is already set
       .then((response) => {
         if (response.data.resumeUrl) {

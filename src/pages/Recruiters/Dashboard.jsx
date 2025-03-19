@@ -9,6 +9,7 @@ import ScheduleInterview from './data/schedule-interviews';
 import ManageFeedback from './data/manage-feedback';
 import CompanyProfile from './data/company-profile';
 import AccountSettings from './data/account-settings';
+import EditJob from './data/EditJob';
 
 function Dashboard() {
     return (
@@ -33,6 +34,7 @@ function Dashboard() {
                         <Route path="manage-feedback" element={<ManageFeedback />} />
                         <Route path="company-profile" element={<CompanyProfile />} />
                         <Route path="account-settings" element={<AccountSettings />} />
+                        <Route path="edit-job" element={<EditJob />} />
                     </Routes>
                 </div>
             </div>
