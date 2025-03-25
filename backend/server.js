@@ -9,8 +9,13 @@ const app = express();
 // ✅ Middleware
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174", "https://erm-v0ek.onrender.com"], // Allow both
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: [
+      "http://localhost:5173",         // Local frontend
+      "http://localhost:5174",         // Another local frontend (if needed)
+      "https://erm-v0ek.onrender.com"  // Deployed frontend
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
