@@ -13,9 +13,9 @@ const CompanyProfile = () => {
   useEffect(() => {
     const fetchCompanyDetails = async () => {
       const data = {
-        name: "TechCorp Ltd.",
-        email: "contact@techcorp.com",
-        description: "A leading software company specializing in AI solutions.",
+        name: "Freston",
+        email: "freston@gmail.com",
+        description: "A leading software company specializing in Analytics.",
       };
       setCompany(data);
     };

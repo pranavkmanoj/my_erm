@@ -1,36 +1,63 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
+const Recruiter = require("../models/Recruiter");
 
 const authMiddleware = async (req, res, next) => {
+
     try {
-        const authHeader = req.header("Authorization");
-
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            console.warn("❌ No token provided or incorrect format");
-            return res.status(401).json({ message: "Unauthorized: No token provided" });
+        // Extract token from Authorization header
+        const token = req.header("Authorization")?.replace("Bearer ", "");
+        if (!token) {
+            console.warn("❌ No token provided");
+            return res.status(401).json({ error: "Unauthorized: No token provided" });
         }
 
-        const token = authHeader.split(" ")[1].trim();
-
-        // ✅ Verify and decode JWT token
+        // Verify and decode the JWT token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        if (!decoded?.id) {
+        if (!decoded?.id || !decoded?.role) {
             console.warn("❌ Invalid token structure");
-            return res.status(401).json({ message: "Invalid token structure" });
+            return res.status(401).json({ error: "Invalid token structure" });
         }
 
-        // ✅ Attach user details to `req.user`
-        req.user = { id: decoded.id, role: decoded.role || "user" };
+        // Find the user based on role
+        let user;
+        if (decoded.role === "user") {
+            user = await User.findById(decoded.id).select("-password");
+        } else if (decoded.role === "recruiter") {
+            user = await Recruiter.findById(decoded.id).select("-password");
+        } else {
+            console.warn("❌ Invalid role in token");
+            return res.status(401).json({ error: "Unauthorized: Invalid role" });
+        }
 
+        // Check if user exists
+        if (!user) {
+            console.warn(`❌ ${decoded.role} not found`);
+            return res.status(401).json({ error: `Unauthorized: ${decoded.role} not found` });
+        }
 
-        next();
+        // Attach user details to req.user
+        req.user = {
+            id: user._id.toString(), // Ensure id is a string
+            role: decoded.role,
+            email: user.email,
+            recruiterId: decoded.role === "recruiter" ? user._id.toString() : undefined, // Add recruiterId only for recruiters
+        };
+
+   
+
+        next(); // Proceed to the next middleware/route
     } catch (error) {
         console.error("❌ Authentication error:", error.message);
-        return res.status(401).json({
-            message: error.name === "TokenExpiredError"
-                ? "Token expired, please log in again."
-                : "Invalid token."
-        });
+
+        // Handle specific JWT errors
+        if (error.name === "TokenExpiredError") {
+            return res.status(401).json({ error: "Token expired, please log in again." });
+        } else if (error.name === "JsonWebTokenError") {
+            return res.status(401).json({ error: "Invalid token." });
+        }
+
+        res.status(500).json({ error: "Internal Server Error" });
     }
 };
 

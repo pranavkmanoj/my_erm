@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   profilePic: { type: String, default: null }, // Store profile image URL
   coverPhoto: { type: String, default: null }, // Store cover photo URL
- cvFile: { type: String, default: null },
+  cvFile: { type: String, default: null },
 });
 
 module.exports = mongoose.model("user_logins", userSchema);

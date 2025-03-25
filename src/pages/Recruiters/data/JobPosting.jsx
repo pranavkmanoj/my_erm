@@ -1,185 +1,154 @@
 import { useState } from "react";
-import axiosInstance from "../../../axiosInstance"; // Import Axios instance
+import axiosInstance from "../../../axiosInstance";
+import {
+  Briefcase, Building, MapPin, DollarSign, ClipboardList,
+  Calendar, Layers, GraduationCap, Users, Timer, Globe
+} from "lucide-react";
 
 const JobPosting = () => {
   const [jobData, setJobData] = useState({
-    jobTitle: "",
-    companyName: "",
-    jobDescription: "",
-    jobLocation: "",
-    salary: "",
-    jobType: "Full-time",
-    skillsRequired: "",
-    experienceRequired: "",
-    qualifications: "",
-    applicationDeadline: "",
-    workMode: "Onsite",
+    jobTitle: "", companyName: "", jobDescription: "", jobLocation: "",
+    salary: "", jobType: "Full-time", skillsRequired: "", experienceRequired: "",
+    qualifications: "", applicationDeadline: "", workMode: "Onsite",
   });
 
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleChange = (e) => {
-    setJobData({ ...jobData, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setJobData({ ...jobData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSuccessMessage("");
+    setErrorMessage("");
+
     try {
-      const formattedJobData = {
-        ...jobData,
-        skillsRequired: jobData.skillsRequired.split(",").map((skill) => skill.trim()), // Convert skills to array
-      };
+      const userData = JSON.parse(localStorage.getItem("user"));
+      const token = userData?.token;
+      const recruiterId = userData?.id;
 
-      const response = await axiosInstance.post("/jobs", formattedJobData);
-      if (response.status === 201) {
-        setSuccessMessage("Job posted successfully! ✅");
-        setJobData({
-          jobTitle: "",
-          companyName: "",
-          jobDescription: "",
-          jobLocation: "",
-          salary: "",
-          jobType: "Full-time",
-          skillsRequired: "",
-          experienceRequired: "",
-          qualifications: "",
-          applicationDeadline: "",
-          workMode: "Onsite",
-        });
-
-        setTimeout(() => setSuccessMessage(""), 3000);
+      if (!token || !recruiterId) {
+        setErrorMessage("❌ No authentication details found. Please log in.");
+        return;
       }
+
+      const response = await axiosInstance.post(
+        "/jobs",
+        { ...jobData, recruiterId },
+        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+      );
+
+      console.log("✅ Job posted successfully:", response.data);
+      setSuccessMessage("🎉 Job posted successfully!");
+
+      setJobData({
+        jobTitle: "", companyName: "", jobDescription: "", jobLocation: "",
+        salary: "", jobType: "Full-time", skillsRequired: "", experienceRequired: "",
+        qualifications: "", applicationDeadline: "", workMode: "Onsite",
+      });
     } catch (error) {
-      console.error("Error posting job:", error);
+      console.error("❌ Error posting job:", error.response?.data || error.message);
+      setErrorMessage(error.response?.data?.message || "Failed to post job. Please try again.");
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200 mt-10">
-      <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">Post a New Job</h2>
+    <div className="max-w-4xl mx-auto my-10 p-8 bg-white shadow-2xl rounded-2xl border border-gray-200">
+      <h2 className="text-4xl font-extrabold text-center bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text mb-8">
+        Post a New Job
+      </h2>
 
       {successMessage && (
-        <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-3 mb-4">
+        <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-4 shadow-sm">
           {successMessage}
         </div>
       )}
+      {errorMessage && (
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-4 shadow-sm">
+          {errorMessage}
+        </div>
+      )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          name="jobTitle"
-          placeholder="Job Title"
-          value={jobData.jobTitle}
-          onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <input
-          type="text"
-          name="companyName"
-          placeholder="Company Name"
-          value={jobData.companyName}
-          onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <textarea
-          name="jobDescription"
-          placeholder="Job Description"
-          value={jobData.jobDescription}
-          onChange={handleChange}
-          rows="4"
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <input
-          type="text"
-          name="jobLocation"
-          placeholder="Location"
-          value={jobData.jobLocation}
-          onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <input
-          type="number"
-          name="salary"
-          placeholder="Salary"
-          value={jobData.salary}
-          onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
+      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
+        {[
+          { name: "jobTitle", placeholder: "Job Title", icon: <Briefcase />, type: "text" },
+          { name: "companyName", placeholder: "Company Name", icon: <Building />, type: "text" },
+          { name: "jobLocation", placeholder: "Location", icon: <MapPin />, type: "text" },
+          { name: "salary", placeholder: "Salary", icon: <DollarSign />, type: "number" },
+          { name: "skillsRequired", placeholder: "Skills (comma separated)", icon: <Layers />, type: "text" },
+          { name: "experienceRequired", placeholder: "Experience (e.g. 0-2 years)", icon: <Users />, type: "text" },
+          { name: "qualifications", placeholder: "Qualifications (e.g. B.Tech, MCA)", icon: <GraduationCap />, type: "text" },
+          { name: "applicationDeadline", placeholder: "Deadline", icon: <Calendar />, type: "date" }
+        ].map((field, index) => (
+          <div key={index} className="relative">
+            <div className="absolute left-4 top-3 text-gray-500">{field.icon}</div>
+            <input
+              type={field.type}
+              name={field.name}
+              placeholder={field.placeholder}
+              value={jobData[field.name]}
+              onChange={handleChange}
+              className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+              required
+            />
+          </div>
+        ))}
 
-        {/* Job Type Dropdown */}
-        <select
-          name="jobType"
-          value={jobData.jobType}
-          onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        >
-          <option value="Full-time">Full-time</option>
-          <option value="Part-time">Part-time</option>
-          <option value="Internship">Internship</option>
-          <option value="Contract">Contract</option>
-        </select>
+        <div className="col-span-2">
+          <textarea
+            name="jobDescription"
+            placeholder="Job Description"
+            value={jobData.jobDescription}
+            onChange={handleChange}
+            className="w-full p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+            rows="4"
+            required
+          />
+        </div>
 
-        {/* Work Mode Dropdown */}
-        <select
-          name="workMode"
-          value={jobData.workMode}
-          onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        >
-          <option value="Onsite">Onsite</option>
-          <option value="Remote">Remote</option>
-          <option value="Hybrid">Hybrid</option>
-        </select>
+        <div className="col-span-1">
+          <div className="relative">
+            <div className="absolute left-4 top-3 text-gray-500"><Timer /></div>
+            <select
+              name="jobType"
+              value={jobData.jobType}
+              onChange={handleChange}
+              className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+              required
+            >
+              <option value="Full-time">Full-time</option>
+              <option value="Part-time">Part-time</option>
+              <option value="Internship">Internship</option>
+              <option value="Contract">Contract</option>
+            </select>
+          </div>
+        </div>
 
-        <input
-          type="text"
-          name="skillsRequired"
-          placeholder="Skills (comma separated)"
-          value={jobData.skillsRequired}
-          onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <input
-          type="text"
-          name="experienceRequired"
-          placeholder="Experience Required (e.g. 0-2 years)"
-          value={jobData.experienceRequired}
-          onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <input
-          type="text"
-          name="qualifications"
-          placeholder="Qualifications (e.g. B.Tech, MCA)"
-          value={jobData.qualifications}
-          onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <input
-          type="date"
-          name="applicationDeadline"
-          value={jobData.applicationDeadline}
-          onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
+        <div className="col-span-1">
+          <div className="relative">
+            <div className="absolute left-4 top-3 text-gray-500"><Globe /></div>
+            <select
+              name="workMode"
+              value={jobData.workMode}
+              onChange={handleChange}
+              className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+              required
+            >
+              <option value="Onsite">Onsite</option>
+              <option value="Remote">Remote</option>
+              <option value="Hybrid">Hybrid</option>
+            </select>
+          </div>
+        </div>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white p-3 rounded-md font-semibold hover:bg-blue-600 transition duration-200"
-        >
-          Post Job
-        </button>
+        <div className="col-span-2">
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200"
+          >
+             Post Job
+          </button>
+        </div>
       </form>
     </div>
   );

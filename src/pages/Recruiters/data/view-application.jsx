@@ -1,37 +1,52 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../../axiosInstance";
+import { useUser } from "../../../context/AuthContext"; // Import AuthContext
 
 const ViewApplications = () => {
+  const { user } = useUser(); // Get logged-in user (recruiter)
   const [applications, setApplications] = useState([]);
   const [selectedApplication, setSelectedApplication] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!user || !user.id) {
+      setError("No recruiter ID found");
+      setLoading(false);
+      return;
+    }
+
     const fetchApplications = async () => {
       try {
-        const response = await axiosInstance.get("job-applications/all-applications", {
+        console.log("Fetching applications for recruiter:", user.id);
+
+        const response = await axiosInstance.get(`job-applications/recruiter/${user.id}`, {
           headers: { "Content-Type": "application/json" },
         });
 
         console.log("✅ Applications fetched:", response.data);
         setApplications(response.data);
-      } catch (error) {
-        console.error("❌ Error fetching applications:", error.response?.data || error);
+      } catch (err) {
+        console.error("❌ Error fetching applications:", err.response?.data || err);
+        setError(err.response?.data?.message || "Failed to fetch applications");
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchApplications();
-  }, []);
+  }, [user]);
 
   // Function to update application status
   const updateApplicationStatus = async (id, status) => {
     try {
       const response = await axiosInstance.put(`job-applications/update-status/${id}`, { status });
-
       console.log(`✅ Application updated to ${status}:`, response.data);
 
-      // Update the state with the new status
+      // Update the application status in state
       setApplications(applications.map(app => (app._id === id ? { ...app, status } : app)));
-    } catch (error) {
-      console.error("❌ Error updating status:", error.response?.data || error);
+    } catch (err) {
+      console.error("❌ Error updating status:", err.response?.data || err);
     }
   };
 
@@ -41,17 +56,16 @@ const ViewApplications = () => {
 
     try {
       await axiosInstance.delete(`job-applications/delete-application/${id}`);
-
       console.log("✅ Application deleted successfully");
 
       // Remove the application from state
       setApplications(applications.filter(app => app._id !== id));
-    } catch (error) {
-      console.error("❌ Error deleting application:", error.response?.data || error);
+    } catch (err) {
+      console.error("❌ Error deleting application:", err.response?.data || err);
     }
   };
 
-  // Function to get color based on status
+  // Function to get status badge color
   const getStatusColor = (status) => {
     switch (status) {
       case "Reviewed":
@@ -64,6 +78,9 @@ const ViewApplications = () => {
         return "text-yellow-600 bg-yellow-100 px-2 py-1 rounded"; // Pending
     }
   };
+
+  if (loading) return <p className="text-center text-gray-700">Loading applications...</p>;
+  if (error) return <p className="text-center text-red-500">❌ {error}</p>;
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
@@ -142,46 +159,24 @@ const ViewApplications = () => {
         <p className="text-gray-600 text-center mt-4">No applications found.</p>
       )}
 
-      {/* Modal for Full Details */}
+      {/* Modal for Application Details */}
       {selectedApplication && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] max-h-[70vh] overflow-y-auto">
             <h3 className="text-xl font-semibold mb-4 text-center">Applicant Details</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <p><strong>Full Name:</strong> {selectedApplication.firstName} {selectedApplication.lastName}</p>
-              <p><strong>Email:</strong> {selectedApplication.email}</p>
-              <p><strong>Phone:</strong> {selectedApplication.phone || "N/A"}</p>
-              <p><strong>City:</strong> {selectedApplication.city || "N/A"}</p>
-              <p><strong>Experience:</strong> {selectedApplication.experience || "N/A"} years</p>
-              <p><strong>Skills:</strong> {selectedApplication.skills?.join(", ") || "N/A"}</p>
-              <p><strong>Availability:</strong> {selectedApplication.availability || "N/A"}</p>
-              <p><strong>Cover Letter:</strong> {selectedApplication.coverLetter || "N/A"}</p>
-            </div>
-
-            {/* Display Resume as Image */}
-            {selectedApplication.resume && (
-              <div className="mt-4">
-                <h4 className="font-semibold">Resume:</h4>
-                <img
-                  src={selectedApplication.resume}
-                  alt="Resume"
-                  className="w-full h-auto mt-2 border rounded-lg shadow-md"
-                />
-              </div>
-            )}
-
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={() => setSelectedApplication(null)}
-                className="bg-red-500 text-white px-4 py-2 rounded"
-              >
-                Close
-              </button>
-            </div>
+            <p><strong>Name:</strong> {selectedApplication.firstName} {selectedApplication.lastName}</p>
+            <p><strong>Email:</strong> {selectedApplication.email}</p>
+            <p><strong>Phone:</strong> {selectedApplication.phone || "N/A"}</p>
+            <p><strong>Skills:</strong> {selectedApplication.skills?.join(", ") || "N/A"}</p>
+            <button
+              onClick={() => setSelectedApplication(null)}
+              className="bg-red-500 text-white px-4 py-2 rounded mt-4"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
-
     </div>
   );
 };

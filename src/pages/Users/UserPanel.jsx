@@ -16,28 +16,25 @@ const UserPanel1 = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!user?.id) {
-      console.error("🚨 User ID is missing! Redirecting to login...");
-      navigate("/ulogin");
-      return;
+    if (user?.id) {
+      console.log(`🔍 Fetching resume for user ID: ${user.id}`);
+
+      axiosInstance
+        .get(`/user/get-resume/${user.id}`)
+        .then((response) => {
+          if (response.data.resumeUrl) {
+            setResumeUrl(response.data.resumeUrl);
+            console.log("✅ Resume fetched successfully:", response.data.resumeUrl);
+          } else {
+            console.warn("⚠️ No resume found for this user.");
+          }
+        })
+        .catch((error) => {
+          console.error("❌ Error fetching resume:", error.response?.data || error.message);
+        });
     }
+  }, [user]);  // 🔥 No need to check `navigate`
 
-    console.log(`🔍 Fetching resume for user ID: ${user.id}`);
-
-    axiosInstance.get(`/user/get-resume/${user.id}`)
-      // <-- Use axiosInstance, baseURL is already set
-      .then((response) => {
-        if (response.data.resumeUrl) {
-          setResumeUrl(response.data.resumeUrl);
-          console.log("✅ Resume fetched successfully:", response.data.resumeUrl);
-        } else {
-          console.warn("⚠️ No resume found for this user.");
-        }
-      })
-      .catch((error) => {
-        console.error("❌ Error fetching resume:", error.response?.data || error.message);
-      });
-  }, [user, navigate]);
 
 
   const handleFileChange = async (event) => {

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import axiosInstance from "../../axiosInstance"; // Axios instance for API calls
+import axiosInstance from "../../axiosInstance";
 import img1 from "./images/picture.png";
-import { useUser } from "../../context/AuthContext"; // Import useUser context
+import { useUser } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 
 const floatingVariants = {
@@ -23,9 +23,8 @@ const UserLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { setUser } = useUser(); // Use context to store user data
+  const { setUser } = useUser();
 
-  // Handle input changes separately for each role
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -34,7 +33,6 @@ const UserLogin = () => {
     }));
   };
 
-  // Handle login submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -44,29 +42,49 @@ const UserLogin = () => {
       const role = activeTab === "user" ? "user-login" : "recruiter-login";
       const response = await axiosInstance.post(`/auth/${role}`, formData[activeTab]);
 
-      const { token, role: userRole } = response.data;
-      const decoded = jwtDecode(token); // Extract ID from token
+      if (!response.data.token) throw new Error("Authentication token missing in response.");
 
-      // Store user in localStorage
-      localStorage.setItem("user", JSON.stringify({ id: decoded.id, role: userRole, token }));
+      const decoded = jwtDecode(response.data.token);
+      const userData = {
+        id: decoded.id,
+        role: response.data.role,
+        token: response.data.token,
+      };
 
-      // Update user in context
-      setUser({ id: decoded.id, role: userRole, token });
+      if (activeTab === "recruiter") {
+        userData.recruiterId = decoded.recruiterId || null;
+      }
 
-      // Redirect user based on role
-      navigate(userRole === "user" ? "/" : "/rpanel");
+      // // ✅ Clear any existing data before setting new data
+      // localStorage.removeItem("userData");
+      // localStorage.removeItem("recruiterData");
+
+      // ✅ Store user/recruiter data separately
+      if (activeTab === "user") {
+        localStorage.setItem("userData", JSON.stringify(userData));
+      } else {
+        localStorage.setItem("recruiterData", JSON.stringify(userData));
+        localStorage.setItem("token", response.data.token);
+
+      }
+
+      // ✅ Update user context
+      setUser(userData);
+
+      console.log("✅ Login successful. Stored user:", userData);
+
+      // ✅ Redirect based on role
+      navigate(userData.role === "user" ? "/" : "/rpanel");
     } catch (err) {
-      console.error("❌ Login error:", err);
+      console.error("❌ Login error:", err.response?.data?.message || err.message);
       setError(err.response?.data?.message || "Invalid credentials. Try again.");
     } finally {
       setLoading(false);
     }
   };
 
-
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden bg-gray-50">
-      {/* Background Floating Animation */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(10)].map((_, i) => (
           <motion.div
@@ -87,7 +105,6 @@ const UserLogin = () => {
 
       <div className="relative z-10 flex items-center justify-center flex-grow p-4">
         <div className="flex bg-white rounded-lg shadow-lg max-w-4xl w-full h-auto overflow-hidden">
-          {/* Left Side Illustration */}
           <div className="hidden md:flex flex-col items-center justify-center w-1/2 bg-gray-100 p-6">
             <img src={img1} alt="Login Illustration" className="w-3/4" />
             <h2 className="text-xl font-bold mt-4 text-center text-gray-800">
@@ -95,12 +112,10 @@ const UserLogin = () => {
             </h2>
           </div>
 
-          {/* Right Side Login Form */}
           <div className="w-full md:w-1/2 flex flex-col justify-center p-8">
             <h2 className="text-2xl font-bold text-gray-800 text-center">Login</h2>
             <p className="text-center text-gray-600">Select your role to continue</p>
 
-            {/* Role Toggle Buttons */}
             <div className="relative flex border-b mt-6">
               <button
                 className={`flex-1 text-center py-2 text-lg font-medium transition ${activeTab === "user" ? "text-blue-600" : "text-gray-500 hover:text-gray-700"
@@ -125,7 +140,6 @@ const UserLogin = () => {
 
             {error && <p className="text-red-500 text-center mt-2">{error}</p>}
 
-            {/* Login Form */}
             <form onSubmit={handleSubmit} className="mt-6">
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">Email Address</label>
@@ -136,7 +150,6 @@ const UserLogin = () => {
                   onChange={handleChange}
                   className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter your email"
-                  aria-label="Email Address"
                   required
                 />
               </div>
@@ -149,7 +162,6 @@ const UserLogin = () => {
                   onChange={handleChange}
                   className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter your password"
-                  aria-label="Password"
                   required
                 />
               </div>

@@ -22,15 +22,16 @@ const jobRoutes = require("./routes/jobRoutes");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/userRoutes");
 const jobApplicationRoutes = require("./routes/jobApplication"); 
-const interviewRoutes = require("./routes/interviews");
+const interviewRoutes = require("./routes/interview");
+const adminRoutes = require("./routes/adminDash");
 
 // ✅ Register routes with correct base paths
 app.use("/api/auth", authRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/job-applications", jobApplicationRoutes);
-app.use("/api/interviews", interviewRoutes); 
-
+app.use("/api/interview", interviewRoutes);
+app.use("/api/admin", adminRoutes);
 
 // ✅ Connect to MongoDB
 mongoose

@@ -12,7 +12,6 @@ const ApplyJobs = () => {
     const [jobDetails, setJobDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [uploading, setUploading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
 
@@ -26,6 +25,7 @@ const ApplyJobs = () => {
         experience: "",
         skills: [],
         availability: "",
+        recruiterId: "", 
     });
 
     const jobId = new URLSearchParams(useLocation().search).get("jobId");
@@ -42,6 +42,12 @@ const ApplyJobs = () => {
                     headers: { Authorization: `Bearer ${user?.token}` },
                 });
                 setJobDetails(data);
+
+                // ✅ Assign recruiterId from the job details
+                setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    recruiterId: data.recruiterId || "",
+                }));
             } catch (error) {
                 setError("Failed to load job details.");
             } finally {
@@ -61,13 +67,12 @@ const ApplyJobs = () => {
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        if (file && file.type.startsWith("image/")) { // ✅ Accepts only images
+        if (file && file.type.startsWith("image/")) {
             setSelectedFile(file);
         } else {
             alert("❌ Please upload a valid image file (JPG, PNG).");
         }
     };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -100,7 +105,8 @@ const ApplyJobs = () => {
             applicationData.append("skills", JSON.stringify(formData.skills));
             applicationData.append("availability", formData.availability);
             applicationData.append("jobId", jobId);
-            applicationData.append("cv", selectedFile); // ✅ Image file instead of PDF
+            applicationData.append("recruiterId", formData.recruiterId); // ✅ Attach recruiterId
+            applicationData.append("cv", selectedFile);
 
             await axiosInstance.post("/job-applications/apply", applicationData, {
                 headers: {
@@ -188,13 +194,7 @@ const ApplyJobs = () => {
                                     ) : (
                                         <>
                                             <h2 className="text-2xl font-semibold mb-4">Upload Your CV</h2>
-                                            <input
-                                                type="file"
-                                                accept="image/*" // ✅ Restrict file selection to images only
-                                                className="border p-2 rounded w-full"
-                                                onChange={handleFileChange}
-                                                required
-                                            />
+                                            <input type="file" accept="image/*" className="border p-2 rounded w-full" onChange={handleFileChange} required />
                                             <button className="bg-green-600 text-white py-2 px-4 rounded mt-6" onClick={handleSubmit}>Submit Application</button>
                                         </>
                                     )}

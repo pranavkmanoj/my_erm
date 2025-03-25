@@ -33,12 +33,12 @@ const Sidebar = () => {
               >
                 View Company Registrations
               </div>
-              <div
+              {/* <div
                 className="p-2 hover:bg-gray-600 rounded cursor-pointer"
                 onClick={() => navigate("/apanel/Approved-Company")}
               >
                 Approved Companies
-              </div>
+              </div> */}
             </div>
           )}
         </div>

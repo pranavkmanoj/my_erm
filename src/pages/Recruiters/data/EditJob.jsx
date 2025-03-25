@@ -1,160 +1,212 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import axiosInstance from "../../../axiosInstance";
+import { useUser } from "../../../context/AuthContext";
+import { Pencil, Trash2, Briefcase, X, Info } from "lucide-react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const EditJob = () => {
+const Jobview = () => {
+    const { user } = useUser();
+    const recruiterId = user?.role === "recruiter" ? user.recruiterId : null;
+    const token = user?.token;
+
     const [jobs, setJobs] = useState([]);
-    const [editJob, setEditJob] = useState(null);
-    const [formData, setFormData] = useState({
-        companyName: "",
+    const [status, setStatus] = useState("loading");
+    const [error, setError] = useState(null);
+    const [selectedJob, setSelectedJob] = useState(null);
+    const [jobData, setJobData] = useState({
         jobTitle: "",
         jobDescription: "",
-        jobLocation: "",
-        jobType: "",
         salary: "",
-        status: "Active",
+        jobType: "",
+        jobLocation: "",
+        skillsRequired: "",
+        experienceRequired: "",
+        qualifications: "",
+        applicationDeadline: "",
+        workMode: "",
     });
 
     useEffect(() => {
+        if (!recruiterId) {
+            setStatus("failed");
+            setError("Recruiter ID not found. Please log in again.");
+            return;
+        }
+
+        const fetchJobs = async () => {
+            try {
+                const response = await axiosInstance.get(`/jobs/recruiter/${recruiterId}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setJobs(response.data);
+                setStatus("success");
+            } catch (error) {
+                setError(error.response?.data?.message || "Failed to fetch jobs.");
+                setStatus("failed");
+            }
+        };
+
         fetchJobs();
-    }, []);
+    }, [recruiterId, token]);
 
-    const fetchJobs = async () => {
+    const deleteJob = async (jobId) => {
         try {
-            const response = await axios.get("http://localhost:5000/api/jobs");
-            setJobs(response.data);
+            await axiosInstance.delete(`/api/jobs/${jobId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setJobs(jobs.filter((job) => job._id !== jobId));
+            toast.success("Job deleted successfully!");
         } catch (error) {
-            console.error("Error fetching jobs:", error);
+            toast.error(error.response?.data?.message || "Failed to delete job.");
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this job?")) return;
+    const viewJobDetails = (job) => {
+        setSelectedJob(job);
+        setJobData({
+            jobTitle: job.jobTitle,
+            jobDescription: job.jobDescription,
+            salary: job.salary,
+            jobType: job.jobType,
+            jobLocation: job.jobLocation,
+            skillsRequired: job.skillsRequired.join(", "),
+            experienceRequired: job.experienceRequired,
+            qualifications: job.qualifications,
+            applicationDeadline: job.applicationDeadline.split("T")[0],
+            workMode: job.workMode,
+        });
+    };
+
+    const handleEditChange = (e) => {
+        setJobData({ ...jobData, [e.target.name]: e.target.value });
+    };
+
+    const saveJob = async () => {
         try {
-            await axios.delete(`http://localhost:5000/api/jobs/${id}`);
-            setJobs(jobs.filter((job) => job._id !== id));
+            const response = await axiosInstance.put(`/jobs/${selectedJob._id}`,
+                {
+                    ...jobData,
+                    skillsRequired: jobData.skillsRequired.split(",").map((skill) => skill.trim()),
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+
+            if (response.status === 200) {
+                setJobs(jobs.map((job) => (job._id === selectedJob._id ? response.data : job))); // Update the local job list
+                toast.success("Job updated successfully!");
+                setSelectedJob(null); // Close the edit form
+            }
         } catch (error) {
-            console.error("Error deleting job:", error);
+            toast.error(error.response?.data?.message || "Failed to update job.");
         }
     };
 
-    const handleEditClick = (job) => {
-        setEditJob(job._id);
-        setFormData({ ...job });
-    };
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleUpdate = async () => {
-        try {
-            await axios.put(`http://localhost:5000/api/jobs/${editJob}`, formData);
-            fetchJobs();
-            setEditJob(null);
-        } catch (error) {
-            console.error("Error updating job:", error);
-        }
-    };
+    if (status === "loading") return <p className="text-center text-gray-500">Loading jobs...</p>;
+    if (status === "failed") return <p className="text-center text-red-500">Error: {error}</p>;
 
     return (
-        <div className="p-6">
-            <h2 className="text-2xl font-semibold mb-4">Manage Jobs</h2>
-            <ul className="space-y-4">
-                {jobs.map((job) => (
-                    <li key={job._id} className="border p-4 rounded shadow">
-                        {editJob === job._id ? (
-                            <div className="space-y-2">
-                                <input
-                                    type="text"
-                                    name="companyName"
-                                    value={formData.companyName}
-                                    onChange={handleChange}
-                                    className="border p-2 w-full rounded"
-                                    placeholder="Company Name"
-                                />
-                                <input
-                                    type="text"
-                                    name="jobTitle"
-                                    value={formData.jobTitle}
-                                    onChange={handleChange}
-                                    className="border p-2 w-full rounded"
-                                    placeholder="Job Title"
-                                />
-                                <input
-                                    type="text"
-                                    name="jobLocation"
-                                    value={formData.jobLocation}
-                                    onChange={handleChange}
-                                    className="border p-2 w-full rounded"
-                                    placeholder="Location"
-                                />
-                                <input
-                                    type="text"
-                                    name="jobType"
-                                    value={formData.jobType}
-                                    onChange={handleChange}
-                                    className="border p-2 w-full rounded"
-                                    placeholder="Job Type"
-                                />
-                                <input
-                                    type="text"
-                                    name="salary"
-                                    value={formData.salary}
-                                    onChange={handleChange}
-                                    className="border p-2 w-full rounded"
-                                    placeholder="Salary"
-                                />
-                                <select
-                                    name="status"
-                                    value={formData.status}
-                                    onChange={handleChange}
-                                    className="border p-2 w-full rounded"
-                                >
-                                    <option value="Active">Active</option>
-                                    <option value="Closed">Closed</option>
-                                </select>
-                                <button
-                                    onClick={handleUpdate}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded"
-                                >
-                                    Save
-                                </button>
-                                <button
-                                    onClick={() => setEditJob(null)}
-                                    className="bg-gray-400 text-white px-4 py-2 rounded ml-2"
-                                >
-                                    Cancel
-                                </button>
+        <div className="max-w-6xl mx-auto p-6">
+            <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Job Listings</h2>
+
+            {jobs.length === 0 ? (
+                <p className="text-center text-gray-500">No jobs available.</p>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {jobs.map((job) => (
+                        <div key={job._id} className="bg-white shadow-lg rounded-lg p-5 border border-gray-200 hover:shadow-xl transition duration-300">
+                            <div className="flex items-center gap-3 mb-3">
+                                <Briefcase size={40} className="text-blue-600" />
+                                <div>
+                                    <h3 className="text-xl font-semibold text-gray-800">{job.jobTitle}</h3>
+                                    <p className="text-gray-600">{job.companyName} - {job.jobLocation}</p>
+                                </div>
                             </div>
-                        ) : (
-                            <div>
-                                <h3 className="text-lg font-bold">{job.jobTitle}</h3>
-                                <p>{job.companyName}</p>
-                                <p>{job.jobLocation}</p>
-                                <p>{job.jobType}</p>
-                                <p>${job.salary}</p>
-                                <p className={`font-bold ${job.status === "Active" ? "text-green-500" : "text-red-500"}`}>
-                                    {job.status}
-                                </p>
+
+                            <p className="text-gray-500"><strong>Salary:</strong> {job.salary}</p>
+                            <p className="text-gray-500"><strong>Type:</strong> {job.jobType}</p>
+
+                            <div className="mt-4 flex justify-between">
                                 <button
-                                    onClick={() => handleEditClick(job)}
-                                    className="bg-yellow-500 text-white px-4 py-2 rounded mr-2"
+                                    onClick={() => viewJobDetails(job)}
+                                    className="flex items-center gap-2 px-4 py-2 text-white bg-blue-500 hover:bg-blue-700 rounded-md"
                                 >
-                                    Edit
+                                    <Info size={18} />
+                                    Details
                                 </button>
+
                                 <button
-                                    onClick={() => handleDelete(job._id)}
-                                    className="bg-red-500 text-white px-4 py-2 rounded"
+                                    onClick={() => deleteJob(job._id)}
+                                    className="flex items-center gap-2 px-4 py-2 text-white bg-red-500 hover:bg-red-700 rounded-md"
                                 >
+                                    <Trash2 size={18} />
                                     Delete
                                 </button>
                             </div>
-                        )}
-                    </li>
-                ))}
-            </ul>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {selectedJob && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-bold">Edit Job Details</h2>
+                            <button onClick={() => setSelectedJob(null)} className="text-gray-500 hover:text-red-500">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Structured Two-Column Layout */}
+                        <div className="grid grid-cols-2 gap-6">
+                            {Object.keys(jobData).map((key) => (
+                                <div key={key} className="flex flex-col">
+                                    <label className="block text-gray-700 font-semibold mb-1 capitalize">
+                                        {key.replace(/([A-Z])/g, " $1")}
+                                    </label>
+                                    {key === "jobDescription" ? (
+                                        <textarea
+                                            name={key}
+                                            value={jobData[key]}
+                                            onChange={handleEditChange}
+                                            className="w-full border p-2 rounded resize-none h-24"
+                                        />
+                                    ) : key === "applicationDeadline" ? (
+                                        <input
+                                            type="date"
+                                            name={key}
+                                            value={jobData[key]}
+                                            onChange={handleEditChange}
+                                            className="w-full border p-2 rounded"
+                                        />
+                                    ) : (
+                                        <input
+                                            type="text"
+                                            name={key}
+                                            value={jobData[key]}
+                                            onChange={handleEditChange}
+                                            className="w-full border p-2 rounded"
+                                        />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Button Area */}
+                        <div className="flex justify-end mt-6">
+                            <button onClick={saveJob} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <ToastContainer />
         </div>
     );
 };
 
-export default EditJob;
+export default Jobview;
