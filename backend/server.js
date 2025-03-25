@@ -31,12 +31,12 @@ const interviewRoutes = require("./routes/interview");
 const adminRoutes = require("./routes/adminDash");
 
 // ✅ Register routes with correct base paths
-app.use("/api/auth", authRoutes);
-app.use("/api/jobs", jobRoutes);
-app.use("/api/user", userRoutes);
-app.use("/api/job-applications", jobApplicationRoutes);
-app.use("/api/interview", interviewRoutes);
-app.use("/api/admin", adminRoutes);
+app.use("/auth", authRoutes);
+app.use("/jobs", jobRoutes);
+app.use("/user", userRoutes);
+app.use("/job-applications", jobApplicationRoutes);
+app.use("/interview", interviewRoutes);
+app.use("/admin", adminRoutes);
 
 // ✅ Connect to MongoDB
 mongoose
