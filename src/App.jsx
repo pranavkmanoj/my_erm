@@ -11,7 +11,7 @@ import JobListing from './pages/Users/data/JobList';
 import ScheduleInterview from './pages/Users/data/ScheduleInterview';
 import ApplyJobs from './pages/Users/data/Apply-Jobs';
 import UserProfile from './pages/Users/data/user_profile';
-import ViewApplication from './pages/Users/data/ViewApplication';
+import ViewApplication from './pages/Users/data/viewApplication';
 
 import AdminPanel from './pages/Admins/AdminPanel';
 import AdminLogin from './pages/Admins/AdminLogin';
