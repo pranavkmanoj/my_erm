@@ -30,102 +30,105 @@ const getShortlistedCandidates = async (req, res) => {
 
 //Schedule interview
 const scheduleInterview = async (req, res) => {
+  console.log("Incoming Request Body:", req.body);  // 🛠️ Log the request payload for debugging
+
   try {
     const { jobApplicationId, interviewDate } = req.body;
 
+    // Validate request data
     if (!jobApplicationId || !interviewDate) {
-      return res.status(400).json({ error: "Job Application ID and Interview Date are required" });
+      return res.status(400).json({ error: "Job Application ID and Interview Date are required." });
     }
 
-    // Fetch the job application details
+    const parsedDate = new Date(interviewDate);
+    if (isNaN(parsedDate.getTime())) {
+      return res.status(400).json({ error: "Invalid interview date format." });
+    }
+
+    // Fetch job application with populated fields
     const jobApplication = await JobApplication.findById(jobApplicationId)
       .populate('jobId', 'jobTitle')
       .populate('recruiterId', 'email')
       .populate({
         path: 'userId',
-        model: 'user_logins',  // Use the correct model name
-        select: 'name email'
+        model: 'user_logins',
+        select: 'name email phoneNumber'
       });
 
     if (!jobApplication) {
-      return res.status(404).json({ error: "Job Application not found" });
+      return res.status(404).json({ error: "Job Application not found." });
     }
 
-    // Create or update the interview
-    let interview = await Interview.findOne({ jobApplicationId });
+    const user = jobApplication.userId;
+    const recruiter = jobApplication.recruiterId;
+    const job = jobApplication.jobId;
 
-    if (interview) {
-      // Update the existing interview
-      interview = await Interview.findByIdAndUpdate(
-        interview._id,
-        {
-          interviewDate,
-          firstName: jobApplication.userId.name.split(" ")[0] || "",    // Extract first name
-          lastName: jobApplication.userId.name.split(" ")[1] || "",     // Extract last name
-          phoneNumber: jobApplication.userId.phoneNumber || "N/A",
-          email: jobApplication.userId.email,
-          action: "Interview",
-        },
-        { new: true }
-      );
-    } else {
-      // Create a new interview with all fields
-      interview = new Interview({
+    // Ensure all necessary data is available
+    if (!user || !recruiter || !job) {
+      return res.status(400).json({ error: "Incomplete job application details." });
+    }
+
+    // Upsert (Create or Update) interview
+    const interview = await Interview.findOneAndUpdate(
+      { jobApplicationId },
+      {
         jobApplicationId,
-        recruiterId: jobApplication.recruiterId,
-        userId: jobApplication.userId,
-        jobId: jobApplication.jobId,
-        interviewDate,
-        firstName: jobApplication.userId.name.split(" ")[0] || "",
-        lastName: jobApplication.userId.name.split(" ")[1] || "",
-        phoneNumber: jobApplication.userId.phoneNumber || "N/A",
-        email: jobApplication.userId.email,
+        recruiterId: recruiter._id,
+        userId: user._id,
+        jobId: job._id,
+        interviewDate: parsedDate,
+        firstName: user.name?.split(" ")[0] || "",
+        lastName: user.name?.split(" ")[1] || "",
+        phoneNumber: user.phoneNumber || "N/A",
+        email: user.email,
         action: "Interview",
-      });
+      },
+      { new: true, upsert: true }
+    );
 
-      await interview.save();
-    }
-
-    // Update job application action to "Interview"
+    // Update job application action
     jobApplication.action = "Interview";
     await jobApplication.save();
 
-    // Send interview confirmation email
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    // Send confirmation email
+    try {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: jobApplication.userId.email,  // Send to the candidate's email
-      subject: `Interview Scheduled for ${jobApplication.jobId.jobTitle}`,
-      text: `
-        Dear ${jobApplication.userId.name},
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: user.email,
+        subject: `Interview Scheduled: ${job.jobTitle}`,
+        html: `
+          <p>Dear ${user.name},</p>
+          <p>Your interview for the position of <strong>${job.jobTitle}</strong> has been scheduled.</p>
+          <ul>
+            <li>📅 <strong>Date:</strong> ${parsedDate.toLocaleString()}</li>
+          </ul>
+          <p>Best regards,<br>Recruitment Team</p>
+        `,
+      };
 
-        Your interview for the position of ${jobApplication.jobId.jobTitle} has been scheduled.
+      await transporter.sendMail(mailOptions);
+      console.log(`✅ Confirmation email sent to ${user.email}`);
 
-        Interview Date: ${new Date(interviewDate).toLocaleString()}
-        Phone Number: ${jobApplication.userId.phoneNumber || "N/A"}
-
-        Best regards,
-        Recruitment Team
-      `,
-    };
-
-    await transporter.sendMail(mailOptions);
+    } catch (emailError) {
+      console.error("❌ Failed to send confirmation email:", emailError);
+    }
 
     res.status(200).json({
-      message: "Interview scheduled successfully and email sent",
+      message: "Interview scheduled successfully.",
       interview,
     });
 
   } catch (error) {
-    console.error("Error scheduling interview:", error);
-    res.status(500).json({ error: "Error scheduling interview" });
+    console.error("🚨 Error scheduling interview:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 

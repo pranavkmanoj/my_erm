@@ -13,6 +13,7 @@ const ApplyJobs = () => {
     const [error, setError] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission loading
 
     const [formData, setFormData] = useState({
         firstName: user?.firstName || "",
@@ -75,6 +76,8 @@ const ApplyJobs = () => {
             return;
         }
 
+        setIsSubmitting(true); // Start loading
+
         try {
             const applicationData = new FormData();
             Object.entries(formData).forEach(([key, value]) => {
@@ -99,6 +102,8 @@ const ApplyJobs = () => {
         } catch (error) {
             console.error("Error submitting application:", error);
             alert(error.response?.data?.message || "Application failed!");
+        } finally {
+            setIsSubmitting(false); // Stop loading regardless of success/error
         }
     };
 
@@ -126,10 +131,20 @@ const ApplyJobs = () => {
                             </button>
                         </div>
                     </div>
+                ) : isSubmitting ? (
+                    <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 text-center">
+                        <div className="p-8">
+                            <div className="inline-flex items-center justify-center w-16 h-16 mb-4">
+                                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+                            </div>
+                            <h2 className="text-2xl font-bold text-gray-800 mb-2">Submitting Application...</h2>
+                            <p className="text-gray-600">Please wait while we process your application.</p>
+                        </div>
+                    </div>
                 ) : (
                     <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
                         <div className="p-6 border-b border-gray-200">
-                            
+                            {/* Job title can be added here if needed */}
                         </div>
 
                         {/* Stepper */}
@@ -264,7 +279,7 @@ const ApplyJobs = () => {
                                                     <p className="mb-2 text-sm text-gray-500">
                                                         <span className="font-semibold">Click to upload</span> or drag and drop
                                                     </p>
-                                                    <p className="text-xs text-gray-500">JPG, PNG (MAX. 5MB)</p>
+                                                    
                                                 </div>
                                                 <input
                                                     type="file"
@@ -290,9 +305,10 @@ const ApplyJobs = () => {
                                         </button>
                                         <button
                                             onClick={handleSubmit}
-                                            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                                            disabled={isSubmitting}
+                                            className={`px-4 py-2 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${isSubmitting ? 'bg-green-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'}`}
                                         >
-                                            Submit Application
+                                            {isSubmitting ? 'Submitting...' : 'Submit Application'}
                                         </button>
                                     </div>
                                 </div>

@@ -3,22 +3,27 @@ import axiosInstance from "../../../axiosInstance";
 import { useUser } from "../../../context/AuthContext";
 
 const ShortlistedCandidates = () => {
-  const { user } = useUser(); // Get logged-in recruiter data
+  const { user } = useUser();  // Get recruiter info from context
   const [candidates, setCandidates] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [interviewDate, setInterviewDate] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-  // Fetch shortlisted candidates for the logged-in recruiter
+  // 👉 Fetch shortlisted candidates for the recruiter
   useEffect(() => {
     if (user?.id) {
       axiosInstance
         .get(`/interview/shortlisted?recruiterId=${user.id}`, {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
+          headers: { Authorization: `Bearer ${user.token}` },
         })
-        .then((response) => setCandidates(response.data))
-        .catch((error) => console.error("Error fetching candidates:", error));
+        .then((response) => {
+          setCandidates(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching candidates:", error);
+          setMessage("Failed to load candidates.");
+        });
     }
   }, [user]);
 
@@ -26,39 +31,58 @@ const ShortlistedCandidates = () => {
     setSelectedCandidate(candidate);
   };
 
-  const confirmInterview = () => {
+  const confirmInterview = async () => {
     if (!interviewDate) {
       alert("Please select an interview date and time.");
       return;
     }
 
-    axiosInstance
-      .post(
-        "/interview/schedule",
+    setLoading(true);  // Show loading spinner
+
+    try {
+      // 🛠️ Ensure correct fields are sent in the request body
+      const response = await axiosInstance.post(
+        `/interview/schedule`,
         {
-          jobApplicationId: selectedCandidate._id, // Send selected candidate's job application ID
-          interviewDate, // Send selected interview date
+          jobApplicationId: selectedCandidate._id,   // Use _id directly
+          recruiterId: user.id,                      // Include recruiterId
+          userId: selectedCandidate.userId,          // Include userId
+          jobId: selectedCandidate.jobId,            // Include jobId
+          interviewDate: new Date(interviewDate).toISOString(),  // Ensure ISO format
+          firstName: selectedCandidate.firstName,
+          lastName: selectedCandidate.lastName,
+          phoneNumber: selectedCandidate.phone,     // Match the schema field name
+          email: selectedCandidate.email,
         },
         {
           headers: {
-            Authorization: `Bearer ${user.token}`, // Include token if required
+            Authorization: `Bearer ${user.token}`,
+            "Content-Type": "application/json"
           },
         }
-      )
-      .then(() => {
-        alert("Interview Scheduled Successfully! The candidate has been notified.");
-        setSelectedCandidate(null); // Close the modal
-      })
-      .catch((error) => {
-        console.error("Error scheduling interview:", error);
-        alert("There was an error scheduling the interview.");
-      });
-  };
+      );
 
+      setMessage("✅ Interview Scheduled Successfully!");
+      setSelectedCandidate(null);
+      setInterviewDate("");
+
+    } catch (error) {
+      console.error("Error scheduling interview:", error);
+      setMessage(`❌ ${error.response?.data?.error || "An error occurred"}`);
+    } finally {
+      setLoading(false);  // Hide loading spinner
+    }
+  };
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h2 className="text-2xl font-bold mb-5 text-gray-700">Shortlisted Candidates</h2>
+
+      {message && (
+        <div className={`p-3 mb-4 ${message.includes("✅") ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}`}>
+          {message}
+        </div>
+      )}
 
       {candidates.length === 0 ? (
         <p className="text-gray-600">No shortlisted candidates found.</p>
@@ -122,6 +146,7 @@ const ShortlistedCandidates = () => {
             <input
               type="datetime-local"
               className="border p-2 rounded w-full mb-3"
+              value={interviewDate}
               onChange={(e) => setInterviewDate(e.target.value)}
             />
 
@@ -134,9 +159,11 @@ const ShortlistedCandidates = () => {
               </button>
               <button
                 onClick={confirmInterview}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                className={`px-4 py-2 rounded text-white ${loading ? "bg-gray-500" : "bg-green-500 hover:bg-green-600"
+                  }`}
+                disabled={loading}
               >
-                Confirm Interview
+                {loading ? "Scheduling..." : "Confirm Interview"}
               </button>
             </div>
           </div>
