@@ -16,8 +16,19 @@ const UserReg = () => {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
   const navigate = useNavigate();
+
+  const validatePassword = (password) => {
+    return (
+      password.length >= 8 &&
+      /[A-Z]/.test(password) &&
+      /[a-z]/.test(password) &&
+      /[0-9]/.test(password) &&
+      /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    );
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -27,7 +38,7 @@ const UserReg = () => {
     else if (!/^\S+@\S+\.\S+$/.test(email)) newErrors.email = "Invalid email format";
 
     if (!password) newErrors.password = "Password is required";
-    else if (password.length < 8) newErrors.password = "Password must be at least 8 characters";
+    else if (!validatePassword(password)) newErrors.password = "Password doesn't meet requirements";
 
     if (password !== confirmPassword) newErrors.confirmPassword = "Passwords don't match";
 
@@ -122,7 +133,7 @@ const UserReg = () => {
                   type="text"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="John Doe"
+                  placeholder="Name"
                   className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.name ? "border-red-500" : "border-gray-300"}`}
                 />
                 {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
@@ -162,10 +173,26 @@ const UserReg = () => {
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="At least 8 characters"
+                onFocus={() => setIsPasswordFocused(true)}
+                onBlur={() => setIsPasswordFocused(false)}
+                placeholder="Create a password"
                 className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.password ? "border-red-500" : "border-gray-300"}`}
               />
               {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+              
+              {/* Password Rules (shown only when password field is focused) */}
+              {isPasswordFocused && (
+                <div className="mt-2 text-xs text-gray-500">
+                  <p className="font-medium mb-1">Password must contain:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>At least 8 characters</li>
+                    <li>At least one uppercase letter (A-Z)</li>
+                    <li>At least one lowercase letter (a-z)</li>
+                    <li>At least one number (0-9)</li>
+                    <li>At least one special character (!@#$%^&*)</li>
+                  </ul>
+                </div>
+              )}
             </div>
 
             <div>

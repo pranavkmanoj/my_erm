@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../../axiosInstance";
-import { useUser } from "../../../context/AuthContext"; // Import AuthContext
+import { useUser } from "../../../context/AuthContext";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
 const ViewApplications = () => {
-  const { user } = useUser(); // Get logged-in user (recruiter)
+  const { user } = useUser();
   const [applications, setApplications] = useState([]);
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,16 +19,12 @@ const ViewApplications = () => {
 
     const fetchApplications = async () => {
       try {
-        console.log("Fetching applications for recruiter:", user.id);
-
         const response = await axiosInstance.get(`job-applications/recruiter/${user.id}`, {
           headers: { "Content-Type": "application/json" },
         });
 
-        console.log("✅ Applications fetched:", response.data);
         setApplications(response.data);
       } catch (err) {
-        console.error("❌ Error fetching applications:", err.response?.data || err);
         setError(err.response?.data?.message || "Failed to fetch applications");
       } finally {
         setLoading(false);
@@ -37,35 +34,96 @@ const ViewApplications = () => {
     fetchApplications();
   }, [user]);
 
-  // Function to update application status
-  const updateApplicationStatus = async (id, status) => {
-    try {
-      const response = await axiosInstance.put(`job-applications/update-status/${id}`, { status });
-      console.log(`✅ Application updated to ${status}:`, response.data);
+  // Function to handle application status update with SweetAlert2
+  const handleStatusChange = async (id, status) => {
+    let alertMessage = "";
 
-      // Update the application status in state
-      setApplications(applications.map(app => (app._id === id ? { ...app, status } : app)));
-    } catch (err) {
-      console.error("❌ Error updating status:", err.response?.data || err);
+    switch (status) {
+      case "Accepted":
+        alertMessage = "Check the shortlisted candidates for the next process.";
+        break;
+      case "Pending":
+        alertMessage = "Are you sure you want to set this application to Pending?";
+        break;
+      case "Rejected":
+        alertMessage = "Are you sure you want to reject this candidate?";
+        break;
+      case "Reviewed":
+        alertMessage = "Are you sure you have reviewed this application?";
+        break;
+      default:
+        alertMessage = "Are you sure you want to change the status?";
+    }
+
+    // Show confirmation alert
+    const result = await Swal.fire({
+      title: "Confirm Status Change",
+      text: alertMessage,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Update it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.put(`job-applications/update-status/${id}`, { status });
+
+        // Update the application status in state
+        setApplications((prev) =>
+          prev.map((app) => (app._id === id ? { ...app, status } : app))
+        );
+
+        // Show success alert
+        Swal.fire({
+          title: "Updated!",
+          text: `Application status set to ${status}`,
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      } catch (err) {
+        Swal.fire({
+          title: "Error",
+          text: "Failed to update the status.",
+          icon: "error",
+        });
+      }
     }
   };
 
-  // Function to delete an application
   const deleteApplication = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this application?")) return;
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+    });
 
-    try {
-      await axiosInstance.delete(`job-applications/delete-application/${id}`);
-      console.log("✅ Application deleted successfully");
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.delete(`job-applications/delete-application/${id}`);
+        setApplications((prev) => prev.filter((app) => app._id !== id));
 
-      // Remove the application from state
-      setApplications(applications.filter(app => app._id !== id));
-    } catch (err) {
-      console.error("❌ Error deleting application:", err.response?.data || err);
+        Swal.fire({
+          title: "Deleted!",
+          text: "The application has been deleted.",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      } catch (err) {
+        Swal.fire({
+          title: "Error",
+          text: "Failed to delete the application.",
+          icon: "error",
+        });
+      }
     }
   };
 
-  // Function to get status badge color
   const getStatusColor = (status) => {
     switch (status) {
       case "Reviewed":
@@ -75,7 +133,7 @@ const ViewApplications = () => {
       case "Rejected":
         return "text-red-600 bg-red-100 px-2 py-1 rounded";
       default:
-        return "text-yellow-600 bg-yellow-100 px-2 py-1 rounded"; // Pending
+        return "text-yellow-600 bg-yellow-100 px-2 py-1 rounded";
     }
   };
 
@@ -114,7 +172,7 @@ const ViewApplications = () => {
                     <select
                       className="border px-2 py-1 rounded text-gray-700"
                       value={app.status || "Pending"}
-                      onChange={(e) => updateApplicationStatus(app._id, e.target.value)}
+                      onChange={(e) => handleStatusChange(app._id, e.target.value)}
                     >
                       <option value="Pending">Pending</option>
                       <option value="Reviewed">Reviewed</option>
@@ -157,25 +215,6 @@ const ViewApplications = () => {
         </div>
       ) : (
         <p className="text-gray-600 text-center mt-4">No applications found.</p>
-      )}
-
-      {/* Modal for Application Details */}
-      {selectedApplication && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] max-h-[70vh] overflow-y-auto">
-            <h3 className="text-xl font-semibold mb-4 text-center">Applicant Details</h3>
-            <p><strong>Name:</strong> {selectedApplication.firstName} {selectedApplication.lastName}</p>
-            <p><strong>Email:</strong> {selectedApplication.email}</p>
-            <p><strong>Phone:</strong> {selectedApplication.phone || "N/A"}</p>
-            <p><strong>Skills:</strong> {selectedApplication.skills?.join(", ") || "N/A"}</p>
-            <button
-              onClick={() => setSelectedApplication(null)}
-              className="bg-red-500 text-white px-4 py-2 rounded mt-4"
-            >
-              Close
-            </button>
-          </div>
-        </div>
       )}
     </div>
   );

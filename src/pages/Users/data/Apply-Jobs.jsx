@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../Layout/User-Navbar";
 import { useUser } from "../../../context/AuthContext";
 import axiosInstance from "../../../axiosInstance";
-import backgroundImage from "../images/background.jpg";
 
 const ApplyJobs = () => {
     const { user } = useUser();
@@ -25,7 +24,7 @@ const ApplyJobs = () => {
         experience: "",
         skills: [],
         availability: "",
-        recruiterId: "", 
+        recruiterId: "",
     });
 
     const jobId = new URLSearchParams(useLocation().search).get("jobId");
@@ -42,12 +41,7 @@ const ApplyJobs = () => {
                     headers: { Authorization: `Bearer ${user?.token}` },
                 });
                 setJobDetails(data);
-
-                // ✅ Assign recruiterId from the job details
-                setFormData((prevFormData) => ({
-                    ...prevFormData,
-                    recruiterId: data.recruiterId || "",
-                }));
+                setFormData(prev => ({ ...prev, recruiterId: data.recruiterId || "" }));
             } catch (error) {
                 setError("Failed to load job details.");
             } finally {
@@ -62,7 +56,7 @@ const ApplyJobs = () => {
     };
 
     const handleSkillsChange = (e) => {
-        setFormData({ ...formData, skills: e.target.value.split(",").map((skill) => skill.trim()) });
+        setFormData({ ...formData, skills: e.target.value.split(",").map(skill => skill.trim()) });
     };
 
     const handleFileChange = (e) => {
@@ -70,42 +64,28 @@ const ApplyJobs = () => {
         if (file && file.type.startsWith("image/")) {
             setSelectedFile(file);
         } else {
-            alert("❌ Please upload a valid image file (JPG, PNG).");
+            alert("Please upload a valid image file (JPG, PNG).");
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!user || !user.id) {
-            alert("❌ User ID is missing. Please log in again.");
-            return;
-        }
-
-        if (!jobId) {
-            alert("❌ Invalid job selection.");
-            return;
-        }
-
-        if (!selectedFile) {
-            alert("❌ Please upload your resume as an image (JPG, PNG).");
+        if (!user?.id || !jobId || !selectedFile) {
+            alert("Please fill all required fields and upload your resume.");
             return;
         }
 
         try {
             const applicationData = new FormData();
+            Object.entries(formData).forEach(([key, value]) => {
+                if (key === "skills") {
+                    applicationData.append(key, JSON.stringify(value));
+                } else {
+                    applicationData.append(key, value);
+                }
+            });
             applicationData.append("userId", user.id);
-            applicationData.append("firstName", formData.firstName);
-            applicationData.append("lastName", formData.lastName);
-            applicationData.append("phone", formData.phone);
-            applicationData.append("email", formData.email);
-            applicationData.append("city", formData.city);
-            applicationData.append("coverLetter", formData.coverLetter);
-            applicationData.append("experience", formData.experience);
-            applicationData.append("skills", JSON.stringify(formData.skills));
-            applicationData.append("availability", formData.availability);
             applicationData.append("jobId", jobId);
-            applicationData.append("recruiterId", formData.recruiterId); // ✅ Attach recruiterId
             applicationData.append("cv", selectedFile);
 
             await axiosInstance.post("/job-applications/apply", applicationData, {
@@ -116,94 +96,211 @@ const ApplyJobs = () => {
             });
 
             setSubmitted(true);
-            alert("✅ Application submitted successfully!");
-
         } catch (error) {
-            console.error("❌ Error submitting application:", error);
-            alert(error.response?.data?.message || "Something went wrong!");
+            console.error("Error submitting application:", error);
+            alert(error.response?.data?.message || "Application failed!");
         }
     };
 
+    const stepTitles = ["Personal Info", "Application Details", "Upload Resume"];
+
     return (
-        <div>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <Navbar />
-            <div className="relative min-h-screen flex items-center justify-center bg-cover bg-center"
-                style={{ backgroundImage: `url(${backgroundImage})` }}>
-                <div className="relative max-w-5xl mx-auto p-6">
-                    {submitted ? (
-                        <div className="bg-green-100 text-green-800 p-6 rounded-lg shadow-md text-center">
-                            <h2 className="text-2xl font-semibold">Application Submitted!</h2>
-                            <p>Thank you for applying. We will review your application and get back to you soon.</p>
+            <main className="container mx-auto px-4 py-8">
+                {submitted ? (
+                    <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 text-center">
+                        <div className="p-8">
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <h2 className="text-2xl font-bold text-gray-800 mb-2">Application Submitted!</h2>
+                            <p className="text-gray-600 mb-6">We've received your application and will review it shortly.</p>
                             <button
                                 onClick={() => navigate("/job-listing")}
-                                className="mt-4 bg-blue-600 text-white py-2 px-4 rounded"
+                                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                             >
-                                OK
+                                Back to Jobs
                             </button>
                         </div>
-                    ) : (
-                        <>
-                            <div className="flex justify-center mb-6">
-                                {[1, 2, 3].map((s) => (
-                                    <div key={s}
-                                        className={`px-4 py-2 rounded-full text-white ${step === s ? "bg-blue-600" : "bg-gray-400"}`}>
-                                        {`Step ${s}`}
+                    </div>
+                ) : (
+                    <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+                        <div className="p-6 border-b border-gray-200">
+                            
+                        </div>
+
+                        {/* Stepper */}
+                        <div className="px-6 py-4 border-b border-gray-200">
+                            <div className="flex justify-between">
+                                {[1, 2, 3].map((stepNumber) => (
+                                    <div key={stepNumber} className="flex flex-col items-center">
+                                        <div
+                                            className={`w-10 h-10 rounded-full flex items-center justify-center ${step >= stepNumber ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"}`}
+                                        >
+                                            {stepNumber}
+                                        </div>
+                                        <span className={`text-sm mt-2 ${step >= stepNumber ? "text-blue-600 font-medium" : "text-gray-500"}`}>
+                                            {stepTitles[stepNumber - 1]}
+                                        </span>
                                     </div>
                                 ))}
                             </div>
+                        </div>
 
-                            <div className="flex gap-6">
-                                <div className="w-2/3 bg-white p-6 shadow-md rounded-lg flex flex-col justify-center h-auto w-full">
-                                    {step === 1 ? (
-                                        <>
-                                            <h2 className="text-2xl font-semibold mb-4">Personal Information</h2>
-                                            <form>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    {["firstName", "lastName", "phone", "email", "city"].map((field) => (
-                                                        <input key={field}
-                                                            type="text"
-                                                            name={field}
-                                                            value={formData[field]}
-                                                            onChange={handleChange}
-                                                            placeholder={field.replace(/([A-Z])/g, " $1")}
-                                                            className="border p-2 rounded w-full"
-                                                            required
-                                                        />
-                                                    ))}
-                                                </div>
-                                                <button type="button" className="mt-6 bg-blue-600 text-white py-2 px-4 rounded w-full" onClick={() => setStep(2)}>
-                                                    Continue
-                                                </button>
-                                            </form>
-                                        </>
-                                    ) : step === 2 ? (
-                                        <>
-                                            <h2 className="text-2xl font-semibold mb-4">Job Application Details</h2>
-                                            <textarea name="coverLetter" value={formData.coverLetter} onChange={handleChange} placeholder="Cover Letter (optional)" className="border p-2 rounded w-full" />
-                                            <input type="number" name="experience" value={formData.experience} onChange={handleChange} placeholder="Experience (in years)" className="border p-2 rounded w-full mt-4" required />
-                                            <input type="text" name="skills" value={formData.skills.join(", ")} onChange={handleSkillsChange} placeholder="Skills (comma-separated)" className="border p-2 rounded w-full mt-4" required />
-                                            <select name="availability" value={formData.availability} onChange={handleChange} className="border p-2 rounded w-full mt-4" required>
-                                                <option value="">Select Availability</option>
-                                                <option value="Immediate">Immediate</option>
-                                                <option value="1 Month">1 Month</option>
-                                                <option value="2 Months">2 Months</option>
-                                                <option value="More">More</option>
-                                            </select>
-                                            <button className="bg-green-600 text-white py-2 px-4 rounded mt-6" onClick={() => setStep(3)}>Next</button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <h2 className="text-2xl font-semibold mb-4">Upload Your CV</h2>
-                                            <input type="file" accept="image/*" className="border p-2 rounded w-full" onChange={handleFileChange} required />
-                                            <button className="bg-green-600 text-white py-2 px-4 rounded mt-6" onClick={handleSubmit}>Submit Application</button>
-                                        </>
-                                    )}
+                        {/* Form Content */}
+                        <div className="p-6">
+                            {step === 1 && (
+                                <div className="space-y-6">
+                                    <h2 className="text-xl font-semibold text-gray-800">Personal Information</h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {["firstName", "lastName", "phone", "email", "city"].map((field) => (
+                                            <div key={field} className="space-y-1">
+                                                <label className="block text-sm font-medium text-gray-700">
+                                                    {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+                                                </label>
+                                                <input
+                                                    type={field === "email" ? "email" : "text"}
+                                                    name={field}
+                                                    value={formData[field]}
+                                                    onChange={handleChange}
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                                    required
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="flex justify-end">
+                                        <button
+                                            onClick={() => setStep(2)}
+                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </>
-                    )}
-                </div>
-            </div>
+                            )}
+
+                            {step === 2 && (
+                                <div className="space-y-6">
+                                    <h2 className="text-xl font-semibold text-gray-800">Application Details</h2>
+                                    <div className="space-y-1">
+                                        <label className="block text-sm font-medium text-gray-700">Cover Letter (optional)</label>
+                                        <textarea
+                                            name="coverLetter"
+                                            value={formData.coverLetter}
+                                            onChange={handleChange}
+                                            rows="4"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="block text-sm font-medium text-gray-700">Experience (years)</label>
+                                        <input
+                                            type="number"
+                                            name="experience"
+                                            value={formData.experience}
+                                            onChange={handleChange}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="block text-sm font-medium text-gray-700">Skills (comma separated)</label>
+                                        <input
+                                            type="text"
+                                            name="skills"
+                                            value={formData.skills.join(", ")}
+                                            onChange={handleSkillsChange}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="block text-sm font-medium text-gray-700">Availability</label>
+                                        <select
+                                            name="availability"
+                                            value={formData.availability}
+                                            onChange={handleChange}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                            required
+                                        >
+                                            <option value="">Select availability</option>
+                                            <option value="Immediate">Immediate</option>
+                                            <option value="1 Month">1 Month</option>
+                                            <option value="2 Months">2 Months</option>
+                                            <option value="More">More than 2 months</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <button
+                                            onClick={() => setStep(1)}
+                                            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                        >
+                                            Back
+                                        </button>
+                                        <button
+                                            onClick={() => setStep(3)}
+                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {step === 3 && (
+                                <div className="space-y-6">
+                                    <h2 className="text-xl font-semibold text-gray-800">Upload Your Resume</h2>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-center w-full">
+                                            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                    <svg className="w-8 h-8 mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                                    </svg>
+                                                    <p className="mb-2 text-sm text-gray-500">
+                                                        <span className="font-semibold">Click to upload</span> or drag and drop
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">JPG, PNG (MAX. 5MB)</p>
+                                                </div>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    onChange={handleFileChange}
+                                                    required
+                                                />
+                                            </label>
+                                        </div>
+                                        {selectedFile && (
+                                            <div className="p-3 bg-green-50 text-green-800 rounded-md text-sm">
+                                                Selected file: {selectedFile.name}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <button
+                                            onClick={() => setStep(2)}
+                                            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                        >
+                                            Back
+                                        </button>
+                                        <button
+                                            onClick={handleSubmit}
+                                            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                                        >
+                                            Submit Application
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </main>
         </div>
     );
 };
