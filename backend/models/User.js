@@ -5,8 +5,8 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  profilePic: { type: String, default: null }, // Store profile image URL
-  coverPhoto: { type: String, default: null }, // Store cover photo URL
+  profilePic: { type: String, default: null }, 
+  coverPhoto: { type: String, default: null }, 
   cvFile: { type: String, default: null },
 });
 

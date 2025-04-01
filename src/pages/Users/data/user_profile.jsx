@@ -59,31 +59,43 @@ const UserProfile = () => {
     window.location.href = "/ulogin";
   };
 
-  // Handle Image Preview & Upload
-  const handleImagePreviewAndUpload = async (event, type) => {
+  // ✅ Optimized Upload Function
+  const handleImageUpload = async (event, type) => {
     const file = event.target.files[0];
     if (!file) return;
 
+    // Show Preview
     const fileURL = URL.createObjectURL(file);
-    if (type === "profile") setTempProfilePic(fileURL);
-    if (type === "cover") setTempCoverPhoto(fileURL);
+    if (type === "profile") {
+      setTempProfilePic(fileURL);
+    } else {
+      setTempCoverPhoto(fileURL);
+    }
 
+    // Upload to Backend
     const uploadData = new FormData();
     uploadData.append(type === "profile" ? "profilePic" : "coverPhoto", file);
 
     try {
       const response = await axiosInstance.put(
-        `/user/upload-${type === "profile" ? "profile" : "cover"}`,
+        `/user/upload-${type}`,
         uploadData,
-        { headers: { Authorization: `Bearer ${user.token}`, "Content-Type": "multipart/form-data" } }
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
+      const imageUrl = response.data.secure_url || response.data.url;
+
       if (type === "profile") {
-        setProfilePic(response.data.profilePic);
-        setUser((prevUser) => ({ ...prevUser, profilePic: response.data.profilePic }));
-      } else if (type === "cover") {
-        setCoverPhoto(response.data.coverPhoto);
-        setUser((prevUser) => ({ ...prevUser, coverPhoto: response.data.coverPhoto }));
+        setProfilePic(imageUrl);
+        setUser((prevUser) => ({ ...prevUser, profilePic: imageUrl }));
+      } else {
+        setCoverPhoto(imageUrl);
+        setUser((prevUser) => ({ ...prevUser, coverPhoto: imageUrl }));
       }
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -91,7 +103,7 @@ const UserProfile = () => {
     }
   };
 
-  // Handle Profile Update
+  // ✅ Profile Update Handler
   const updateProfile = async () => {
     setSaving(true);
     try {
@@ -127,11 +139,11 @@ const UserProfile = () => {
 
         {/* Cover Photo Section */}
         <div className="relative w-full h-48 bg-gray-200 flex items-center justify-center">
-          {tempCoverPhoto || coverPhoto ? (
-            <img src={tempCoverPhoto || coverPhoto} alt="Cover" className="w-full h-full object-cover" />
-          ) : (
-            <h1 className="text-3xl font-bold text-gray-700">{user.name}</h1>
-          )}
+          <img
+            src={tempCoverPhoto || coverPhoto}
+            alt="Cover"
+            className="w-full h-full object-cover"
+          />
 
           {editMode && (
             <div className="absolute bottom-2 right-2 z-10">
@@ -146,7 +158,7 @@ const UserProfile = () => {
                 id="coverUploadInput"
                 className="hidden"
                 accept="image/*"
-                onChange={(e) => handleImagePreviewAndUpload(e, "cover")}
+                onChange={(e) => handleImageUpload(e, "cover")}
               />
             </div>
           )}
@@ -154,13 +166,11 @@ const UserProfile = () => {
 
         {/* Profile Photo Section */}
         <div className="relative -mt-16 flex flex-col items-center">
-          {tempProfilePic || profilePic ? (
-            <img src={tempProfilePic || profilePic} alt="Profile" className="w-32 h-32 rounded-full border-4 border-white object-cover" />
-          ) : (
-            <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 text-2xl font-bold border-4 border-white">
-              {user.name[0]}
-            </div>
-          )}
+          <img
+            src={tempProfilePic || profilePic}
+            alt="Profile"
+            className="w-32 h-32 rounded-full border-4 border-white object-cover"
+          />
 
           {editMode && (
             <label className="mt-2 px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800 relative cursor-pointer">
@@ -169,7 +179,7 @@ const UserProfile = () => {
                 type="file"
                 className="absolute inset-0 opacity-0 cursor-pointer"
                 accept="image/*"
-                onChange={(e) => handleImagePreviewAndUpload(e, "profile")}
+                onChange={(e) => handleImageUpload(e, "profile")}
               />
             </label>
           )}
@@ -205,19 +215,18 @@ const UserProfile = () => {
 
         <div className="flex justify-between mt-4">
           {editMode ? (
-            <button className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600" onClick={updateProfile}>
+            <button className="px-4 py-2 bg-green-500 text-white rounded-md" onClick={updateProfile}>
               Save Changes
             </button>
           ) : (
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600" onClick={() => setEditMode(true)}>
+            <button className="px-4 py-2 bg-blue-500 text-white rounded-md" onClick={() => setEditMode(true)}>
               Edit Profile
             </button>
           )}
-          <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600" onClick={handleLogout}>
+          <button className="px-4 py-2 bg-gray-500 text-white rounded-md" onClick={handleLogout}>
             Logout
           </button>
         </div>
-
       </div>
     </div>
   );

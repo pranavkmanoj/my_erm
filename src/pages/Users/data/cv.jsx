@@ -1,176 +1,230 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../../../context/AuthContext";
 import axiosInstance from "../../../axiosInstance";
+import { FiUploadCloud, FiDownload, FiTrash2, FiAlertCircle, FiFile } from "react-icons/fi";
 
-const CVUpload = () => {
-    const { user } = useUser();
-    const [file, setFile] = useState(null);
-    const [cvUrl, setCvUrl] = useState("");
-    const [error, setError] = useState("");
-    const [uploading, setUploading] = useState(false);
-    const [progress, setProgress] = useState(0);
+const CVUpload = ({ bgColor = "white" }) => {
+  const { user } = useUser();
+  const [file, setFile] = useState(null);
+  const [cvUrl, setCvUrl] = useState("");
+  const [error, setError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
-    const allowedTypes = ["application/pdf"];
-    const maxFileSize = 5 * 1024 * 1024; // 5MB
+  const allowedTypes = ["application/pdf"];
+  const maxFileSize = 5 * 1024 * 1024; // 5MB
 
-    // Fetch existing CV if available
-    useEffect(() => {
-        const fetchCv = async () => {
-            if (!user?.id || !user?.token) {
-                setError("Unauthorized! Please log in again.");
-                return;
-            }
+  // Fetch existing CV
+  useEffect(() => {
+    const fetchCV = async () => {
+      if (!user?.id || !user?.token) return;
 
-            try {
-                const response = await axiosInstance.get(`/user/get-cv/${user.id}`, {
-                    headers: { Authorization: `Bearer ${user.token}` },
-                });
-
-                if (response.data.cvFile) {
-                    setCvUrl(response.data.cvFile);
-                } else {
-                    setCvUrl("");
-                }
-            } catch (error) {
-                console.error("Error fetching CV:", error);
-                setError(error.response?.status === 401 ? "Unauthorized! Please log in again." : "Failed to fetch CV.");
-            }
-        };
-
-        fetchCv();
-    }, [user]);
-
-    // Handle file selection
-    const handleFileChange = (e) => {
-        const selectedFile = e.target.files[0];
-
-        if (selectedFile) {
-            if (!allowedTypes.includes(selectedFile.type)) {
-                setError("Invalid file type. Please upload a PDF.");
-                return;
-            }
-
-            if (selectedFile.size > maxFileSize) {
-                setError("File size exceeds 5MB limit.");
-                return;
-            }
-
-            setFile(selectedFile);
-            setError("");
+      try {
+        const response = await axiosInstance.get(`/user/get-cv/${user.id}`, {
+          headers: { Authorization: `Bearer ${user.token}` },
+        });
+        if (response.data.cvFile) {
+          setCvUrl(response.data.cvFile);
         }
+      } catch (err) {
+        console.error("Error fetching CV:", err);
+      }
     };
 
-    // Upload the CV file
-    const handleUpload = async () => {
-        if (!user?.id || !user?.token) {
-            setError("You must be logged in to upload a CV.");
-            return;
+    fetchCV();
+  }, [user]);
+
+  // File validation
+  const validateFile = (file) => {
+    if (!file) return;
+
+    if (!allowedTypes.includes(file.type)) {
+      setError("Only PDF files are allowed");
+      return;
+    }
+
+    if (file.size > maxFileSize) {
+      setError("File size exceeds 5MB limit");
+      return;
+    }
+
+    setFile(file);
+    setError("");
+  };
+
+  // Upload file
+  const handleUpload = async () => {
+    if (!user?.id || !user?.token || !file) {
+      setError("Please select a file to upload");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("cvFile", file);
+
+    try {
+      setUploading(true);
+
+      const response = await axiosInstance.put(
+        `/user/upload-cv/${user.id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${user.token}`
+          }
         }
+      );
 
-        if (!file) {
-            setError("Please select a file to upload.");
-            return;
-        }
+      setCvUrl(response.data.cvUrl);
+      setFile(null);
+      setError("");
+    } catch (err) {
+      console.error("Upload error:", err);
+      setError(err.response?.data?.message || "Upload failed. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
 
-        const formData = new FormData();
-        formData.append("cvFile", file);
+  const handleRemoveFile = () => {
+    setFile(null);
+    setError("");
+  };
 
-        try {
-            setUploading(true);
-            setProgress(0);
+  // Drag & Drop handlers
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
 
-            const res = await axiosInstance.put(`/user/upload-cv/${user.id}`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer ${user.token}`,
-                },
-                onUploadProgress: (progressEvent) => {
-                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                    setProgress(percentCompleted);
-                },
-            });
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
 
-            alert("CV uploaded successfully!");
-            setFile(null);
-            setProgress(0);
-            setCvUrl(res.data.cvUrl);
-        } catch (err) {
-            setError("Failed to upload CV. Please try again.");
-            console.error("Upload error:", err);
-        } finally {
-            setUploading(false);
-        }
-    };
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
 
-    // Download CV
-    const handleDownload = () => {
-        if (cvUrl) {
-            const link = document.createElement("a");
-            link.href = cvUrl;
-            link.setAttribute("download", `CV_${user.id}.pdf`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } else {
-            alert("No CV available for download.");
-        }
-    };
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const droppedFile = e.dataTransfer.files[0];
+    validateFile(droppedFile);
+  };
 
-    return (
-        <div className="max-w-md mx-auto p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold mb-4 text-center">Upload Your CV</h2>
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    validateFile(selectedFile);
+  };
 
-            {!user ? (
-                <p className="text-red-500 text-sm text-center">Please log in to upload your CV.</p>
-            ) : (
-                <>
-                    {cvUrl && (
-                        <div className="mb-4">
-                            <p className="text-green-600 text-center">Your uploaded CV:</p>
-                            <button
-                                onClick={handleDownload}
-                                className="block w-full text-center text-blue-500 underline mt-2"
-                            >
-                                Download/View CV
-                            </button>
-                        </div>
-                    )}
-
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition-colors">
-                        <input
-                            type="file"
-                            id="cv-upload"
-                            accept=".pdf"
-                            onChange={handleFileChange}
-                            className="hidden"
-                        />
-                        <label htmlFor="cv-upload" className="block text-gray-600 cursor-pointer">
-                            {file ? file.name : "Drag & drop or click to upload"}
-                        </label>
-                    </div>
-
-                    {error && <p className="text-red-500 text-sm mt-2 text-center">{error}</p>}
-
-                    {uploading && (
-                        <div className="mt-4 w-full bg-gray-200 rounded-full h-2.5">
-                            <div
-                                className="bg-blue-500 h-2.5 rounded-full"
-                                style={{ width: `${progress}%` }}
-                            ></div>
-                        </div>
-                    )}
-
-                    <button
-                        onClick={handleUpload}
-                        disabled={uploading || !user}
-                        className="w-full mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-                    >
-                        {uploading ? "Uploading..." : "Upload CV"}
-                    </button>
-                </>
-            )}
+  return (
+    <div
+      className={`max-w-md mx-auto p-6 rounded-lg shadow-sm border border-gray-200 ${
+        bgColor === "black" ? "bg-black" : "bg-white"
+      }`}
+    >
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <h2 className={`text-xl font-medium ${bgColor === "black" ? "text-white" : "text-black"}`}>
+            Upload Your Resume
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">PDF format, maximum 5MB</p>
         </div>
-    );
+
+        {/* Existing Resume */}
+        {cvUrl && (
+          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="flex items-center gap-2">
+              <FiFile className="text-gray-500" />
+              <span className="text-sm font-medium">Current Resume</span>
+            </div>
+            <button
+              onClick={() => window.open(cvUrl, "_blank")}
+              className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1"
+            >
+              <FiDownload size={14} /> View
+            </button>
+          </div>
+        )}
+
+        {/* Upload Area */}
+        <div className="space-y-4">
+          <label
+            className={`block border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+              isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"
+            }`}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+          >
+            <div className="flex flex-col items-center justify-center gap-2">
+              <FiUploadCloud className={`text-3xl ${isDragging ? "text-blue-500" : "text-gray-400"}`} />
+              <div className="text-sm text-gray-600">
+                <span className="text-blue-600 font-medium">Click to upload</span> or drag and drop
+              </div>
+              <p className="text-xs text-gray-400">PDF only (max 5MB)</p>
+            </div>
+            <input
+              type="file"
+              accept=".pdf"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </label>
+
+          {/* Selected File */}
+          {file && (
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex items-center gap-2 overflow-hidden">
+                <FiFile className="text-gray-500 flex-shrink-0" />
+                <span className="text-sm font-medium truncate">{file.name}</span>
+                <span className="text-xs text-gray-500 whitespace-nowrap">
+                  {(file.size / 1024 / 1024).toFixed(2)} MB
+                </span>
+              </div>
+              <button
+                onClick={handleRemoveFile}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <FiTrash2 />
+              </button>
+            </div>
+          )}
+
+          {/* Error Message */}
+          {error && (
+            <div className="flex items-center gap-2 p-3 bg-red-50 rounded-lg text-red-600 text-sm">
+              <FiAlertCircle />
+              <span>{error}</span>
+            </div>
+          )}
+
+          {/* Upload Button */}
+          <button
+            onClick={handleUpload}
+            disabled={!file || uploading}
+            className={`w-full py-2 px-4 rounded-md font-medium text-white transition-colors ${
+              !file || uploading
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
+          >
+            {uploading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="animate-pulse">⏳</span> Uploading...
+              </span>
+            ) : (
+              "Upload Resume"
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default CVUpload;

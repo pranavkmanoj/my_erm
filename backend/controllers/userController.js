@@ -1,149 +1,195 @@
 const User = require("../models/User");
-const cloudinary = require("../cloudinaryConfig");
+const cloudinary = require("../config/cloudinary");
 
-/**
- * ✅ Upload Profile Picture
- */
-exports.uploadProfilePic = async (req, res) => {
+// Upload CV to Cloudinary
+const uploadCv = async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    const userId = req.params.id;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
-      { profilePic: req.file.path },
-      { new: true }
-    ).select("-password");
-
-    if (!updatedUser) return res.status(404).json({ error: "User not found" });
-
-    res.json(updatedUser);
-  } catch (error) {
-    res.status(500).json({ error: "Image upload failed", message: error.message });
-  }
-};
-
-/**
- * ✅ Upload Cover Photo
- */
-exports.uploadCoverPhoto = async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
-      { coverPhoto: req.file.path },
-      { new: true }
-    ).select("-password");
-
-    if (!updatedUser) return res.status(404).json({ error: "User not found" });
-
-    res.json(updatedUser);
-  } catch (error) {
-    res.status(500).json({ error: "Image upload failed", message: error.message });
-  }
-};
-
-/**
- * ✅ Upload CV (PDF, DOCX)
- */
-exports.uploadCV = async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (!req.file || !req.file.path) return res.status(400).json({ message: "No file uploaded" });
-
-    const user = await User.findByIdAndUpdate(id, { cvFile: req.file.path }, { new: true });
-
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    res.json({ message: "CV uploaded successfully", cvUrl: user.cvFile });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
-
-/**
- * ✅ Get User's CV URL
- */
-exports.getUserCV = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    if (req.user.id !== id) {
-      return res.status(403).json({ message: "Forbidden: Access denied" });
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
     }
 
+    // Upload file to Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: "resumes",
+      resource_type: "auto",
+      upload_preset: "signed_upload"
+    });
+
+    // ✅ Update the user's CV URL in MongoDB
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { cvFile: result.secure_url },  // Store the CV URL
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "CV uploaded successfully",
+      cvUrl: result.secure_url
+    });
+  } catch (error) {
+    console.error("Cloudinary upload error:", error);
+    res.status(500).json({
+      message: "Failed to upload CV",
+      error: error.message
+    });
+  }
+};
+
+
+// ✅ Get CV
+const getCv = async (req, res) => {
+  const { id } = req.params;
+
+  try {
     const user = await User.findById(id);
-    if (!user || !user.cvFile) {
-      return res.status(404).json({ message: "CV not found" });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({ cvFile: user.cvFile });
+    if (!user.cvFile) {
+      return res.status(404).json({ message: "No CV found for this user" });
+    }
+
+    res.status(200).json({ cvFile: user.cvFile });
+
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error("Error fetching CV:", error);
+    res.status(500).json({ message: "Failed to fetch CV" });
   }
 };
 
-/**
- * ✅ Update Profile Details (Name & Email)
- */
-exports.updateProfile = async (req, res) => {
+
+// fetching the user Profile (Name,email,coverProfile and profilepic)
+const getUserProfile = async (req, res) => {
   try {
+    const userId = req.user.id;
+
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      profilePic: user.profilePic,
+      coverPhoto: user.coverPhoto,
+    });
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+//update the profie UserProfile (Name and email)
+const updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
     const { name, email } = req.body;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
-      { name, email },
-      { new: true }
-    ).select("-password");
-
-    if (!updatedUser) return res.status(404).json({ error: "User not found" });
-
-    res.json(updatedUser);
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error", message: error.message });
-  }
-};
-
-/**
- * ✅ Fetch User Profile
- */
-exports.getUserProfile = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select("-password");
-
-    if (!user) return res.status(404).json({ error: "User not found" });
-
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ error: "Server error", message: error.message });
-  }
-};
-
-/**
- * ✅ Fetch Resume File (Serve File)
- */
-exports.getResume = async (req, res) => {
-  try {
-    const { userId } = req.params;
-
-    const user = await User.findById(userId);
-    if (!user || !user.cvFile) {
-      return res.status(404).json({ error: "Resume not found" });
+    if (!name || !email) {
+      return res.status(400).json({ message: "Name and email are required" });
     }
 
-    res.json({ resumeUrl: user.cvFile });
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { name, email },
+      { new: true, runValidators: true }
+    ).select("name email");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      name: updatedUser.name,
+      email: updatedUser.email,
+    });
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error", message: error.message });
+    console.error("Error updating profile:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-/**
- * ✅ Fetch Current User (for Authentication)
- */
-exports.getCurrentUser = async (req, res) => {
-  if (req.user) {
-    res.json(req.user);
-  } else {
-    res.status(404).json({ message: "No user found" });
+//Update the Profile Pic 
+
+const uploadProfilePic = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    // Upload image to Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: "profile_pics",
+    });
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePic: result.secure_url },
+      { new: true }
+    ).select("profilePic");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ profilePic: updatedUser.profilePic });
+  } catch (error) {
+    console.error("Error uploading profile picture:", error);
+    res.status(500).json({ message: "Server error" });
   }
+};
+
+//Upload the CoverPhoto
+const uploadCoverPhoto = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    // Upload image to Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: "cover_photos",
+    });
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { coverPhoto: result.secure_url },
+      { new: true }
+    ).select("coverPhoto");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ coverPhoto: updatedUser.coverPhoto });
+  } catch (error) {
+    console.error("Error uploading cover photo:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+module.exports = {
+  uploadCv,
+  getCv,
+  getUserProfile,
+  updateUserProfile,
+  uploadProfilePic,
+  uploadCoverPhoto
 };

@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../Layout/User-Navbar";
 import { useUser } from "../../../context/AuthContext";
 import axiosInstance from "../../../axiosInstance";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ApplyJobs = () => {
     const { user } = useUser();
@@ -13,7 +15,7 @@ const ApplyJobs = () => {
     const [error, setError] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
-    const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission loading
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [formData, setFormData] = useState({
         firstName: user?.firstName || "",
@@ -31,10 +33,25 @@ const ApplyJobs = () => {
     const jobId = new URLSearchParams(useLocation().search).get("jobId");
 
     useEffect(() => {
+        if (!user) {
+            toast.error("Please login to apply for this job", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            navigate("/ulogin", { state: { from: `/apply-job?jobId=${jobId}` } });
+            return;
+        }
+
         const fetchJobDetails = async () => {
             if (!jobId) {
                 setError("Job not found.");
                 setLoading(false);
+                toast.error("Job not found");
                 return;
             }
             try {
@@ -42,15 +59,23 @@ const ApplyJobs = () => {
                     headers: { Authorization: `Bearer ${user?.token}` },
                 });
                 setJobDetails(data);
-                setFormData(prev => ({ ...prev, recruiterId: data.recruiterId || "" }));
+                setFormData(prev => ({
+                    ...prev,
+                    firstName: user.firstName || "",
+                    lastName: user.lastName || "",
+                    phone: user.phone || "",
+                    email: user.email || "",
+                    recruiterId: data.recruiterId || ""
+                }));
             } catch (error) {
                 setError("Failed to load job details.");
+                toast.error("Failed to load job details");
             } finally {
                 setLoading(false);
             }
         };
         fetchJobDetails();
-    }, [jobId, user]);
+    }, [jobId, user, navigate]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -59,24 +84,32 @@ const ApplyJobs = () => {
     const handleSkillsChange = (e) => {
         setFormData({ ...formData, skills: e.target.value.split(",").map(skill => skill.trim()) });
     };
-
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        if (file && file.type.startsWith("image/")) {
+
+        if (file && file.type === "application/pdf") {
             setSelectedFile(file);
+            toast.success("Resume uploaded successfully");
         } else {
-            alert("Please upload a valid image file (JPG, PNG).");
+            toast.warning("Please upload a valid PDF file.");
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!user?.id || !jobId || !selectedFile) {
-            alert("Please fill all required fields and upload your resume.");
+
+        if (!user) {
+            toast.error("Please login to apply for this job");
+            navigate("/login", { state: { from: `/apply-job?jobId=${jobId}` } });
             return;
         }
 
-        setIsSubmitting(true); // Start loading
+        if (!jobId || !selectedFile) {
+            toast.error("Please fill all required fields and upload your resume.");
+            return;
+        }
+
+        setIsSubmitting(true);
 
         try {
             const applicationData = new FormData();
@@ -89,7 +122,7 @@ const ApplyJobs = () => {
             });
             applicationData.append("userId", user.id);
             applicationData.append("jobId", jobId);
-            applicationData.append("cv", selectedFile);
+            applicationData.append("resume", selectedFile);
 
             await axiosInstance.post("/job-applications/apply", applicationData, {
                 headers: {
@@ -98,12 +131,13 @@ const ApplyJobs = () => {
                 },
             });
 
+            toast.success("Application submitted successfully!");
             setSubmitted(true);
         } catch (error) {
             console.error("Error submitting application:", error);
-            alert(error.response?.data?.message || "Application failed!");
+            toast.error(error.response?.data?.message || "Application failed!");
         } finally {
-            setIsSubmitting(false); // Stop loading regardless of success/error
+            setIsSubmitting(false);
         }
     };
 
@@ -144,7 +178,11 @@ const ApplyJobs = () => {
                 ) : (
                     <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
                         <div className="p-6 border-b border-gray-200">
-                            {/* Job title can be added here if needed */}
+                            {jobDetails && (
+                                <h2 className="text-xl font-semibold text-gray-800">
+                                    Applying for: {jobDetails.title} at {jobDetails.company}
+                                </h2>
+                            )}
                         </div>
 
                         {/* Stepper */}
@@ -175,6 +213,7 @@ const ApplyJobs = () => {
                                             <div key={field} className="space-y-1">
                                                 <label className="block text-sm font-medium text-gray-700">
                                                     {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+                                                    {["firstName", "lastName", "phone", "email"].includes(field) && " *"}
                                                 </label>
                                                 <input
                                                     type={field === "email" ? "email" : "text"}
@@ -182,7 +221,8 @@ const ApplyJobs = () => {
                                                     value={formData[field]}
                                                     onChange={handleChange}
                                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                                    required
+                                                    required={["firstName", "lastName", "phone", "email"].includes(field)}
+
                                                 />
                                             </div>
                                         ))}
@@ -209,10 +249,11 @@ const ApplyJobs = () => {
                                             onChange={handleChange}
                                             rows="4"
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                            placeholder="Explain why you're a good fit for this position..."
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700">Experience (years)</label>
+                                        <label className="block text-sm font-medium text-gray-700">Experience (years) *</label>
                                         <input
                                             type="number"
                                             name="experience"
@@ -220,10 +261,11 @@ const ApplyJobs = () => {
                                             onChange={handleChange}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                                             required
+                                            min="0"
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700">Skills (comma separated)</label>
+                                        <label className="block text-sm font-medium text-gray-700">Skills (comma separated) *</label>
                                         <input
                                             type="text"
                                             name="skills"
@@ -231,10 +273,11 @@ const ApplyJobs = () => {
                                             onChange={handleSkillsChange}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                                             required
+                                            placeholder="e.g. JavaScript, React, Node.js"
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700">Availability</label>
+                                        <label className="block text-sm font-medium text-gray-700">Availability *</label>
                                         <select
                                             name="availability"
                                             value={formData.availability}
@@ -279,11 +322,12 @@ const ApplyJobs = () => {
                                                     <p className="mb-2 text-sm text-gray-500">
                                                         <span className="font-semibold">Click to upload</span> or drag and drop
                                                     </p>
-                                                    
+                                                    <p className="text-xs text-gray-500">PDF only (max 5MB)</p>
                                                 </div>
                                                 <input
                                                     type="file"
-                                                    accept="image/*"
+                                                    name="resume"
+                                                    accept="application/pdf"
                                                     className="hidden"
                                                     onChange={handleFileChange}
                                                     required
@@ -292,7 +336,7 @@ const ApplyJobs = () => {
                                         </div>
                                         {selectedFile && (
                                             <div className="p-3 bg-green-50 text-green-800 rounded-md text-sm">
-                                                Selected file: {selectedFile.name}
+                                                Selected file: {selectedFile.name} ({Math.round(selectedFile.size / 1024)} KB)
                                             </div>
                                         )}
                                     </div>
@@ -305,8 +349,8 @@ const ApplyJobs = () => {
                                         </button>
                                         <button
                                             onClick={handleSubmit}
-                                            disabled={isSubmitting}
-                                            className={`px-4 py-2 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${isSubmitting ? 'bg-green-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'}`}
+                                            disabled={isSubmitting || !selectedFile}
+                                            className={`px-4 py-2 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'} ${!selectedFile && 'opacity-50 cursor-not-allowed'}`}
                                         >
                                             {isSubmitting ? 'Submitting...' : 'Submit Application'}
                                         </button>

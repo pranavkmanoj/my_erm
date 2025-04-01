@@ -2,8 +2,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
+const path = require('path'); 
+const fs = require('fs');
 
-// ✅ Initialize Express app first
 const app = express();
 
 // ✅ Middleware
@@ -37,6 +38,12 @@ app.use("/user", userRoutes);
 app.use("/job-applications", jobApplicationRoutes);
 app.use("/interview", interviewRoutes);
 app.use("/admin", adminRoutes);
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true }); // recursive: true creates parent directories if needed
+}
 
 // ✅ Connect to MongoDB
 mongoose

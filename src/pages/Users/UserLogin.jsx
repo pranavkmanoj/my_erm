@@ -55,25 +55,16 @@ const UserLogin = () => {
         userData.recruiterId = decoded.recruiterId || null;
       }
 
-      // // ✅ Clear any existing data before setting new data
-      // localStorage.removeItem("userData");
-      // localStorage.removeItem("recruiterData");
-
-      // ✅ Store user/recruiter data separately
       if (activeTab === "user") {
         localStorage.setItem("userData", JSON.stringify(userData));
       } else {
         localStorage.setItem("recruiterData", JSON.stringify(userData));
         localStorage.setItem("token", response.data.token);
-
       }
 
-      // ✅ Update user context
       setUser(userData);
-
       console.log("✅ Login successful. Stored user:", userData);
 
-      // ✅ Redirect based on role
       navigate(userData.role === "user" ? "/" : "/rpanel");
     } catch (err) {
       console.error("❌ Login error:", err.response?.data?.message || err.message);
@@ -131,8 +122,21 @@ const UserLogin = () => {
               >
                 Recruiter
               </button>
+
+              {/* ✅ Admin Login Link */}
+              <Link
+                to="/alogin"
+                className="flex-1 text-center py-2 text-lg font-medium text-red-600 hover:text-red-700 transition"
+              >
+                Admin
+              </Link>
+
               <motion.div
-                className={`absolute bottom-0 h-1 transition-all duration-300 ease-in-out ${activeTab === "user" ? "left-0 w-1/2 bg-blue-600" : "left-1/2 w-1/2 bg-green-600"
+                className={`absolute bottom-0 h-1 transition-all duration-300 ease-in-out ${activeTab === "user"
+                  ? "left-0 w-1/3 bg-blue-600"
+                  : activeTab === "recruiter"
+                    ? "left-1/3 w-1/3 bg-green-600"
+                    : "left-2/3 w-1/3 bg-red-600"
                   }`}
                 layoutId="underline"
               />

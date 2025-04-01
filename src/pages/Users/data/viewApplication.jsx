@@ -8,15 +8,10 @@ import {
   FiCheckCircle,
   FiXCircle,
   FiClock,
-  FiUser,
-  FiMail,
-  FiPhone,
   FiMapPin,
   FiAward,
-  FiCode,
   FiDownload,
   FiCalendar,
-  FiBarChart2,
   FiSearch
 } from "react-icons/fi";
 import background from '../images/background.jpg';
@@ -270,7 +265,7 @@ const ViewApplications = () => {
                       {app.resume && (
                         <div className="mt-6">
                           <a
-                            href={app.resume.replace("/image/upload/", "/raw/upload/")}
+                            href={app.resume.replace("/cv/", "/resumes/")}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"

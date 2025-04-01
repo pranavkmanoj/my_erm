@@ -1,12 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext"; // Import AuthProvider
+import { AuthProvider } from "./context/AuthContext";
 
 import UserPanel from './pages/Users/UserPanel';
 import RegistrationPage from './pages/Users/UserReg';
 import LoginPage from './pages/Users/UserLogin';
-import BrowseJob from './pages/Users/data/BrowseJob';
-import JobDetails from './pages/Users/data/JobDetails';
 import JobListing from './pages/Users/data/JobList';
 import ScheduleInterview from './pages/Users/data/ScheduleInterview';
 import ApplyJobs from './pages/Users/data/Apply-Jobs';
@@ -22,16 +20,13 @@ import Dashboard from './pages/Recruiters/Dashboard';
 
 function App() {
   return (
-    <AuthProvider> {/* Wrapping App with AuthProvider */}
+    <AuthProvider>
       <Router>
         <Routes>
-          {/* Public Routes */}
           <Route path="/ulogin" element={<LoginPage />} />
           <Route path="/uregister" element={<RegistrationPage />} />
 
           <Route path="/" element={<UserPanel />} />
-          <Route path="/browsejobs" element={<BrowseJob />} />
-          <Route path="/job-details" element={<JobDetails />} />
           <Route path="/job-listing" element={<JobListing />} />
           <Route path="/interview" element={<ScheduleInterview />} />
           <Route path="/apply-jobs" element={<ApplyJobs />} />
@@ -42,7 +37,7 @@ function App() {
           <Route path="/alogin" element={<AdminLogin />} />
           <Route path="/aregister" element={<AdminRegister />} />
 
-          {/* Protected Routes (Handled inside components instead) */}
+
           <Route path="/apanel/*" element={<AdminPanel />} />
           <Route path="/rpanel" element={<Recruiter />} />
           <Route path="/dashboard/*" element={<Dashboard />} />

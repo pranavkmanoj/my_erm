@@ -1,42 +1,10 @@
-const multer = require("multer");
-const cloudinary = require("cloudinary").v2;
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("../config/cloudinary");
 const JobApplication = require("../models/JobApplication");
 const JobListing = require("../models/Job_listing");
 const nodemailer = require("nodemailer");
-const mongoose = require('mongoose');
 require("dotenv").config();
 
 
-// ✅ Configure Cloudinary
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// ✅ Configure CloudinaryStorage for PDFs
-const storage = new CloudinaryStorage({
-    cloudinary,
-    params: {
-        folder: "job_applications_cv",
-        format: async (req, file) => file.mimetype.split("/")[1], // Preserve format (jpg, png)
-        public_id: (req, file) => `${Date.now()}-${file.originalname.replace(/\s+/g, "_").replace(/\.[^.]+$/, "")}`,
-        resource_type: "image",
-    },
-});
-
-const upload = multer({
-    storage,
-    fileFilter: (req, file, cb) => {
-        if (file.mimetype.startsWith("image/")) {
-            cb(null, true);
-        } else {
-            cb(new Error("Only images (JPG, PNG) are allowed"), false);
-        }
-    },
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-});
 
 
 // Nodemailer transporter setup
@@ -56,72 +24,68 @@ const applyJob = async (req, res) => {
         console.log("📂 Uploaded File:", req.file);
         console.log("👤 Authenticated User:", req.user);
 
-        // Extract form data from request body
         const { firstName, lastName, phone, email, city, jobId, skills, availability, coverLetter, experience } = req.body;
-        const userId = req.user?.id; // Extract user ID from authentication middleware
+        const userId = req.user?.id;
 
-        // Ensure user is authenticated
         if (!userId) {
-            console.error("🚨 Missing User ID");
             return res.status(401).json({ message: "Unauthorized. Please log in to apply for jobs." });
         }
 
-        // Validate required fields
         if (!firstName || !lastName || !phone || !email || !city || !availability || !coverLetter || !experience || !jobId) {
-            console.error("🚨 Missing Required Fields");
             return res.status(400).json({ message: "All fields are required." });
         }
 
-        // Ensure a resume (CV) is uploaded
         if (!req.file) {
-            console.error("🚨 Resume Upload Failed");
             return res.status(400).json({ message: "CV upload failed. Please upload a valid PDF." });
         }
 
-        // Check if the job exists and fetch recruiterId
+        // Verify job existence
         const job = await JobListing.findById(jobId);
         if (!job) {
-            console.error("🚨 Job Not Found");
-            return res.status(404).json({ message: "The job you are trying to apply for does not exist." });
+            return res.status(404).json({ message: "The job does not exist." });
         }
-        const recruiterId = job.recruiterId; // ✅ Fetch recruiterId from the job listing
 
-        // Parse skills into an array (handles both string and array formats)
+        const recruiterId = job.recruiterId;
+
+        // Parse skills
         const parsedSkills = Array.isArray(skills)
             ? skills
             : skills.split(",").map(skill => skill.trim());
 
-        // Format availability with the first letter capitalized
         const formattedAvailability = availability.charAt(0).toUpperCase() + availability.slice(1);
 
-        // Check if the user has already applied for this job
+        // Check for duplicate application
         const existingApplication = await JobApplication.findOne({ userId, jobId });
         if (existingApplication) {
-            console.error("🚨 Duplicate Application");
             return res.status(400).json({ message: "You have already applied for this job." });
         }
 
-        // Save CV file path (assuming Cloudinary or a local file storage system)
-        const cvUrl = req.file.path;
+        // Upload resume to Cloudinary
+       const result = await cloudinary.uploader.upload(req.file.path, {
+            folder: "resumes",  
+            resource_type: "auto",
+            format: "pdf"
+            });
 
-        // Create a new Job Application document
+        const cvUrl = result.secure_url;
+
+        // Create and save the job application
         const jobApplication = new JobApplication({
             userId,
-            recruiterId, // ✅ Store recruiterId in job application
+            recruiterId,
             firstName: firstName.trim(),
             lastName: lastName.trim(),
             phone: phone.trim(),
             email: email.trim().toLowerCase(),
             city: city.trim(),
             jobId,
-            resume: cvUrl,
+            resume: cvUrl,  // Store Cloudinary URL
             skills: parsedSkills,
             availability: formattedAvailability,
             coverLetter: coverLetter.trim(),
             experience: experience.trim(),
         });
 
-        // Save application to database
         await jobApplication.save();
 
         console.log("✅ Application Successfully Submitted:", jobApplication);
@@ -132,6 +96,8 @@ const applyJob = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 };
+
+
 
 
 // 📌 Fetch All Job Applications (User Side)
@@ -371,7 +337,6 @@ const getUserCV = async (req, res) => {
 };
 
 module.exports = {
-    upload,
     applyJob,
     getUserApplications,
     getJobApplicationsByRecruiter,

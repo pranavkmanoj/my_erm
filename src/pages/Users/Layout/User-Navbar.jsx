@@ -29,7 +29,7 @@ const Navbar1 = () => {
     location.pathname === path ? "text-red-500 font-semibold" : "text-gray-700 dark:text-white";
 
   return (
-    <nav className="bg-white border-b border-gray-200 dark:bg-gray-900 fixed top-0 left-0 right-0 z-10 shadow-md">
+    <nav className="bg-[#140000] border-b border-gray-600 text-white fixed top-0 left-0 right-0 z-10 shadow-md">
       <div className="max-w-screen-xl flex items-center justify-between mx-auto p-4">
         {/* Logo */}
         <motion.button
@@ -45,7 +45,7 @@ const Navbar1 = () => {
         {/* Mobile Menu Button */}
         <motion.button
           whileTap={{ scale: 0.9 }}
-          className="md:hidden text-gray-700 dark:text-white"
+          className="md:hidden text-white dark:text-white"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -59,7 +59,7 @@ const Navbar1 = () => {
               whileHover={{ scale: 1.1, color: "#ef4444" }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate(path)}
-              className={`hover:text-red-500 transition-colors duration-300 ${isActive(path)}`}
+              className={`text-white hover:text-red-500 transition-colors duration-300 ${isActive(path)}`}
             >
               {path === "/job-listing" ? "Jobs" : path === "/view-application" ? "Applications" : "Interviews"}
             </motion.button>
@@ -72,7 +72,7 @@ const Navbar1 = () => {
             whileHover={{ scale: 1.1, color: "#ef4444" }}
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate("/ulogin")}
-            className={`flex items-center space-x-2 text-lg font-medium transition-all duration-300 ${isActive("/ulogin")}`}
+            className={`text-white flex items-center space-x-2 text-lg font-medium transition-all duration-300 ${isActive("/ulogin")}`}
           >
             <Briefcase size={20} />
             <span>Recruiter</span>
@@ -84,7 +84,7 @@ const Navbar1 = () => {
                 whileHover={{ scale: 1.1, color: "#ef4444" }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleProfileClick}
-                className={`flex items-center space-x-2 text-lg font-medium transition-all duration-300 ${isActive("/user-profile")}`}
+                className={`text-white flex items-center space-x-2 text-lg font-medium transition-all duration-300 ${isActive("/user-profile")}`}
               >
                 <User size={24} className="rounded-full bg-gray-200 p-1 dark:bg-gray-700" />
                 <span>Profile</span>

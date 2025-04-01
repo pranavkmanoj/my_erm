@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../../axiosInstance";
 import { useUser } from "../../../context/AuthContext";
-import Swal from "sweetalert2"; // Import SweetAlert2
+import Swal from "sweetalert2";
 
 const ViewApplications = () => {
   const { user } = useUser();
@@ -189,7 +189,7 @@ const ViewApplications = () => {
                   <td className="py-3 px-4">
                     {app.resume ? (
                       <a
-                        href={app.resume.replace("/image/upload/", "/raw/upload/")}
+                        href={app.resume.replace("/cv/", "/resumes/")}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"

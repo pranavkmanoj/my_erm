@@ -2,8 +2,9 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 const jobApplicationController = require("../controllers/jobApplicationController");
+const upload = require("../middleware/uploadMiddleware");
 
-router.post("/apply", authMiddleware, jobApplicationController.upload.single("cv"), jobApplicationController.applyJob);
+router.post("/apply", authMiddleware, upload.single("resume"), jobApplicationController.applyJob);
 router.get("/", authMiddleware, jobApplicationController.getUserApplications);
 router.get("/recruiter/:recruiterId", jobApplicationController.getJobApplicationsByRecruiter);
 router.delete("/delete-application/:id", jobApplicationController.deleteApplication);
