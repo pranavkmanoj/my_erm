@@ -80,7 +80,7 @@ const UserPanel1 = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      
+
       {/* Hero Section */}
       <div className="flex flex-col bg-gradient-to-b from-[#fb5607] to-[#140000] py-16 lg:py-24 text-center">
         <div className="w-full max-w-3xl mx-auto px-6">
@@ -115,19 +115,30 @@ const UserPanel1 = () => {
             <img src={img} alt="Hero Image" className="w-full max-w-lg mx-auto" />
           </div>
           <div className="lg:w-1/2 lg:pl-10 text-center lg:text-left">
-            <motion.h1
-              className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#ea033f] via-[#fb5607] to-[#f7f7f7] text-transparent bg-clip-text mb-6"
+            <motion.div
+              className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#ea033f] via-[#fb5607] to-[#f7f7f7] text-transparent bg-clip-text mb-8"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
               variants={container}
             >
-              {Array.from(titleText).map((char, index) => (
-                <motion.span key={index} variants={letter} className="inline-block">
-                  {char === " " ? "\u00A0" : char}
-                </motion.span>
-              ))}
-            </motion.h1>
+              <div className="flex flex-wrap justify-center lg:justify-start">
+                {titleText.split(' ').map((word, wordIndex) => (
+                  <div key={wordIndex} className="flex mr-2 last:mr-0">
+                    {Array.from(word).map((char, charIndex) => (
+                      <motion.span
+                        key={charIndex}
+                        variants={letter}
+                        className="inline-block"
+                      >
+                        {char}
+                      </motion.span>
+                    ))}
+                    {wordIndex < titleText.split(' ').length - 1 && '\u00A0'}
+                  </div>
+                ))}
+              </div>
+            </motion.div>
             <p className="text-md sm:text-lg text-[#f7f7f7] mb-6">
               Create a profile that highlights your unique skills and preferences,
               then apply to jobs with just one click.
