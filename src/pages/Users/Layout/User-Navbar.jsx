@@ -29,128 +29,183 @@ const Navbar1 = () => {
     location.pathname === path ? "text-red-500 font-semibold" : "text-gray-700 dark:text-white";
 
   return (
-    <nav className="bg-[#140000] border-b border-gray-600 text-white fixed top-0 left-0 right-0 z-10 shadow-md">
-      <div className="max-w-screen-xl flex items-center justify-between mx-auto p-4">
-        {/* Logo */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => navigate("/")}
-          className="flex items-center space-x-3"
-        >
-          <img src={logo} className="h-8 ml-2" alt="ERM Logo" />
-          <span className="text-2xl font-semibold dark:text-white">ERM</span>
-        </motion.button>
-
-        {/* Mobile Menu Button */}
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          className="md:hidden text-white dark:text-white"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </motion.button>
-
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex flex-1 justify-center space-x-8 text-lg font-medium">
-          {["/job-listing", "/view-application", "/interview"].map((path, index) => (
-            <motion.button
-              key={index}
-              whileHover={{ scale: 1.1, color: "#ef4444" }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate(path)}
-              className={`text-white hover:text-red-500 transition-colors duration-300 ${isActive(path)}`}
-            >
-              {path === "/job-listing" ? "Jobs" : path === "/view-application" ? "Applications" : "Interviews"}
-            </motion.button>
-          ))}
-        </div>
-
-        {/* Right Section */}
-        <div className="hidden md:flex items-center space-x-6">
+    <nav className="bg-[#140000] border-b border-gray-600 text-white fixed top-0 left-0 right-0 z-50 shadow-md">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
           <motion.button
-            whileHover={{ scale: 1.1, color: "#ef4444" }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => navigate("/ulogin")}
-            className={`text-white flex items-center space-x-2 text-lg font-medium transition-all duration-300 ${isActive("/ulogin")}`}
+            onClick={() => navigate("/")}
+            className="flex-shrink-0 flex items-center"
           >
-            <Briefcase size={20} />
-            <span>Recruiter</span>
+            <img src={logo} className="h-8" alt="ERM Logo" />
+            <span className="ml-2 text-xl sm:text-2xl font-semibold">ERM</span>
           </motion.button>
 
-          {user ? (
-            <>
-              <motion.button
-                whileHover={{ scale: 1.1, color: "#ef4444" }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleProfileClick}
-                className={`text-white flex items-center space-x-2 text-lg font-medium transition-all duration-300 ${isActive("/user-profile")}`}
-              >
-                <User size={24} className="rounded-full bg-gray-200 p-1 dark:bg-gray-700" />
-                <span>Profile</span>
-              </motion.button>
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex md:ml-6 md:items-center md:space-x-4 lg:space-x-8">
+            <div className="flex space-x-4 lg:space-x-8">
+              {["/job-listing", "/view-application", "/interview"].map((path, index) => (
+                <motion.button
+                  key={index}
+                  whileHover={{ scale: 1.05, color: "#ef4444" }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => navigate(path)}
+                  className={`px-3 py-2 text-sm lg:text-base font-medium hover:text-red-500 transition-colors duration-300 ${isActive(path)}`}
+                >
+                  {path === "/job-listing" ? "Jobs" : path === "/view-application" ? "Applications" : "Interviews"}
+                </motion.button>
+              ))}
+            </div>
+          </div>
 
-              <motion.button
-                whileHover={{ scale: 1.1, color: "#dc2626" }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleLogout}
-                className="text-red-500 hover:text-red-700 flex items-center space-x-2"
-              >
-                <LogOut size={20} />
-                <span>Logout</span>
-              </motion.button>
-            </>
-          ) : (
+          {/* Right Section - Desktop */}
+          <div className="hidden md:flex md:items-center md:space-x-4 lg:space-x-6">
             <motion.button
-              whileHover={{ scale: 1.1, color: "#ef4444" }}
+              whileHover={{ scale: 1.05, color: "#ef4444" }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate("/ulogin")}
-              className="text-gray-700 dark:text-white hover:text-red-500 flex items-center space-x-2"
+              className={`flex items-center space-x-1 text-sm lg:text-base font-medium hover:text-red-500 transition-colors duration-300 ${isActive("/ulogin")}`}
             >
-              <LogIn size={20} />
-              <span>Login</span>
-            </motion.button>
-          )}
-        </div>
-      </div>
-
-      {/* Animated Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4 }}
-            className="md:hidden flex flex-col items-center space-y-4 py-4 bg-white dark:bg-gray-900 shadow-md"
-          >
-            <motion.button whileHover={{ scale: 1.1, color: "#ef4444" }} onClick={() => navigate("/job-listing")} className="hover:text-red-500 dark:text-white">
-              Jobs
-            </motion.button>
-            <motion.button whileHover={{ scale: 1.1, color: "#ef4444" }} onClick={() => navigate("/view-application")} className="hover:text-red-500 dark:text-white">
-              Applications
-            </motion.button>
-            <motion.button whileHover={{ scale: 1.1, color: "#ef4444" }} onClick={() => navigate("/interview")} className="hover:text-red-500 dark:text-white">
-              Interviews
+              <Briefcase size={18} className="flex-shrink-0" />
+              <span>Recruiter</span>
             </motion.button>
 
             {user ? (
               <>
-                <motion.button whileHover={{ scale: 1.1, color: "#ef4444" }} onClick={handleProfileClick} className="hover:text-red-500 dark:text-white flex items-center space-x-2">
-                  <User size={20} />
+                <motion.button
+                  whileHover={{ scale: 1.05, color: "#ef4444" }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleProfileClick}
+                  className={`flex items-center space-x-1 text-sm lg:text-base font-medium hover:text-red-500 transition-colors duration-300 ${isActive("/user-profile")}`}
+                >
+                  <User size={20} className="flex-shrink-0 rounded-full bg-gray-200 p-0.5 dark:bg-gray-700" />
                   <span>Profile</span>
                 </motion.button>
-                <motion.button whileHover={{ scale: 1.1, color: "#dc2626" }} onClick={handleLogout} className="text-red-500 hover:text-red-700 flex items-center space-x-2">
-                  <LogOut size={20} />
+
+                <motion.button
+                  whileHover={{ scale: 1.05, color: "#dc2626" }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleLogout}
+                  className="flex items-center space-x-1 text-sm lg:text-base font-medium text-red-500 hover:text-red-700 transition-colors duration-300"
+                >
+                  <LogOut size={18} className="flex-shrink-0" />
                   <span>Logout</span>
                 </motion.button>
               </>
             ) : (
-              <motion.button whileHover={{ scale: 1.1, color: "#ef4444" }} onClick={() => navigate("/ulogin")} className="text-gray-700 dark:text-white hover:text-red-500 flex items-center space-x-2">
-                <LogIn size={20} />
+              <motion.button
+                whileHover={{ scale: 1.05, color: "#ef4444" }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate("/ulogin")}
+                className="flex items-center space-x-1 text-sm lg:text-base font-medium hover:text-red-500 transition-colors duration-300"
+              >
+                <LogIn size={18} className="flex-shrink-0" />
                 <span>Login</span>
               </motion.button>
             )}
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center">
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              className="text-white focus:outline-none"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </motion.button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden bg-[#1a1a1a] shadow-lg overflow-hidden"
+          >
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              {["/job-listing", "/view-application", "/interview"].map((path, index) => (
+                <motion.button
+                  key={index}
+                  whileHover={{ scale: 1.02, x: 5 }}
+                  onClick={() => {
+                    navigate(path);
+                    setIsOpen(false);
+                  }}
+                  className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${isActive(path)} hover:bg-gray-800`}
+                >
+                  {path === "/job-listing" ? "Jobs" : path === "/view-application" ? "Applications" : "Interviews"}
+                </motion.button>
+              ))}
+
+              <motion.button
+                whileHover={{ scale: 1.02, x: 5 }}
+                onClick={() => {
+                  navigate("/ulogin");
+                  setIsOpen(false);
+                }}
+                className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${isActive("/ulogin")} hover:bg-gray-800`}
+              >
+                <div className="flex items-center">
+                  <Briefcase size={18} className="mr-2" />
+                  Recruiter
+                </div>
+              </motion.button>
+
+              {user ? (
+                <>
+                  <motion.button
+                    whileHover={{ scale: 1.02, x: 5 }}
+                    onClick={() => {
+                      handleProfileClick();
+                      setIsOpen(false);
+                    }}
+                    className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${isActive("/user-profile")} hover:bg-gray-800`}
+                  >
+                    <div className="flex items-center">
+                      <User size={18} className="mr-2 rounded-full bg-gray-200 p-0.5 dark:bg-gray-700" />
+                      Profile
+                    </div>
+                  </motion.button>
+
+                  <motion.button
+                    whileHover={{ scale: 1.02, x: 5 }}
+                    onClick={() => {
+                      handleLogout();
+                      setIsOpen(false);
+                    }}
+                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-gray-800 hover:text-red-700"
+                  >
+                    <div className="flex items-center">
+                      <LogOut size={18} className="mr-2" />
+                      Logout
+                    </div>
+                  </motion.button>
+                </>
+              ) : (
+                <motion.button
+                  whileHover={{ scale: 1.02, x: 5 }}
+                  onClick={() => {
+                    navigate("/ulogin");
+                    setIsOpen(false);
+                  }}
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-gray-800"
+                >
+                  <div className="flex items-center">
+                    <LogIn size={18} className="mr-2" />
+                    Login
+                  </div>
+                </motion.button>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
