@@ -46,7 +46,8 @@
     "redux-persist": "^6.0.0",
     "sweetalert2": "^11.17.2",
     "swiper": "^11.2.2",
-    "tailwindcss": "^4.0.3"
+    "tailwindcss": "^4.0.3",
+    "typical": "^7.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
