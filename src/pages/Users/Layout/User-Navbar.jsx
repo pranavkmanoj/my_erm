@@ -26,10 +26,10 @@ const Navbar1 = () => {
   };
 
   const isActive = (path) =>
-    location.pathname === path ? "text-red-500 font-semibold" : "text-gray-700 dark:text-white";
+    location.pathname === path ? "text-red-500 font-semibold" : "text-gray-800";
 
   return (
-    <nav className="bg-[#140000] border-b border-gray-600 text-white fixed top-0 left-0 right-0 z-50 shadow-md">
+    <nav className="bg-black border-b border-gray-200 text-white fixed top-0 left-0 right-0 z-50 shadow-md">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -40,7 +40,7 @@ const Navbar1 = () => {
             className="flex-shrink-0 flex items-center"
           >
             <img src={logo} className="h-8" alt="ERM Logo" />
-            <span className="ml-2 text-xl sm:text-2xl font-semibold">ERM</span>
+            <span className="ml-2 text-xl sm:text-2xl font-semibold text-white">ERM</span>
           </motion.button>
 
           {/* Desktop Navigation */}
@@ -52,7 +52,7 @@ const Navbar1 = () => {
                   whileHover={{ scale: 1.05, color: "#ef4444" }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => navigate(path)}
-                  className={`px-3 py-2 text-sm lg:text-base font-medium hover:text-red-500 transition-colors duration-300 ${isActive(path)}`}
+                  className={`px-5 py-2 text-lg font-semibold text-white hover:text-red-500 transition-colors duration-300 ${isActive(path)}`}
                 >
                   {path === "/job-listing" ? "Jobs" : path === "/view-application" ? "Applications" : "Interviews"}
                 </motion.button>
@@ -66,7 +66,7 @@ const Navbar1 = () => {
               whileHover={{ scale: 1.05, color: "#ef4444" }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate("/ulogin")}
-              className={`flex items-center space-x-1 text-sm lg:text-base font-medium hover:text-red-500 transition-colors duration-300 ${isActive("/ulogin")}`}
+              className={`flex items-center space-x-1 text-lg font-medium text-white hover:text-red-500 transition-colors duration-300 ${isActive("/ulogin")}`}
             >
               <Briefcase size={18} className="flex-shrink-0" />
               <span>Recruiter</span>
@@ -78,9 +78,9 @@ const Navbar1 = () => {
                   whileHover={{ scale: 1.05, color: "#ef4444" }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleProfileClick}
-                  className={`flex items-center space-x-1 text-sm lg:text-base font-medium hover:text-red-500 transition-colors duration-300 ${isActive("/user-profile")}`}
+                  className={`flex items-center space-x-1 text-lg font-medium text-white hover:text-red-500 transition-colors duration-300 ${isActive("/user-profile")}`}
                 >
-                  <User size={20} className="flex-shrink-0 rounded-full bg-gray-200 p-0.5 dark:bg-gray-700" />
+                  <User size={20} className="flex-shrink-0 rounded-full bg-gray-200 p-0.5" />
                   <span>Profile</span>
                 </motion.button>
 
@@ -88,7 +88,7 @@ const Navbar1 = () => {
                   whileHover={{ scale: 1.05, color: "#dc2626" }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleLogout}
-                  className="flex items-center space-x-1 text-sm lg:text-base font-medium text-red-500 hover:text-red-700 transition-colors duration-300"
+                  className="flex items-center space-x-1 text-lg font-medium text-red-500 hover:text-red-700 transition-colors duration-300"
                 >
                   <LogOut size={18} className="flex-shrink-0" />
                   <span>Logout</span>
@@ -111,7 +111,7 @@ const Navbar1 = () => {
           <div className="md:hidden flex items-center">
             <motion.button
               whileTap={{ scale: 0.9 }}
-              className="text-white focus:outline-none"
+              className="text-gray-800 focus:outline-none"
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle menu"
             >
@@ -129,7 +129,7 @@ const Navbar1 = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden bg-[#1a1a1a] shadow-lg overflow-hidden"
+            className="md:hidden bg-white shadow-lg overflow-hidden"
           >
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {["/job-listing", "/view-application", "/interview"].map((path, index) => (
@@ -140,7 +140,7 @@ const Navbar1 = () => {
                     navigate(path);
                     setIsOpen(false);
                   }}
-                  className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${isActive(path)} hover:bg-gray-800`}
+                  className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${isActive(path)} hover:bg-gray-100`}
                 >
                   {path === "/job-listing" ? "Jobs" : path === "/view-application" ? "Applications" : "Interviews"}
                 </motion.button>
@@ -152,7 +152,7 @@ const Navbar1 = () => {
                   navigate("/ulogin");
                   setIsOpen(false);
                 }}
-                className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${isActive("/ulogin")} hover:bg-gray-800`}
+                className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${isActive("/ulogin")} hover:bg-gray-100`}
               >
                 <div className="flex items-center">
                   <Briefcase size={18} className="mr-2" />
@@ -168,10 +168,10 @@ const Navbar1 = () => {
                       handleProfileClick();
                       setIsOpen(false);
                     }}
-                    className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${isActive("/user-profile")} hover:bg-gray-800`}
+                    className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${isActive("/user-profile")} hover:bg-gray-100`}
                   >
                     <div className="flex items-center">
-                      <User size={18} className="mr-2 rounded-full bg-gray-200 p-0.5 dark:bg-gray-700" />
+                      <User size={18} className="mr-2 rounded-full bg-gray-200 p-0.5" />
                       Profile
                     </div>
                   </motion.button>
@@ -182,7 +182,7 @@ const Navbar1 = () => {
                       handleLogout();
                       setIsOpen(false);
                     }}
-                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-gray-800 hover:text-red-700"
+                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-gray-100 hover:text-red-700"
                   >
                     <div className="flex items-center">
                       <LogOut size={18} className="mr-2" />
@@ -197,7 +197,7 @@ const Navbar1 = () => {
                     navigate("/ulogin");
                     setIsOpen(false);
                   }}
-                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-gray-800"
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100"
                 >
                   <div className="flex items-center">
                     <LogIn size={18} className="mr-2" />

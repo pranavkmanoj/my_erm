@@ -45,10 +45,16 @@ const UserPanel1 = () => {
 
                         <div className="mt-6 flex gap-4 justify-center">
                             <button
-                                className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:bg-blue-700 hover:scale-105"
-                                onClick={() => navigate("/")}
+                                className="px-6 py-3 bg-blue-600 text-black font-semibold rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:bg-white hover:scale-105"
+                                onClick={() => navigate("/ulogin")}
                             >
                                 Create Your Profile
+                            </button>
+                            <button
+                                className="px-6 py-3 bg-white text-black font-semibold rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:bg-blue-700 hover:scale-105"
+                                onClick={() => navigate("/Dashboard")}
+                            >
+                                DashBoard
                             </button>
                         </div>
                     </main>

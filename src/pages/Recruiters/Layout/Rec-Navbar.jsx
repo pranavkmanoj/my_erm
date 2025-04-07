@@ -15,11 +15,11 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white border-b border-gray-200 dark:bg-gray-900 fixed top-0 left-0 right-0 z-10 shadow-md flex items-center justify-between px-4 py-3 w-full">
+    <nav className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-10 shadow-md flex items-center justify-between px-4 py-3 w-full">
       {/* Logo and Brand Name */}
       <button onClick={() => navigate("/rpanel")} className="flex items-center space-x-3">
         <img src={logo} className="h-8 ml-2" alt="ERM Logo" />
-        <span className="text-2xl font-semibold dark:text-white">ERM</span>
+        <span className="text-2xl font-semibold text-black">ERM</span>
         <span className="hidden sm:inline">for Employers</span>
       </button>
 
@@ -29,11 +29,11 @@ const Navbar = () => {
       </button>
 
       {/* Menu Items */}
-      <div className={`absolute md:static bottom-0 left-0 right-0 bg-white dark:bg-gray-900 md:flex md:items-center md:space-x-6 px-4 md:px-0 py-3 md:py-0 shadow-md md:shadow-none transition-transform transform ${menuOpen ? "translate-y-0" : "translate-y-full md:translate-y-0"} flex flex-col md:flex-row md:translate-y-0`}>
+      <div className={`absolute md:static bottom-0 left-0 right-0 bg-white text-black md:flex md:items-center md:space-x-6 px-4 md:px-0 py-3 md:py-0 shadow-md md:shadow-none transition-transform transform ${menuOpen ? "translate-y-0" : "translate-y-full md:translate-y-0"} flex flex-col md:flex-row md:translate-y-0`}>
         <motion.button
           whileHover={{ scale: 1.1, color: "#ef4444" }}
           onClick={() => navigate("/Dashboard")}
-          className={`block md:inline-block text-lg font-medium px-3 py-2 transition-all duration-300 ${location.pathname === "/Dashboard" ? "text-red-500 font-semibold" : "dark:text-white hover:text-red-500"
+          className={`block md:inline-block text-lg font-medium px-3 py-2 transition-all duration-300 ${location.pathname === "/Dashboard" ? "text-red-500 font-semibold" : "dark:text-black hover:text-red-500"
             }`}
         >
           Dashboard
@@ -43,9 +43,9 @@ const Navbar = () => {
         <div className="relative group">
           <motion.button
             whileHover={{ scale: 1.1, color: "#ef4444" }}
-            className="flex items-center space-x-2 text-lg font-medium dark:text-white hover:text-red-500 transition-all"
+            className="flex items-center space-x-2 text-lg font-medium dark:text-black hover:text-red-500 transition-all"
           >
-            <User size={24} className="rounded-full bg-gray-200 p-1 dark:bg-gray-700" />
+            <User size={24} className="rounded-full bg-gray-200 p-1 dark:bg-gray-200" />
             <span>Profile</span>
           </motion.button>
           <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all flex flex-col">

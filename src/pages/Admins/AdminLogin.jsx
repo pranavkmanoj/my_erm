@@ -1,30 +1,43 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import API from '../../axiosInstance'; // Ensure your axios instance is correctly imported
 
-const UserLogin = () => {
+const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
 
-    const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+    try {
+      // Ensure the data is being sent correctly in the request body
+      const res = await API.post('/auth/admin/login', { email, password });
+      console.log("Login successful, token:", res.data.token); // Log token for debugging
 
-    const user = storedUsers.find(user => user.email === email && user.password === password);
+      // Store token in localStorage
+      localStorage.setItem('token', res.data.token);
 
-    if (user) {
-      alert('Login successful!');
-      navigate('/'); 
-    } else {
-      alert('Invalid email or password');
+      // Redirect to the dashboard
+      navigate('/apanel');
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err.response?.data?.error || 'Invalid email or password');
+    } finally {
+      setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="bg-gray-800 text-gray-100 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Admin Login</h2>
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-300">Email</label>
@@ -32,7 +45,7 @@ const UserLogin = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-500 rounded-md bg-gray-700 text-white shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               placeholder="Enter your Email Id"
               required
             />
@@ -43,7 +56,7 @@ const UserLogin = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-500 rounded-md bg-gray-700 text-white shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               placeholder="Enter your Password"
               required
             />
@@ -51,19 +64,14 @@ const UserLogin = () => {
           <button
             type="submit"
             className="w-full bg-white text-black py-2 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-bold"
+            disabled={loading}
           >
-            LOGIN
+            {loading ? 'Logging in...' : 'LOGIN'}
           </button>
         </form>
-        <p className="mt-4 text-center text-sm text-gray-300">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-teal-400 font-medium">
-            Register here
-          </Link>
-        </p>
       </div>
     </div>
   );
 };
 
-export default UserLogin;
+export default AdminLogin;

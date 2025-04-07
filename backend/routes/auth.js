@@ -1,5 +1,5 @@
 const express = require("express");
-const { register, loginUser, getAllRecruiters, getAllUsers } = require("../controllers/authController");
+const { register, loginUser,adminLogin, getAllRecruiters, getAllUsers } = require("../controllers/authController");
 
 const router = express.Router();
 
@@ -17,5 +17,8 @@ router.get("/recruiters", getAllRecruiters);
 
 // Route to fetch all registered users
 router.get("/users", getAllUsers);
+
+//Admin Login
+router.post("/admin/login", adminLogin);
 
 module.exports = router;

@@ -242,7 +242,7 @@ const ApplyJobs = () => {
                                 <div className="space-y-6">
                                     <h2 className="text-xl font-semibold text-gray-800">Application Details</h2>
                                     <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700">Cover Letter (optional)</label>
+                                        <label className="block text-sm font-medium text-gray-700">Cover Letter</label>
                                         <textarea
                                             name="coverLetter"
                                             value={formData.coverLetter}

@@ -128,7 +128,7 @@ const CVUpload = ({ bgColor = "white" }) => {
           <div className="flex flex-col sm:flex-row items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
             <div className="flex items-center gap-2">
               <FiFile className="text-gray-500" />
-              <span className="text-sm font-medium truncate">Current Resume</span>
+              <span className="text-sm font-medium truncate text-black">Current Resume</span>
             </div>
             <button
               onClick={() => window.open(cvUrl, "_blank")}
@@ -141,9 +141,8 @@ const CVUpload = ({ bgColor = "white" }) => {
 
         {/* Upload Area */}
         <label
-          className={`block w-full border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition ${
-            isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"
-          }`}
+          className={`block w-full border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"
+            }`}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
@@ -185,9 +184,8 @@ const CVUpload = ({ bgColor = "white" }) => {
         <button
           onClick={handleUpload}
           disabled={!file || uploading}
-          className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${
-            !file || uploading ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
-          }`}
+          className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${!file || uploading ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`}
         >
           {uploading ? "⏳ Uploading..." : "Upload Resume"}
         </button>

@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Recruiter = require("../models/Recruiter");
+const Admin = require("../models/admin")
 require("dotenv").config();
 
 // Register User or Recruiter
@@ -91,6 +92,39 @@ const loginUser = async (req, res, userType) => {
   }
 };
 
+//Admin Login
+const adminLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate email and password
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
+    // Find admin by email
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(400).json({ error: "Invalid email or password" });
+    }
+
+    // Check password (assuming it's plain text)
+    if (password !== admin.password) {
+      return res.status(400).json({ error: "Invalid password" });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({ id: admin._id, role: "admin" }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+    // Return the token
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error("Login error:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
 // Fetch all recruiters
 const getAllRecruiters = async (req, res) => {
   try {
@@ -115,4 +149,4 @@ const getAllUsers = async (req, res) => {
 };
 
 
-module.exports = { register, loginUser, getAllRecruiters, getAllUsers};
+module.exports = { register, loginUser,adminLogin, getAllRecruiters, getAllUsers};

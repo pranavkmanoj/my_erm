@@ -126,7 +126,7 @@ const getUserApplications = async (req, res) => {
             skills: app.skills,
             availability: app.availability,
             status: app.status,
-            appliedDate: app.createdAt, // Mongoose timestamps automatically generate this field
+            appliedDate: app.createdAt, 
             resume: app.resume,
             jobTitle: app.jobId?.jobTitle || "N/A",
             companyName: app.jobId?.companyName || "N/A"

@@ -3,7 +3,7 @@ import axiosInstance from "../../../axiosInstance";
 import { useUser } from "../../../context/AuthContext";
 
 const ShortlistedCandidates = () => {
-  const { user } = useUser();  // Get recruiter info from context
+  const { user } = useUser();  
   const [candidates, setCandidates] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [interviewDate, setInterviewDate] = useState("");
@@ -37,8 +37,7 @@ const ShortlistedCandidates = () => {
       return;
     }
 
-    setLoading(true);  // Show loading spinner
-
+    setLoading(true); 
     try {
       // 🛠️ Ensure correct fields are sent in the request body
       const response = await axiosInstance.post(
