@@ -144,9 +144,9 @@ const ApplyJobs = () => {
     const stepTitles = ["Personal Info", "Application Details", "Upload Resume"];
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="min-h-screen flex justify-center">
             <Navbar />
-            <main className="container mx-auto px-4 py-8">
+            <main className="container mx-auto px-4 py-8 pb-8 pt-24">
                 {submitted ? (
                     <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 text-center">
                         <div className="p-8">
@@ -191,11 +191,11 @@ const ApplyJobs = () => {
                                 {[1, 2, 3].map((stepNumber) => (
                                     <div key={stepNumber} className="flex flex-col items-center">
                                         <div
-                                            className={`w-10 h-10 rounded-full flex items-center justify-center ${step >= stepNumber ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"}`}
+                                            className={`w-10 h-10 rounded-full flex items-center justify-center ${step >= stepNumber ? "bg-[#FB5607] text-white" : "bg-gray-200 text-gray-600"}`}
                                         >
                                             {stepNumber}
                                         </div>
-                                        <span className={`text-sm mt-2 ${step >= stepNumber ? "text-blue-600 font-medium" : "text-gray-500"}`}>
+                                        <span className={`text-sm mt-2 ${step >= stepNumber ? "text-black font-medium" : "text-gray-500"}`}>
                                             {stepTitles[stepNumber - 1]}
                                         </span>
                                     </div>
@@ -230,7 +230,7 @@ const ApplyJobs = () => {
                                     <div className="flex justify-end">
                                         <button
                                             onClick={() => setStep(2)}
-                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                            className="px-4 py-2 bg-black text-white rounded-md hover:bg-[#FB5607] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
                                         >
                                             Next
                                         </button>
@@ -301,7 +301,7 @@ const ApplyJobs = () => {
                                         </button>
                                         <button
                                             onClick={() => setStep(3)}
-                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                            className="px-4 py-2 bg-black text-white rounded-md hover:bg-[#FB5607] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
                                         >
                                             Next
                                         </button>
@@ -350,7 +350,7 @@ const ApplyJobs = () => {
                                         <button
                                             onClick={handleSubmit}
                                             disabled={isSubmitting || !selectedFile}
-                                            className={`px-4 py-2 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'} ${!selectedFile && 'opacity-50 cursor-not-allowed'}`}
+                                            className={`px-4 py-2 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-black hover:bg-[#FB5607] focus:ring-black'} ${!selectedFile && 'opacity-50 cursor-not-allowed'}`}
                                         >
                                             {isSubmitting ? 'Submitting...' : 'Submit Application'}
                                         </button>

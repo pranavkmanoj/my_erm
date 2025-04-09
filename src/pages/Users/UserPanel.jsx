@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import axiosInstance from "../../axiosInstance";
 import Navbar from "./Layout/User-Navbar";
 import Footer from "./Layout/Footer";
-import img from "../../pages/Users/images/banner (1).webp";
+import img from "../../pages/Users/images/image.png";
 import { useUser } from "../../context/AuthContext";
 import JobCarousel from "./data/JobCarousel";
 import CvUpload from "./data/cv";
@@ -75,16 +75,6 @@ const UserPanel1 = () => {
     },
   };
 
-  const sentence = "Find the job made for you.";
-  const letterVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { type: "spring", stiffness: 300, damping: 12 }
-    }
-  };
-
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -118,23 +108,16 @@ const UserPanel1 = () => {
           </div>
         </div>
 
-        {/* Branding Section with Enlarged Image */}
+        {/* Branding Section with simple image */}
         <div className="bg-[#140000] py-16 px-6 lg:py-24">
           <div className="container mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
-            {/* Enlarged Image Container */}
-            <div className="lg:w-1/2 w-full">
-              <div className="w-full max-w-2xl mx-auto">
-                <img
-                  src={img}
-                  alt="Career Opportunities"
-                  className="w-full h-auto object-contain rounded-lg shadow-xl"
-                  style={{
-                    maxHeight: "500px",
-                    boxShadow: "0 15px 30px rgba(234, 3, 63, 0.3)"
-                  }}
-                />
-              </div>
-            </div>
+            {/* Simple Image Container */}
+            <img
+              src={img}
+              alt="Career Opportunities"
+              className="w-full max-w-[700px] h-auto mx-auto"
+            />
+
 
             <div className="lg:w-1/2 lg:pl-8 text-center lg:text-left">
               <motion.div
