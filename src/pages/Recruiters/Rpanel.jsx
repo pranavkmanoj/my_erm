@@ -11,81 +11,83 @@ const UserPanel1 = () => {
 
     const quotes = [
         {
-            quote: "The only way to do great work is to love what you do.",
-            author: "Steve Jobs"
+            quote: "Time spent on hiring is time well spent.",
+            author: "Robert Half"
         },
         {
             quote: "Innovation distinguishes between a leader and a follower.",
             author: "Steve Jobs"
         },
         {
-            quote: "Success is not final, failure is not fatal: it is the courage to continue that counts.",
-            author: "Winston Churchill"
+            quote: "Great vision without great people is irrelevant.",
+            author: "Jim Collins"
         },
         {
-            quote: "Believe you can and you're halfway there.",
-            author: "Theodore Roosevelt"
+            quote: "Acquiring the right talent is the most important key to growth. Hiring was — and still is — the most important thing we do.",
+            author: "Marc Benioff"
         },
-        // Add more quotes here
     ];
 
     return (
         <div className="flex flex-col min-h-screen">
             <Navbar />
-            <div className="flex flex-col bg-gradient-to-b from-blue-100 to-blue-200 py-20 lg:py-32">
-                <div className="flex flex-col items-center justify-center flex-grow p-6 text-center">
-                    <main className="w-full max-w-2xl">
-                        <h1 className="text-4xl font-bold mt-6 wave-heading">
+
+            {/* Main content with padding to avoid navbar overlap */}
+            <main className="flex-1 pt-16">
+                {/* Hero Section */}
+                <div className="flex flex-col bg-gradient-to-b from-[#EA033F] to-[#140000] py-16 lg:py-24 text-center">
+                    <div className="w-full max-w-3xl mx-auto px-6">
+                        <h1 className="text-4xl sm:text-5xl font-bold text-[#f7f7f7] leading-tight wave-heading whitespace-nowrap">
                             Bridging Talent with Opportunity
                         </h1>
 
-                        <p className="text-lg text-gray-600 mt-4">
-                            "The right talent isn’t just found—it’s connected. A great hiring platform bridges skill with opportunity, making recruitment seamless and impactful."
+                        <p className="text-md sm:text-lg text-[#f7f7f7] mt-4">
+                            The right talent isn’t just found—it’s connected.
+                            A great hiring platform bridges skill with opportunity, making recruitment seamless and impactful.
                         </p>
-
-                        <div className="mt-6 flex gap-4 justify-center">
+                        <div className="mt-6 flex flex-col sm:flex-row gap-4 items-center justify-center">
                             <button
-                                className="px-6 py-3 bg-blue-600 text-black font-semibold rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:bg-white hover:scale-105"
+                                className="w-full sm:w-auto px-6 py-3 bg-[#EA033F] text-[#f7f7f7] font-semibold rounded-lg shadow-md hover:bg-[#FB5607] transition-colors"
                                 onClick={() => navigate("/ulogin")}
                             >
                                 Create Your Profile
                             </button>
                             <button
-                                className="px-6 py-3 bg-white text-black font-semibold rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:bg-blue-700 hover:scale-105"
+                                className="w-full sm:w-auto px-6 py-3 bg-[#f7f7f7] text-[#140000] font-semibold rounded-lg shadow-md hover:bg-gray-300 transition-colors"
                                 onClick={() => navigate("/Dashboard")}
                             >
                                 DashBoard
                             </button>
                         </div>
-                    </main>
+                    </div>
                 </div>
-            </div>
 
-            <div className="bg-white py-20 lg:py-32">
-                <div className="container mx-auto px-4 lg:px-6">
-                    <Carousel
-                        showArrows={true}
-                        showStatus={false}
-                        showIndicators={true}
-                        infiniteLoop={true}
-                        autoPlay={true}
-                        interval={5000} // Adjust interval as needed
-                    >
-                        {quotes.map((quote, index) => (
-                            <div key={index} className="flex flex-col items-center justify-center h-full"> {/* Added h-full */}
-                                <div className="text-center"> {/* Centered content */}
-                                    <p className="text-2xl lg:text-3xl font-bold text-gray-800 mb-4">
-                                        "{quote.quote}"
-                                    </p>
-                                    <p className="text-lg text-gray-600">
-                                        - {quote.author}
-                                    </p>
+                <div className="bg-black py-20 lg:py-32">
+                    <div className="container mx-auto px-4 lg:px-6">
+                        <Carousel
+                            showArrows={true}
+                            showStatus={false}
+                            showIndicators={true}
+                            infiniteLoop={true}
+                            autoPlay={true}
+                            interval={5000} // Adjust interval as needed
+                        >
+                            {quotes.map((quote, index) => (
+                                <div key={index} className="flex flex-col items-center justify-center h-full"> {/* Added h-full */}
+                                    <div className="text-center"> {/* Centered content */}
+                                        <p className="text-2xl lg:text-3xl font-bold text-white mb-4">
+                                            "{quote.quote}"
+                                        </p>
+                                        <p className="text-lg text-white">
+                                            - {quote.author}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </Carousel>
+                            ))}
+                        </Carousel>
+                    </div>
                 </div>
-            </div>
+            </main>
 
             <Footer />
         </div>

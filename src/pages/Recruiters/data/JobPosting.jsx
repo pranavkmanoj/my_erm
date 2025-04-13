@@ -4,22 +4,31 @@ import {
   Briefcase, Building, MapPin, DollarSign, ClipboardList,
   Calendar, Layers, GraduationCap, Users, Timer, Globe
 } from "lucide-react";
+import Swal from 'sweetalert2';
 
 const JobPosting = () => {
   const [jobData, setJobData] = useState({
-    jobTitle: "", companyName: "", jobDescription: "", jobLocation: "",
-    salary: "", jobType: "Full-time", skillsRequired: "", experienceRequired: "",
-    qualifications: "", applicationDeadline: "", workMode: "Onsite",
+    jobTitle: "",
+    companyName: "",
+    jobDescription: "",
+    jobLocation: "",
+    salary: "",
+    jobType: "Full-time",
+    skillsRequired: "",
+    experienceRequired: "",
+    qualifications: "",
+    applicationDeadline: "",
+    workMode: "Onsite",
   });
 
-  const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleChange = (e) => setJobData({ ...jobData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setJobData({ ...jobData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuccessMessage("");
     setErrorMessage("");
 
     try {
@@ -39,30 +48,56 @@ const JobPosting = () => {
       );
 
       console.log("✅ Job posted successfully:", response.data);
-      setSuccessMessage("🎉 Job posted successfully!");
+      
+      // Show SweetAlert2 success message
+      Swal.fire({
+        title: 'Success!',
+        text: 'Job posted successfully!',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#EA033F',
+        background: '#ffffff',
+        iconColor: '#4CAF50',
+        timer: 3000,
+        timerProgressBar: true,
+      });
 
+      // Reset form
       setJobData({
-        jobTitle: "", companyName: "", jobDescription: "", jobLocation: "",
-        salary: "", jobType: "Full-time", skillsRequired: "", experienceRequired: "",
-        qualifications: "", applicationDeadline: "", workMode: "Onsite",
+        jobTitle: "",
+        companyName: "",
+        jobDescription: "",
+        jobLocation: "",
+        salary: "",
+        jobType: "Full-time",
+        skillsRequired: "",
+        experienceRequired: "",
+        qualifications: "",
+        applicationDeadline: "",
+        workMode: "Onsite",
       });
     } catch (error) {
       console.error("❌ Error posting job:", error.response?.data || error.message);
-      setErrorMessage(error.response?.data?.message || "Failed to post job. Please try again.");
+      const errorMsg = error.response?.data?.message || "Failed to post job. Please try again.";
+      setErrorMessage(errorMsg);
+      
+      // Show SweetAlert2 error message
+      Swal.fire({
+        title: 'Error!',
+        text: errorMsg,
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#EA033F',
+      });
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto my-10 p-8 bg-white shadow-2xl rounded-2xl border border-gray-200">
-      <h2 className="text-4xl font-extrabold text-center bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text mb-8">
+      <h2 className="text-4xl font-extrabold text-center bg-gradient-to-b from-[#EA033F] to-[#140000] text-transparent bg-clip-text mb-8">
         Post a New Job
       </h2>
 
-      {successMessage && (
-        <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-4 shadow-sm">
-          {successMessage}
-        </div>
-      )}
       {errorMessage && (
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-4 shadow-sm">
           {errorMessage}
@@ -144,9 +179,9 @@ const JobPosting = () => {
         <div className="col-span-2">
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200"
+            className="w-full bg-gradient-to-b from-[#EA033F] to-[#140000] text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200"
           >
-             Post Job
+            Post Job
           </button>
         </div>
       </form>

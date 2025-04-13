@@ -1,71 +1,139 @@
-import React, { useState } from "react";
-import { Bell, User, LogOut, Menu, X } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
-import logo from "../../../assets/logo.jpg";
+import React, { useState, useEffect } from "react";
+import { LogOut, Menu, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../../../context/AuthContext";
+import logo from "../../../assets/logo.webp";
+import { motion, AnimatePresence } from "framer-motion";
 
-const Navbar = () => {
+const Navbar1 = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
   const navigate = useNavigate();
-  const location = useLocation();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const { user, logout } = useUser();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY && currentScrollY > 60) {
+        setShowNavbar(false);
+      } else {
+        setShowNavbar(true);
+      }
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
   const handleLogout = () => {
-    localStorage.removeItem("recruiterToken"); // Assuming token is stored here
+    logout();
     navigate("/ulogin");
   };
 
   return (
-    <nav className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-10 shadow-md flex items-center justify-between px-4 py-3 w-full">
-      {/* Logo and Brand Name */}
-      <button onClick={() => navigate("/rpanel")} className="flex items-center space-x-3">
-        <img src={logo} className="h-8 ml-2" alt="ERM Logo" />
-        <span className="text-2xl font-semibold text-black">ERM</span>
-        <span className="hidden sm:inline">for Employers</span>
-      </button>
-
-      {/* Mobile Menu Toggle */}
-      <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
-        {menuOpen ? <X size={28} className="text-gray-700 dark:text-white" /> : <Menu size={28} className="text-gray-700 dark:text-white" />}
-      </button>
-
-      {/* Menu Items */}
-      <div className={`absolute md:static bottom-0 left-0 right-0 bg-white text-black md:flex md:items-center md:space-x-6 px-4 md:px-0 py-3 md:py-0 shadow-md md:shadow-none transition-transform transform ${menuOpen ? "translate-y-0" : "translate-y-full md:translate-y-0"} flex flex-col md:flex-row md:translate-y-0`}>
-        <motion.button
-          whileHover={{ scale: 1.1, color: "#ef4444" }}
-          onClick={() => navigate("/Dashboard")}
-          className={`block md:inline-block text-lg font-medium px-3 py-2 transition-all duration-300 ${location.pathname === "/Dashboard" ? "text-red-500 font-semibold" : "dark:text-black hover:text-red-500"
-            }`}
-        >
-          Dashboard
-        </motion.button>
-
-        {/* Profile Dropdown */}
-        <div className="relative group">
+    <motion.nav
+      initial={{ y: 0, opacity: 1 }}
+      animate={{ y: showNavbar ? 0 : -100, opacity: showNavbar ? 1 : 0 }}
+      transition={{ duration: 0.4, ease: "easeInOut" }}
+      className="bg-[#140000] border-b border-gray-600 text-white fixed w-full z-50 px-4 md:px-8 lg:px-10 pt-4 pb-3 shadow-md"
+    >
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo & Brand */}
           <motion.button
-            whileHover={{ scale: 1.1, color: "#ef4444" }}
-            className="flex items-center space-x-2 text-lg font-medium dark:text-black hover:text-red-500 transition-all"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate("/rpanel")}
+            className="flex-shrink-0 flex items-center"
           >
-            <User size={24} className="rounded-full bg-gray-200 p-1 dark:bg-gray-200" />
-            <span>Profile</span>
+            <img src={logo} className="h-8" alt="ERM Logo" />
+            <span className="ml-2 text-xl sm:text-2xl font-semibold">ERM</span>
           </motion.button>
-          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all flex flex-col">
-            <button className="flex items-center px-4 py-3 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-white">
-              <Bell size={20} className="text-blue-500" /> <span>Notifications</span>
-            </button>
-            <button className="flex items-center px-4 py-3 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-white">
-              <User size={20} className="text-green-500" /> <span>Account</span>
-            </button>
-            <button
-              onClick={handleLogout}
-              className="flex items-center px-4 py-3 text-red-500 hover:bg-gray-200 dark:hover:bg-gray-700 font-semibold"
+
+          {/* Right Side Items */}
+          <div className="hidden md:flex md:items-center md:space-x-6">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate("/dashboard/job-posting")}
+              className="text-sm lg:text-base font-medium hover:text-red-500 transition-colors duration-300"
             >
-              <LogOut size={20} className="text-red-500" /> <span>Logout</span>
-            </button>
+              Dashboard
+            </motion.button>
+
+            {user && (
+              <motion.button
+                whileHover={{ scale: 1.05, color: "#dc2626" }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleLogout}
+                className="flex items-center space-x-1 text-sm lg:text-base font-medium text-red-500 hover:text-red-700 transition-colors duration-300"
+              >
+                <LogOut size={18} className="flex-shrink-0" />
+                <span>Logout</span>
+              </motion.button>
+            )}
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <div className="md:hidden flex items-center">
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              className="text-white focus:outline-none"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </motion.button>
           </div>
         </div>
       </div>
-    </nav>
+
+      {/* Mobile Menu Items */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden bg-[#1a1a1a] shadow-lg overflow-hidden"
+          >
+            <div className="px-4 py-3 space-y-1">
+              <motion.button
+                whileHover={{ scale: 1.02, x: 5 }}
+                onClick={() => {
+                  navigate("/dashboard");
+                  setIsOpen(false);
+                }}
+                className="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-gray-800"
+              >
+                Dashboard
+              </motion.button>
+
+              {user && (
+                <motion.button
+                  whileHover={{ scale: 1.02, x: 5 }}
+                  onClick={() => {
+                    handleLogout();
+                    setIsOpen(false);
+                  }}
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-gray-800 hover:text-red-700"
+                >
+                  <div className="flex items-center">
+                    <LogOut size={18} className="mr-2" />
+                    Logout
+                  </div>
+                </motion.button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.nav>
   );
 };
 
-export default Navbar;
+export default Navbar1;

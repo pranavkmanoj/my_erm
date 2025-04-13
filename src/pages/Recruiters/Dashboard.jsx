@@ -20,7 +20,7 @@ function Dashboard() {
             </div>
 
             {/* Sidebar & Main Content */}
-            <div className="flex flex-1 pt-16 flex-col md:flex-row">
+            <div className="flex flex-1 pt-20 flex-col md:flex-row">
                 <Sidebar className="w-full md:w-64 fixed md:relative" />
 
                 {/* Main Content Area (Updated via Nested Routes) */}

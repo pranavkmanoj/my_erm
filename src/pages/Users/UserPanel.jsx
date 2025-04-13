@@ -117,8 +117,6 @@ const UserPanel1 = () => {
               alt="Career Opportunities"
               className="w-full max-w-[700px] h-auto mx-auto"
             />
-
-
             <div className="lg:w-1/2 lg:pl-8 text-center lg:text-left">
               <motion.div
                 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#EA033F] via-[#FB5607] to-[#f7f7f7] text-transparent bg-clip-text mb-8"

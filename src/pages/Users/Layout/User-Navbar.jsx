@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Bell, User, LogOut, Briefcase, Menu, X, LogIn } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "../../../context/AuthContext";
-import logo from "../../../assets/logo.jpg";
+import logo from "../../../assets/logo.webp";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar1 = () => {
@@ -19,9 +19,9 @@ const Navbar1 = () => {
       const currentScrollY = window.scrollY;
 
       if (currentScrollY > lastScrollY && currentScrollY > 60) {
-        setShowNavbar(false); // Hide navbar on scroll down
+        setShowNavbar(false); 
       } else {
-        setShowNavbar(true); // Show navbar on scroll up
+        setShowNavbar(true); 
       }
 
       setLastScrollY(currentScrollY);
