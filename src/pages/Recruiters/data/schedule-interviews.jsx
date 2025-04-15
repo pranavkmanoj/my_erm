@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../axiosInstance";
 import { useUser } from "../../../context/AuthContext";
 
-const ShortlistedCandidates = () => {
+const ScheduleInterview = () => {
   const { user } = useUser();
   const [candidates, setCandidates] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
@@ -85,8 +85,8 @@ const ShortlistedCandidates = () => {
 
       {message.text && (
         <div className={`p-4 mb-6 rounded-lg ${message.type === "success"
-            ? "bg-green-100 text-green-800"
-            : "bg-red-100 text-red-800"
+          ? "bg-green-100 text-green-800"
+          : "bg-red-100 text-red-800"
           }`}>
           {message.text}
         </div>
@@ -184,8 +184,8 @@ const ShortlistedCandidates = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                   <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${selectedCandidate.status === "scheduled"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-yellow-100 text-yellow-800"
+                    ? "bg-green-100 text-green-800"
+                    : "bg-yellow-100 text-yellow-800"
                     }`}>
                     {selectedCandidate.status}
                   </div>
@@ -216,4 +216,4 @@ const ShortlistedCandidates = () => {
   );
 };
 
-export default ShortlistedCandidates;
+export default ScheduleInterview;
