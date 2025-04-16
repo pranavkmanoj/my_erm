@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import axiosInstance from "../../axiosInstance";
-import img1 from "./images/picture.png";
+import img1 from "./images/login image.webp";
+import logo from "../../assets/logo.webp";
 import { useUser } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 
@@ -75,7 +76,17 @@ const UserLogin = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden bg-gray-50">
+    <div className="relative min-h-screen flex flex-col overflow-hidden bg-gradient-to-b from-[#FB5607] to-[#140000]">
+      <div
+        className="absolute top-6 left-6 cursor-pointer"
+        onClick={() => navigate("/")}
+      >
+        <img
+          src={logo}
+          alt="Company Logo"
+          className="h-12 w-auto object-contain"
+        />
+      </div>
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(10)].map((_, i) => (
           <motion.div
@@ -86,7 +97,7 @@ const UserLogin = () => {
               height: `${Math.random() * 120 + 50}px`,
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
-              backgroundColor: i % 2 === 0 ? "rgba(0, 123, 255, 0.5)" : "rgba(123, 31, 162, 0.5)",
+              backgroundColor: i % 2 === 0 ? "rgba(234, 3, 63, 0.3)" : "rgba(251, 86, 7, 0.3)",
             }}
             variants={floatingVariants}
             animate="animate"
@@ -95,93 +106,120 @@ const UserLogin = () => {
       </div>
 
       <div className="relative z-10 flex items-center justify-center flex-grow p-4">
-        <div className="flex bg-white rounded-lg shadow-lg max-w-4xl w-full h-auto overflow-hidden">
-          <div className="hidden md:flex flex-col items-center justify-center w-1/2 bg-gray-100 p-6">
-            <img src={img1} alt="Login Illustration" className="w-3/4" />
-            <h2 className="text-xl font-bold mt-4 text-center text-gray-800">
-              Connect. Apply. Succeed. Your future starts here.
-            </h2>
+        <div className="flex bg-white rounded-xl shadow-2xl max-w-4xl w-full h-auto overflow-hidden border">
+          {/* Left Side with Image and Overlay Text */}
+          <div className="hidden md:flex w-1/2 relative">
+            <img
+              src={img1}
+              alt="Login Illustration"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
+              <motion.h2
+                className="text-3xl font-bold text-white mb-4 leading-tight"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                Unlock Your Professional Journey
+              </motion.h2>
+              <motion.p
+                className="text-xl text-white/90 font-light mb-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                Where talent meets opportunity
+              </motion.p>
+              <motion.div
+                className="w-16 h-1 bg-white/50 rounded-full"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              />
+            </div>
           </div>
 
-          <div className="w-full md:w-1/2 flex flex-col justify-center p-8">
-            <h2 className="text-2xl font-bold text-gray-800 text-center">Login</h2>
-            <p className="text-center text-gray-600">Select your role to continue</p>
+          {/* Right Side with Form */}
+          <div className="w-full md:w-1/2 flex flex-col justify-center p-8 bg-black">
+            <h2 className="text-3xl font-bold text-white text-center mb-2">Welcome Back</h2>
+            <p className="text-center text-white mb-6">Select your role to continue</p>
 
-            <div className="relative flex border-b mt-6">
+            <div className="relative flex border-b border-gray-200 mt-2">
               <button
-                className={`flex-1 text-center py-2 text-lg font-medium transition ${activeTab === "user" ? "text-blue-600" : "text-gray-500 hover:text-gray-700"
+                className={`flex-1 text-center py-2 text-lg font-medium transition ${activeTab === "user" ? "text-[#EA033F]" : "text-white hover:text-gray-200"
                   }`}
                 onClick={() => setActiveTab("user")}
               >
                 User
               </button>
               <button
-                className={`flex-1 text-center py-2 text-lg font-medium transition ${activeTab === "recruiter" ? "text-green-600" : "text-gray-500 hover:text-gray-700"
+                className={`flex-1 text-center py-2 text-lg font-medium transition ${activeTab === "recruiter" ? "text-[#FB5607]" : "text-white hover:text-gray-200"
                   }`}
                 onClick={() => setActiveTab("recruiter")}
               >
                 Recruiter
               </button>
 
-              {/* ✅ Admin Login Link */}
               <Link
                 to="/alogin"
-                className="flex-1 text-center py-2 text-lg font-medium text-red-600 hover:text-red-700 transition"
+                className="flex-1 text-center py-2 text-lg font-medium text-white hover:text-[#EA033F] transition"
               >
                 Admin
               </Link>
 
               <motion.div
                 className={`absolute bottom-0 h-1 transition-all duration-300 ease-in-out ${activeTab === "user"
-                  ? "left-0 w-1/3 bg-blue-600"
+                  ? "left-0 w-1/3 bg-[#EA033F]"
                   : activeTab === "recruiter"
-                    ? "left-1/3 w-1/3 bg-green-600"
-                    : "left-2/3 w-1/3 bg-red-600"
+                    ? "left-1/3 w-1/3 bg-[#FB5607]"
+                    : "left-2/3 w-1/3 bg-white"
                   }`}
                 layoutId="underline"
               />
             </div>
 
-            {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+            {error && <p className="text-[#EA033F] text-center mt-4 font-medium">{error}</p>}
 
-            <form onSubmit={handleSubmit} className="mt-6">
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Email Address</label>
+            <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">Email Address</label>
                 <input
                   type="email"
                   name="email"
                   value={formData[activeTab].email}
                   onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full px-4 py-3 border bg-white border-white rounded-lg focus:ring-2 focus:ring-[#EA033F] focus:border-transparent"
                   placeholder="Enter your email"
                   required
                 />
               </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Password</label>
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">Password</label>
                 <input
                   type="password"
                   name="password"
                   value={formData[activeTab].password}
                   onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full px-4 py-3 border bg-white border-gray-300 rounded-lg focus:ring-2 focus:ring-[#EA033F] focus:border-transparent"
                   placeholder="Enter your password"
                   required
                 />
               </div>
               <button
                 type="submit"
-                className={`w-full text-white py-2 px-4 rounded-md transition ${activeTab === "user" ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"
-                  }`}
+                className={`w-full text-white py-3 px-4 rounded-lg font-medium transition-all ${activeTab === "user"
+                  ? "bg-[#EA033F] hover:bg-[#d00239] shadow-md hover:shadow-lg"
+                  : "bg-[#FB5607] hover:bg-[#e04d06] shadow-md hover:shadow-lg"}`}
                 disabled={loading}
               >
-                {loading ? "Logging in..." : `Login as ${activeTab === "user" ? "User" : "Recruiter"}`}
+                {loading ? "Processing..." : `Login as ${activeTab === "user" ? "User" : "Recruiter"}`}
               </button>
             </form>
 
-            <p className="mt-4 text-center text-gray-600">
+            <p className="mt-6 text-center text-white">
               Don't have an account?{" "}
-              <Link to="/uregister" className="text-blue-600 hover:underline">
+              <Link to="/uregister" className="text-[#EA033F] hover:underline font-medium">
                 Sign up here
               </Link>
             </p>

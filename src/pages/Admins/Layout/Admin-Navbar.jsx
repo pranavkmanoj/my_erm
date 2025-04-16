@@ -9,7 +9,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   return (
-    <header className="bg-gray-900 text-white p-4 flex justify-between items-center relative">
+    <header className="bg-black text-white p-4 flex justify-between items-center relative">
       {/* Logo & ERM - Click to Navigate */}
       <div
         className="text-xl font-bold flex items-center cursor-pointer"

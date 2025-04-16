@@ -8,7 +8,7 @@ const Sidebar = () => {
   const [jobMenuOpen, setJobMenuOpen] = useState(false);
 
   return (
-    <aside className="w-64 bg-gray-800 text-white p-1">
+    <aside className="w-64 bg-black text-white p-1">
       <nav className="flex flex-col gap-2">
         {/* Dashboard */}
         <div
@@ -33,12 +33,7 @@ const Sidebar = () => {
               >
                 View Company Registrations
               </div>
-              {/* <div
-                className="p-2 hover:bg-gray-600 rounded cursor-pointer"
-                onClick={() => navigate("/apanel/Approved-Company")}
-              >
-                Approved Companies
-              </div> */}
+
             </div>
           )}
         </div>
@@ -59,12 +54,6 @@ const Sidebar = () => {
               >
                 Total Number of Registrations
               </div>
-              <div
-                className="p-2 hover:bg-gray-600 rounded cursor-pointer"
-                onClick={() => navigate("/apanel/emp-delete")}
-              >
-                Delete Employee Account
-              </div>
             </div>
           )}
         </div>
@@ -84,12 +73,6 @@ const Sidebar = () => {
                 onClick={() => navigate("/apanel/View-total-job-posted")}
               >
                 Total Job Posted
-              </div>
-              <div
-                className="p-2 hover:bg-gray-600 rounded cursor-pointer"
-                onClick={() => navigate("/apanel/Job-filter")}
-              >
-                Filter Jobs
               </div>
             </div>
           )}

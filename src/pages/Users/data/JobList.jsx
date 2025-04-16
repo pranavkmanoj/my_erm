@@ -49,7 +49,7 @@ const JobList = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#140000] text-white">
+    <div className="min-h-screen bg-gradient-to-b from-[#FB5607] to-[#140000] text-white">
       <Navbar />
 
       {/* Main Content Wrapper */}
@@ -60,7 +60,7 @@ const JobList = () => {
             <input
               type="text"
               placeholder="Search by title, company, or location..."
-              className="w-full p-4 pl-12 border border-gray-400 bg-white rounded-md shadow-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-[#FB5607]"
+              className="w-full p-4 pl-12 border border-white bg-black rounded-md shadow-lg text-lg text-white focus:outline-none focus:ring-2 focus:ring-[#FB5607]"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -71,7 +71,7 @@ const JobList = () => {
         {/* Job List */}
         <div className={`${selectedJob ? 'blur-sm' : ''}`}>
           {loading ? (
-            <p className="text-center text-gray-400">Loading jobs...</p>
+            <p className="text-center text-white">Loading jobs...</p>
           ) : error ? (
             <p className="text-center text-red-500">{error}</p>
           ) : (
@@ -80,12 +80,12 @@ const JobList = () => {
                 filteredJobs.map((job) => (
                   <div
                     key={job._id}
-                    className="bg-white text-[#140000] p-4 shadow-md rounded-md transition-transform transform hover:scale-105 cursor-pointer"
+                    className="bg-black text-white p-4 shadow-md rounded-md transition-transform transform hover:scale-105 cursor-pointer"
                   >
                     <h3 className="text-lg font-bold text-[#FB5607]">{job.jobTitle}</h3>
-                    <p className="text-gray-700">{job.companyName}</p>
-                    <p className="text-gray-700">{job.jobLocation}</p>
-                    <p className="text-gray-700">Salary: ₹{job.salary}</p>
+                    <p className="text-white">{job.companyName}</p>
+                    <p className="text-white">{job.jobLocation}</p>
+                    <p className="text-white">Salary: ₹{job.salary}</p>
                     <button
                       onClick={() => handleViewDetails(job)}
                       className="mt-4 bg-[#FB5607] hover:bg-orange-700 text-white font-bold py-2 px-4 rounded transition"

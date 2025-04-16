@@ -23,7 +23,7 @@ const AdminPanel = () => {
     <div className="flex flex-col h-screen">
       <Navbar />
       <div className="flex flex-1">
-        <div className="w-64 bg-gray-800 text-white">
+        <div className="w-64 bg-black text-white">
           <Sidebar />
         </div>
         <main className="p-6 flex-grow bg-gray-100 pt-4 relative overflow-hidden">
@@ -33,8 +33,6 @@ const AdminPanel = () => {
             <Route path="Total-No.-Jobs" element={<TotalNoOfJobs />} />
             <Route path="Dash-board" element={<AdminDashboard />} />
             <Route path="View-total-job-posted" element={<ViewJobPost />} />
-            <Route path="Job-filter" element={<JobFilter />} />
-            <Route path="emp-delete" element={<DeleteEmployee />} />
           </Routes>
 
           {location.pathname === "/apanel" && (

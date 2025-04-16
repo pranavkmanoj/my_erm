@@ -70,8 +70,8 @@ const ViewApplications = () => {
 
   return (
     <div
-      className="min-h-screen bg-gray-50 bg-fixed bg-cover bg-center"
-      style={{ backgroundImage: `url(${background})` }}
+      className="min-h-screen bg-gradient-to-b from-black to-white bg-fixed bg-cover bg-center"
+    // style={{ backgroundImage: `url(${background})` }}
     >
       <Navbar />
 
