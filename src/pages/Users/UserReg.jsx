@@ -95,7 +95,7 @@ const UserReg = () => {
         <img
           src={logo}
           alt="Company Logo"
-          className="h-12 w-auto object-contain"
+          className="w-[90px] md:w-[120px]"
         />
       </div>
 

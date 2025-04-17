@@ -19,9 +19,9 @@ const Navbar1 = () => {
       const currentScrollY = window.scrollY;
 
       if (currentScrollY > lastScrollY && currentScrollY > 60) {
-        setShowNavbar(false); 
+        setShowNavbar(false);
       } else {
-        setShowNavbar(true); 
+        setShowNavbar(true);
       }
 
       setLastScrollY(currentScrollY);
@@ -63,8 +63,7 @@ const Navbar1 = () => {
             onClick={() => navigate("/")}
             className="flex-shrink-0 flex items-center"
           >
-            <img src={logo} className="h-8" alt="ERM Logo" />
-            <span className="ml-2 text-xl sm:text-2xl font-semibold">ERM</span>
+            <img src={logo} className="w-[90px] md:w-[120px]" alt="ERM Logo" />
           </motion.button>
 
           <div className="hidden md:flex md:ml-6 md:items-center md:space-x-4 lg:space-x-8">
@@ -75,7 +74,7 @@ const Navbar1 = () => {
                   whileHover={{ scale: 1.05, color: "#ef4444" }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => navigate(path)}
-                  className={`px-3 py-2 text-sm lg:text-base font-medium hover:text-red-500 transition-colors duration-300 ${isActive(path)}`}
+                  className={`px-3 py-2 text-[18px] font-medium hover:text-red-500 transition-colors duration-300 ${isActive(path)}`}
                 >
                   {path === "/job-listing" ? "Jobs" : path === "/view-application" ? "Applications" : "Interviews"}
                 </motion.button>
@@ -88,9 +87,9 @@ const Navbar1 = () => {
               whileHover={{ scale: 1.05, color: "#ef4444" }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate("/ulogin")}
-              className={`flex items-center space-x-1 text-sm lg:text-base font-medium hover:text-red-500 transition-colors duration-300 ${isActive("/ulogin")}`}
+              className={`flex items-center space-x-1 text-[18px] font-medium hover:text-red-500 transition-colors duration-300 ${isActive("/ulogin")}`}
             >
-              <Briefcase size={18} className="flex-shrink-0" />
+              <Briefcase size={20} className="flex-shrink-0" />
               <span>Recruiter</span>
             </motion.button>
 
@@ -100,7 +99,7 @@ const Navbar1 = () => {
                   whileHover={{ scale: 1.05, color: "#ef4444" }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleProfileClick}
-                  className={`flex items-center space-x-1 text-sm lg:text-base font-medium hover:text-red-500 transition-colors duration-300 ${isActive("/user-profile")}`}
+                  className={`flex items-center space-x-1 text-[18px] font-medium hover:text-red-500 transition-colors duration-300 ${isActive("/user-profile")}`}
                 >
                   <User size={20} className="flex-shrink-0 rounded-full bg-gray-200 p-0.5 dark:bg-gray-700" />
                   <span>Profile</span>
@@ -110,9 +109,9 @@ const Navbar1 = () => {
                   whileHover={{ scale: 1.05, color: "#dc2626" }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleLogout}
-                  className="flex items-center space-x-1 text-sm lg:text-base font-medium text-red-500 hover:text-red-700 transition-colors duration-300"
+                  className="flex items-center space-x-1 text-[18px] font-medium text-red-500 hover:text-red-700 transition-colors duration-300"
                 >
-                  <LogOut size={18} className="flex-shrink-0" />
+                  <LogOut size={20} className="flex-shrink-0" />
                   <span>Logout</span>
                 </motion.button>
               </>
@@ -121,9 +120,9 @@ const Navbar1 = () => {
                 whileHover={{ scale: 1.05, color: "#ef4444" }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate("/ulogin")}
-                className="flex items-center space-x-1 text-sm lg:text-base font-medium hover:text-red-500 transition-colors duration-300"
+                className="flex items-center space-x-1 text-[18px] font-medium hover:text-red-500 transition-colors duration-300"
               >
-                <LogIn size={18} className="flex-shrink-0" />
+                <LogIn size={20} className="flex-shrink-0" />
                 <span>Login</span>
               </motion.button>
             )}
@@ -136,7 +135,7 @@ const Navbar1 = () => {
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle menu"
             >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
+              {isOpen ? <X size={28} /> : <Menu size={28} />}
             </motion.button>
           </div>
         </div>
@@ -160,7 +159,7 @@ const Navbar1 = () => {
                     navigate(path);
                     setIsOpen(false);
                   }}
-                  className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${isActive(path)} hover:bg-gray-800`}
+                  className={`block w-full text-left px-3 py-3 rounded-md text-[20px] font-medium ${isActive(path)} hover:bg-gray-800`}
                 >
                   {path === "/job-listing" ? "Jobs" : path === "/view-application" ? "Applications" : "Interviews"}
                 </motion.button>
@@ -172,10 +171,10 @@ const Navbar1 = () => {
                   navigate("/ulogin");
                   setIsOpen(false);
                 }}
-                className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${isActive("/ulogin")} hover:bg-gray-800`}
+                className={`block w-full text-left px-3 py-3 rounded-md text-[20px] font-medium ${isActive("/ulogin")} hover:bg-gray-800`}
               >
                 <div className="flex items-center">
-                  <Briefcase size={18} className="mr-2" />
+                  <Briefcase size={20} className="mr-2" />
                   Recruiter
                 </div>
               </motion.button>
@@ -188,10 +187,10 @@ const Navbar1 = () => {
                       handleProfileClick();
                       setIsOpen(false);
                     }}
-                    className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${isActive("/user-profile")} hover:bg-gray-800`}
+                    className={`block w-full text-left px-3 py-3 rounded-md text-[20px] font-medium ${isActive("/user-profile")} hover:bg-gray-800`}
                   >
                     <div className="flex items-center">
-                      <User size={18} className="mr-2 rounded-full bg-gray-200 p-0.5 dark:bg-gray-700" />
+                      <User size={20} className="mr-2 rounded-full bg-gray-200 p-0.5 dark:bg-gray-700" />
                       Profile
                     </div>
                   </motion.button>
@@ -202,10 +201,10 @@ const Navbar1 = () => {
                       handleLogout();
                       setIsOpen(false);
                     }}
-                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-gray-800 hover:text-red-700"
+                    className="block w-full text-left px-3 py-3 rounded-md text-[20px] font-medium text-red-500 hover:bg-gray-800 hover:text-red-700"
                   >
                     <div className="flex items-center">
-                      <LogOut size={18} className="mr-2" />
+                      <LogOut size={20} className="mr-2" />
                       Logout
                     </div>
                   </motion.button>
@@ -217,10 +216,10 @@ const Navbar1 = () => {
                     navigate("/ulogin");
                     setIsOpen(false);
                   }}
-                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-gray-800"
+                  className="block w-full text-left px-3 py-3 rounded-md text-[20px] font-medium hover:bg-gray-800"
                 >
                   <div className="flex items-center">
-                    <LogIn size={18} className="mr-2" />
+                    <LogIn size={20} className="mr-2" />
                     Login
                   </div>
                 </motion.button>

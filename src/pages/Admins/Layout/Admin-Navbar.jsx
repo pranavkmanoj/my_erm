@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import img from "../../../assets/logo.jpg";
+import img from "../../../assets/logo.webp";
 import Profile from "./Navbar-Profile";
 
 const Navbar = () => {
@@ -15,8 +15,7 @@ const Navbar = () => {
         className="text-xl font-bold flex items-center cursor-pointer"
         onClick={() => navigate("/apanel")}
       >
-        <img src={img} alt="Logo" className="h-8 w-8 mr-2" />
-        ERM
+        <img src={img} alt="Logo" className="w-[90px] md:w-[120px]" />
       </div>
 
       <div className="flex items-center gap-6">

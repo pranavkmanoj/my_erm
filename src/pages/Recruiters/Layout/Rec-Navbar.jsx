@@ -42,51 +42,53 @@ const Navbar1 = () => {
     >
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo & Brand */}
+          {/* Logo on the left */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate("/rpanel")}
             className="flex-shrink-0 flex items-center"
           >
-            <img src={logo} className="h-8" alt="ERM Logo" />
-            <span className="ml-2 text-xl sm:text-2xl font-semibold">ERM</span>
+            <img src={logo} className="w-[90px] md:w-[130px]" alt="ERM Logo" />
           </motion.button>
 
-          {/* Right Side Items */}
-          <div className="hidden md:flex md:items-center md:space-x-6">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate("/dashboard/job-posting")}
-              className="text-sm lg:text-base font-medium hover:text-red-500 transition-colors duration-300"
-            >
-              Dashboard
-            </motion.button>
-
-            {user && (
+          {/* Navigation items on the right */}
+          <div className="flex items-center gap-6">
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-10">
               <motion.button
-                whileHover={{ scale: 1.05, color: "#dc2626" }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={handleLogout}
-                className="flex items-center space-x-1 text-sm lg:text-base font-medium text-red-500 hover:text-red-700 transition-colors duration-300"
+                onClick={() => navigate("/dashboard/job-posting")}
+                className="text-[18px] font-medium hover:text-red-500 transition-colors duration-300"
               >
-                <LogOut size={18} className="flex-shrink-0" />
-                <span>Logout</span>
+                Dashboard
               </motion.button>
-            )}
-          </div>
 
-          {/* Mobile Menu Toggle */}
-          <div className="md:hidden flex items-center">
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              className="text-white focus:outline-none"
-              onClick={() => setIsOpen(!isOpen)}
-              aria-label="Toggle menu"
-            >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </motion.button>
+              {user && (
+                <motion.button
+                  whileHover={{ scale: 1.05, color: "#dc2626" }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleLogout}
+                  className="flex items-center space-x-1 text-[18px] font-medium text-red-500 hover:text-red-700 transition-colors duration-300"
+                >
+                  <LogOut size={20} className="flex-shrink-0" />
+                  <span>Logout</span>
+                </motion.button>
+              )}
+            </div>
+
+            {/* Mobile Menu Toggle */}
+            <div className="md:hidden flex items-center">
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                className="text-white focus:outline-none"
+                onClick={() => setIsOpen(!isOpen)}
+                aria-label="Toggle menu"
+              >
+                {isOpen ? <X size={28} /> : <Menu size={28} />}
+              </motion.button>
+            </div>
           </div>
         </div>
       </div>
@@ -108,7 +110,7 @@ const Navbar1 = () => {
                   navigate("/dashboard");
                   setIsOpen(false);
                 }}
-                className="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-gray-800"
+                className="block w-full text-left px-3 py-3 rounded-md text-[20px] font-medium hover:bg-gray-800"
               >
                 Dashboard
               </motion.button>
@@ -120,10 +122,10 @@ const Navbar1 = () => {
                     handleLogout();
                     setIsOpen(false);
                   }}
-                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-gray-800 hover:text-red-700"
+                  className="block w-full text-left px-3 py-3 rounded-md text-[20px] font-medium text-red-500 hover:bg-gray-800 hover:text-red-700"
                 >
                   <div className="flex items-center">
-                    <LogOut size={18} className="mr-2" />
+                    <LogOut size={20} className="mr-2" />
                     Logout
                   </div>
                 </motion.button>
