@@ -125,7 +125,7 @@ const ViewInterviews = () => {
                 )}
             </div>
 
-            <Footer />
+
         </div>
     );
 };

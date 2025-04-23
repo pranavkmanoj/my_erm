@@ -5,7 +5,7 @@ import { useUser } from "../../../context/AuthContext";
 import logo from "../../../assets/logo.webp";
 import { motion, AnimatePresence } from "framer-motion";
 
-const Navbar1 = () => {
+const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -232,4 +232,4 @@ const Navbar1 = () => {
   );
 };
 
-export default Navbar1;
+export default Navbar;

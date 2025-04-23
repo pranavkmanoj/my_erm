@@ -1,55 +1,79 @@
-import React from "react";
-import { FaFacebook, FaXTwitter, FaInstagram, FaGithub, FaLinkedin } from "react-icons/fa6";
+import { FaFacebookF, FaInstagram, FaYoutube, FaLinkedinIn } from "react-icons/fa";
+import logo from "../../../assets/logo.webp"; // Make sure the path matches your project
 
 const Footer = () => {
   return (
-    <footer className="bg-black text-foreground py-6 text-white">
-      <div className="container mx-auto flex flex-col items-center">
-        <div className="flex flex-wrap justify-center mb-4">
-          <div className="mx-4">
-            <h4 className="font-semibold mb-3">ERM</h4>
-            <ul className="list-none mb-1">
-              <li><a href="#" className="text-muted-foreground hover:text-primary">About / Press</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Awards</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Blog</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Contact Us</a></li>
-            </ul>
+    <footer className="bg-black text-white pt-12 pb-6">
+      <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-start">
+
+        {/* Left Side: Social Media + Copyright */}
+        <div className="flex flex-col space-y-6 w-full md:w-2/3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm font-medium">
+
+            {/* LinkedIn */}
+            <div className="flex flex-col w-full">
+              <hr className="w-full border-gray-600 mb-2" />
+              <a
+                href="https://www.linkedin.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex justify-between items-center hover:text-blue-400 transition-colors duration-300"
+              >
+                <span>LinkedIn</span>
+                <FaLinkedinIn size={20} />
+              </a>
+            </div>
+
+            {/* Facebook */}
+            <div className="flex flex-col w-full">
+              <hr className="w-full border-gray-600 mb-2" />
+              <a
+                href="https://www.facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex justify-between items-center hover:text-blue-600 transition-colors duration-300"
+              >
+                <span>Facebook</span>
+                <FaFacebookF size={20} />
+              </a>
+            </div>
+
+            {/* Instagram */}
+            <div className="flex flex-col w-full">
+              <hr className="w-full border-gray-600 mb-2" />
+              <a
+                href="https://www.instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex justify-between items-center hover:text-pink-500 transition-colors duration-300"
+              >
+                <span>Instagram</span>
+                <FaInstagram size={20} />
+              </a>
+            </div>
+
+            {/* YouTube */}
+            <div className="flex flex-col w-full">
+              <hr className="w-full border-gray-600 mb-2" />
+              <a
+                href="https://www.youtube.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex justify-between items-center hover:text-red-500 transition-colors duration-300"
+              >
+                <span>YouTube</span>
+                <FaYoutube size={20} />
+              </a>
+            </div>
           </div>
-          <div className="mx-4">
-            <h4 className="font-semibold mb-3">Employers</h4>
-            <ul className="list-none">
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Get a FREE Employer Account</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Employer Centre</a></li>
-            </ul>
-          </div>
-          <div className="mx-4">
-            <h4 className="font-semibold mb-3">Information</h4>
-            <ul className="list-none">
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Help</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Guidelines</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Terms of Use</a></li>
-            </ul>
-          </div>
-          <div className="mx-4">
-            <h4 className="font-semibold mb-3">Work With Us</h4>
-            <ul className="list-none">
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Advertisers</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary">Careers</a></li>
-            </ul>
-          </div>
+
+          {/* Copyright */}
+          <p className="text-sm text-gray-400 mt-6">© 2025 Core Cognitics. All rights reserved.</p>
         </div>
-        <div className="flex space-x-4">
-          <a href="#" className="text-muted-foreground hover:text-primary"><FaFacebook size={24} /></a>
-          <a href="#" className="text-muted-foreground hover:text-primary"><FaXTwitter size={24} /></a>
-          <a href="#" className="text-muted-foreground hover:text-primary"><FaInstagram size={24} /></a>
-          <a href="#" className="text-muted-foreground hover:text-primary"><FaGithub size={24} /></a>
-          <a href="#" className="text-muted-foreground hover:text-primary"><FaLinkedin size={24} /></a>
-        </div>
-        <div className="mt-4 text-sm text-muted-foreground">
-          <span>Browse by: Companies, Jobs, Locations, Recent posts</span>
-        </div>
-        <div className="mt-2 text-sm text-muted-foreground text-center">
-          <span>Copyright ©</span>
+
+        {/* Right Side: Logo */}
+        <div className="mt-10 md:mt-0">
+          <img src={logo} alt="Core Cognitics Logo" className="h-16 object-contain" />
         </div>
       </div>
     </footer>
