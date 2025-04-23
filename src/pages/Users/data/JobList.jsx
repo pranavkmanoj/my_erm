@@ -86,6 +86,9 @@ const JobList = () => {
                     <p className="text-white">{job.companyName}</p>
                     <p className="text-white">{job.jobLocation}</p>
                     <p className="text-white">Salary: ₹{job.salary}</p>
+                    <div className="mt-2 text-xs text-gray-400">
+                      Posted: {new Date(job.createdAt).toLocaleDateString()}
+                    </div>
                     <button
                       onClick={() => handleViewDetails(job)}
                       className="mt-4 bg-[#FB5607] hover:bg-orange-700 text-white font-bold py-2 px-4 rounded transition"
