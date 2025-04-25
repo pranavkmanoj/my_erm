@@ -30,8 +30,7 @@ const getShortlistedCandidates = async (req, res) => {
 
 //Schedule interview
 const scheduleInterview = async (req, res) => {
-  console.log("Incoming Request Body:", req.body);  // 🛠️ Log the request payload for debugging
-
+  console.log("Incoming Request Body:", req.body);  
   try {
     const { jobApplicationId, interviewDate } = req.body;
 

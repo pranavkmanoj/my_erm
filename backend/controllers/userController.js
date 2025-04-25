@@ -6,21 +6,17 @@ const uploadCv = async (req, res) => {
   try {
     const userId = req.params.id;
 
-    if (!req.file) {
+    if (!req.file || !req.file.path) {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    // Upload file to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "resumes",
-      resource_type: "auto",
-      upload_preset: "signed_upload"
-    });
+    // ✅ Get Cloudinary URL directly from req.file.path (already uploaded by multer-storage-cloudinary)
+    const cloudinaryUrl = req.file.path;
 
-    // ✅ Update the user's CV URL in MongoDB
+    // ✅ Update user document with the uploaded CV URL
     const user = await User.findByIdAndUpdate(
       userId,
-      { cvFile: result.secure_url },  // Store the CV URL
+      { cvFile: cloudinaryUrl },
       { new: true }
     );
 
@@ -30,10 +26,10 @@ const uploadCv = async (req, res) => {
 
     res.status(200).json({
       message: "CV uploaded successfully",
-      cvUrl: result.secure_url
+      cvUrl: cloudinaryUrl
     });
   } catch (error) {
-    console.error("Cloudinary upload error:", error);
+    console.error("CV upload error:", error);
     res.status(500).json({
       message: "Failed to upload CV",
       error: error.message

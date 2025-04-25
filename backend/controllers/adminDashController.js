@@ -1,7 +1,7 @@
-const UserLogin = require("../models/User");  // Your user login schema
-const Recruiter = require("../models/Recruiter"); // Your recruiter schema
-const Job = require("../models/Job_listing"); // Your job schema
-const Application = require("../models/JobApplication"); // Your application schema
+const UserLogin = require("../models/User");  
+const Recruiter = require("../models/Recruiter"); 
+const Job = require("../models/Job_listing"); 
+const Application = require("../models/JobApplication"); 
 
 // Get Admin Dashboard Data
 const getDashboardStats = async (req, res) => {

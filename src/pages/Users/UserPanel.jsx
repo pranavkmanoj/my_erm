@@ -91,6 +91,7 @@ const UserPanel1 = () => {
               We make it easy to find what's next. <br />
               Browse over 100,000 jobs — from top companies to fast-growing startups.
             </p>
+
             <div className="mt-6 flex flex-col sm:flex-row gap-4 items-center justify-center">
               <button
                 className="w-full sm:w-auto px-6 py-3 bg-[#EA033F] text-[#f7f7f7] font-semibold rounded-lg shadow-md hover:bg-[#FB5607] transition-colors"
@@ -109,7 +110,7 @@ const UserPanel1 = () => {
         </div>
 
         {/* Branding Section with simple image */}
-        <div className="bg-[#140000] py-16 px-6 lg:py-24">
+        <div className="bg-gradient-to-r from-[#140000] to-black py-16 px-6 lg:py-24">
           <div className="container mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
             {/* Simple Image Container */}
             <img
@@ -154,7 +155,7 @@ const UserPanel1 = () => {
         </div>
 
         {/* Job Listings Carousel Section */}
-        <div className="bg-[#140000] py-12 px-6">
+        <div className="bg-black py-12 px-6">
           <div className="container mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold text-[#f7f7f7] mb-6 text-center">
               Featured Job Opportunities
