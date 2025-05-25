@@ -1,6 +1,7 @@
 const cloudinary = require("../config/cloudinary");
 const JobApplication = require("../models/JobApplication");
 const JobListing = require("../models/Job_listing");
+const User = require("../models/User");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
@@ -148,18 +149,48 @@ const getJobApplicationsByRecruiter = async (req, res) => {
             return res.status(400).json({ message: "Recruiter ID is required" });
         }
 
-        const jobApplications = await JobApplication.find({ recruiterId });
+        // First find all jobs posted by this recruiter
+        const jobs = await JobListing.find({ recruiterId });
+        if (!jobs.length) {
+            return res.status(404).json({ message: "No jobs found for this recruiter" });
+        }
+
+        // Get the job IDs to find applications for
+        const jobIds = jobs.map(job => job._id);
+
+        // Find applications for these jobs and populate job and user details
+        const jobApplications = await JobApplication.find({ jobId: { $in: jobIds } })
+            .populate({
+                path: 'jobId',
+                select: 'jobTitle companyName'
+            })
+            .populate({
+                path: 'userId',
+                select: 'profilePic name',
+                model: 'user_logins' // Specify the model name
+            })
+            .lean();
 
         if (!jobApplications.length) {
             return res.status(404).json({ message: "No job applications found for this recruiter" });
         }
 
-        res.status(200).json(jobApplications);
+        // Format the response
+        const formattedApplications = jobApplications.map(application => ({
+            ...application,
+            jobTitle: application.jobId?.jobTitle || 'Not Available',
+            companyName: application.jobId?.companyName || 'Not Available',
+            profilePic: application.userId?.profilePic || null,
+            userName: application.userId?.name || 'Unknown'
+        }));
+
+        res.status(200).json(formattedApplications);
     } catch (error) {
         console.error("Error fetching job applications:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
 // 📌 Delete Job Application
 const deleteApplication = async (req, res) => {
     try {

@@ -5,6 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiX, FiExternalLink, FiTrash2, FiChevronDown, FiMail, FiPhone, FiAward, FiSearch, FiFilter } from "react-icons/fi";
 import Swal from "sweetalert2";
 
+// Helper function to get initials
+const getInitials = (firstName, lastName) => {
+  const firstInitial = firstName ? firstName.charAt(0).toUpperCase() : '';
+  const lastInitial = lastName ? lastName.charAt(0).toUpperCase() : '';
+  return `${firstInitial}${lastInitial}`;
+};
+
 const ViewApplications = () => {
   const { user } = useUser();
   const [applications, setApplications] = useState([]);
@@ -24,9 +31,7 @@ const ViewApplications = () => {
 
     const fetchApplications = async () => {
       try {
-        const response = await axiosInstance.get(`job-applications/recruiter/${user.id}`, {
-          headers: { "Content-Type": "application/json" },
-        });
+        const response = await axiosInstance.get(`job-applications/recruiter/${user.id}`);
         setApplications(response.data);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to fetch applications");
@@ -123,17 +128,20 @@ const ViewApplications = () => {
   };
 
   const sortedApplications = [...applications].sort((a, b) => {
-    if (a[sortConfig.key] < b[sortConfig.key]) {
+    const aValue = a[sortConfig.key] || '';
+    const bValue = b[sortConfig.key] || '';
+    
+    if (aValue < bValue) {
       return sortConfig.direction === "asc" ? -1 : 1;
     }
-    if (a[sortConfig.key] > b[sortConfig.key]) {
+    if (aValue > bValue) {
       return sortConfig.direction === "asc" ? 1 : -1;
     }
     return 0;
   });
 
   const filteredApplications = sortedApplications.filter(app => {
-    const matchesSearch = `${app.firstName} ${app.lastName} ${app.email} ${app.skills?.join(" ")}`
+    const matchesSearch = `${app.firstName} ${app.lastName} ${app.email} ${app.skills?.join(" ")} ${app.jobTitle} ${app.companyName}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
 
@@ -234,6 +242,34 @@ const ViewApplications = () => {
                     <th
                       scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 cursor-pointer"
+                      onClick={() => requestSort("jobTitle")}
+                    >
+                      <div className="flex items-center">
+                        Job Title
+                        {sortConfig.key === "jobTitle" && (
+                          <span className="ml-1">
+                            {sortConfig.direction === "asc" ? "↑" : "↓"}
+                          </span>
+                        )}
+                      </div>
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 cursor-pointer"
+                      onClick={() => requestSort("companyName")}
+                    >
+                      <div className="flex items-center">
+                        Company
+                        {sortConfig.key === "companyName" && (
+                          <span className="ml-1">
+                            {sortConfig.direction === "asc" ? "↑" : "↓"}
+                          </span>
+                        )}
+                      </div>
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 cursor-pointer"
                       onClick={() => requestSort("email")}
                     >
                       <div className="flex items-center">
@@ -297,9 +333,18 @@ const ViewApplications = () => {
                       >
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                           <div className="flex items-center">
-                            <div className="h-10 w-10 flex-shrink-0 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium">
-                              {app.firstName.charAt(0)}{app.lastName.charAt(0)}
-                            </div>
+                            {app.profilePic ? (
+                              <img 
+                                src={app.profilePic} 
+                                alt={`${app.firstName} ${app.lastName}`}
+                                className="h-10 w-10 rounded-full object-cover"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div className="h-10 w-10 flex-shrink-0 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium">
+                                {getInitials(app.firstName, app.lastName)}
+                              </div>
+                            )}
                             <div className="ml-4">
                               <div className="font-medium text-gray-900">{app.firstName} {app.lastName}</div>
                               <div className="text-gray-500 flex items-center">
@@ -308,6 +353,12 @@ const ViewApplications = () => {
                               </div>
                             </div>
                           </div>
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                          {app.jobTitle}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                          {app.companyName}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           <div className="flex items-center">
@@ -365,7 +416,7 @@ const ViewApplications = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="6" className="px-6 py-12 text-center text-sm text-gray-500">
+                      <td colSpan="8" className="px-6 py-12 text-center text-sm text-gray-500">
                         <div className="flex flex-col items-center justify-center">
                           <FiSearch className="h-12 w-12 text-gray-400 mb-4" />
                           <p className="text-lg font-medium text-gray-900">No candidates found</p>
@@ -412,9 +463,18 @@ const ViewApplications = () => {
               </div>
               <div className="px-6 py-4">
                 <div className="flex items-start">
-                  <div className="h-16 w-16 flex-shrink-0 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xl font-medium mr-4">
-                    {selectedApplication.firstName.charAt(0)}{selectedApplication.lastName.charAt(0)}
-                  </div>
+                  {selectedApplication.profilePic ? (
+                    <img 
+                      src={selectedApplication.profilePic}
+                      alt={`${selectedApplication.firstName} ${selectedApplication.lastName}`}
+                      className="h-16 w-16 rounded-full object-cover mr-4"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="h-16 w-16 flex-shrink-0 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xl font-medium mr-4">
+                      {getInitials(selectedApplication.firstName, selectedApplication.lastName)}
+                    </div>
+                  )}
                   <div>
                     <h3 className="text-lg font-medium text-gray-900">
                       {selectedApplication.firstName} {selectedApplication.lastName}
@@ -434,6 +494,18 @@ const ViewApplications = () => {
 
                 <div className="mt-6 border-t border-gray-200 pt-6">
                   <dl className="divide-y divide-gray-200">
+                    <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+                      <dt className="text-sm font-medium text-gray-500">Job Title</dt>
+                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        {selectedApplication.jobTitle}
+                      </dd>
+                    </div>
+                    <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+                      <dt className="text-sm font-medium text-gray-500">Company</dt>
+                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        {selectedApplication.companyName}
+                      </dd>
+                    </div>
                     <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
                       <dt className="text-sm font-medium text-gray-500">Application Status</dt>
                       <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -494,7 +566,6 @@ const ViewApplications = () => {
                 >
                   Close
                 </button>
-
               </div>
             </motion.div>
           </motion.div>

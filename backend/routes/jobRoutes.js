@@ -9,5 +9,4 @@ router.get("/recruiter/:recruiterId", jobController.getJobsByRecruiter); //get a
 router.put("/update-status/:id", authMiddleware, jobController.updateJobStatus); //Status update while [active or close](Recruiter Side)
 router.put('/:id', authMiddleware, jobController.updateJob); //For Updation (Recruiter Side)
 router.delete("/:id", authMiddleware, jobController.deleteJob); //For Deletion (Recruiter Side)
-
 module.exports = router;

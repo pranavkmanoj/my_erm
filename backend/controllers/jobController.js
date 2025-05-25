@@ -86,26 +86,32 @@ const getJobsByRecruiter = async (req, res) => {
 
 // ✅ Update job status (Recruiter Side)
 const updateJobStatus = async (req, res) => {
-console.log("Job ID received from request:", req.params.id);
+  console.log("Job ID received from request:", req.params.id);
 
-    try {
-        const { jobId } = req.params;
-        const { status } = req.body;
+  try {
+    const { status } = req.body;
 
-        if (!["Active", "Closed"].includes(status)) {
-            return res.status(400).json({ message: "Invalid status update" });
-        }
-
-        const job = await Job.findOne({ _id: new mongoose.Types.ObjectId(req.params.id) });
-        if (!job) {
-          return res.status(404).json({ message: "Job not found" });
-        }
-        res.status(200).json({ message: "Job status updated successfully", job });
-    } catch (error) {
-        console.error("Error updating job status:", error);
-        res.status(500).json({ message: "Internal server error" });
+    if (!["Active", "Closed"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status update" });
     }
+
+    const job = await Job.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true } // return the updated job
+    );
+
+    if (!job) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    res.status(200).json({ message: "Job status updated successfully", job });
+  } catch (error) {
+    console.error("Error updating job status:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
+
 
 // ✅ Update a job by ID (Recruiter side)
 const updateJob = async (req, res) => {
